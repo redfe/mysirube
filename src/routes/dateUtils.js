@@ -39,7 +39,7 @@ const formatIfValid = (date, formatFunc) => {
  */
 const by10000Year = {
 	label: 'by 10000 years',
-	format: (date) => formatIfValid(date, () => format(date, 'G y')),
+	format: (date) => formatIfValid(date, () => format(date, 'G y年')),
 	increment: (date, inc) => addYears(date, inc * 10000),
 	startOf: (date) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 10000) * 10000))
 };
@@ -49,7 +49,7 @@ const by10000Year = {
  */
 const by1000Year = {
 	label: 'by 1000 years',
-	format: (date) => formatIfValid(date, () => format(date, 'G y')),
+	format: (date) => formatIfValid(date, () => format(date, 'G y年')),
 	increment: (date, inc) => addYears(date, inc * 1000),
 	startOf: (date) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 1000) * 1000))
 };
@@ -59,7 +59,7 @@ const by1000Year = {
  */
 const by100Year = {
 	label: 'by 100 years',
-	format: (date) => formatIfValid(date, () => format(date, 'G y')),
+	format: (date) => formatIfValid(date, () => format(date, 'G y年')),
 	increment: (date, inc) => addYears(date, inc * 100),
 	startOf: (date) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 100) * 100))
 };
@@ -79,7 +79,7 @@ const by10Year = {
  */
 const byYear = {
 	label: 'by year',
-	format: (date) => formatIfValid(date, () => format(date, 'G y')),
+	format: (date) => formatIfValid(date, () => format(date, 'G y年')),
 	increment: addYears,
 	startOf: (date) => startOfYear(date)
 };
@@ -89,7 +89,7 @@ const byYear = {
  */
 const byMonth = {
 	label: 'by month',
-	format: (date) => formatIfValid(date, () => format(date, 'G y-MM')),
+	format: (date) => formatIfValid(date, () => format(date, 'G y年M月')),
 	increment: addMonths,
 	startOf: (date) => startOfMonth(date)
 };
@@ -99,7 +99,7 @@ const byMonth = {
  */
 const byDay = {
 	label: 'by day',
-	format: (date) => formatIfValid(date, () => format(date, 'G y-MM-dd')),
+	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日')),
 	increment: addDays,
 	startOf: (date) => startOfDay(date)
 };
@@ -109,7 +109,7 @@ const byDay = {
  */
 const byHour = {
 	label: 'by hour',
-	format: (date) => formatIfValid(date, () => format(date, 'G y-MM-dd HH')),
+	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 HH時')),
 	increment: addHours,
 	startOf: (date) => startOfHour(date)
 };
@@ -119,7 +119,7 @@ const byHour = {
  */
 const byMinute = {
 	label: 'by minute',
-	format: (date) => formatIfValid(date, () => format(date, 'G y-MM-d HH:mm')),
+	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 HH時mm分')),
 	increment: addMinutes,
 	startOf: (date) => startOfMinute(date)
 };
@@ -129,7 +129,7 @@ const byMinute = {
  */
 const bySecond = {
 	label: 'by second',
-	format: (date) => formatIfValid(date, () => format(date, 'G y-MM-d HH:mm:ss')),
+	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 HH時mm分ss秒')),
 	increment: addSeconds,
 	startOf: (date) => startOfSecond(date)
 };
@@ -139,7 +139,7 @@ const bySecond = {
  */
 const byMillisecond = {
 	label: 'by millisecond',
-	format: (date) => formatIfValid(date, () => format(date, 'G y-MM-d HH:mm:ss.SSS')),
+	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 HH時mm分ss.SSS秒')),
 	increment: addMilliseconds,
 	startOf: (date) => date
 };

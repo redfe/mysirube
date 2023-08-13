@@ -131,7 +131,7 @@
 	}
 	.timeline {
 		height: 100svh;
-		width: 400px;
+		width: 500px;
 		background-color: rgba(255, 255, 255, 0.8);
 		overflow-y: hidden;
 	}
