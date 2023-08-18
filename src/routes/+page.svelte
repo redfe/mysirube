@@ -29,6 +29,23 @@
 	}
 
 	/**
+	 * @param {Date} from
+	 * @param {Date} to
+	 * @param {number} level
+	 */
+	async function fetchCounts(from, to, level) {
+		const params = {
+			from: formatDate(from),
+			to: formatDate(to),
+			level: '' + level
+		};
+		const searchParams = new URLSearchParams(params);
+		const response = await fetch(`/api/timelines/counts?${searchParams.toString()}`);
+		const { counts } = await response.json();
+		return counts;
+	}
+
+	/**
 	 * @param {DateValue=} lastValue
 	 * @returns {Promise<DateValue[]>}
 	 */
@@ -37,10 +54,7 @@
 		if (isOverPrevious(_last.datetime)) return !lastValue ? [_last] : [];
 		const to = selected.increment(_last.datetime, -1);
 		const from = selected.increment(_last.datetime, -(1 + chunkSize));
-		const response = await fetch(
-			`/api/timelines/counts?from=${formatDate(from)}&to=${formatDate(to)}&level=${selected.level}`
-		);
-		const { counts } = await response.json();
+		const counts = await fetchCounts(from, to, selected.level);
 		let array = [];
 		for (let i = 0; i < chunkSize; i++) {
 			const newDatetime = selected.increment(_last.datetime, -(i + 1));
@@ -61,10 +75,7 @@
 		if (isOverNext(_last.datetime)) return !lastValue ? [_last] : [];
 		const from = selected.increment(_last.datetime, 1);
 		const to = selected.increment(_last.datetime, 1 + chunkSize);
-		const response = await fetch(
-			`/api/timelines/counts?from=${formatDate(from)}&to=${formatDate(to)}&level=${selected.level}`
-		);
-		const { counts } = await response.json();
+		const counts = await fetchCounts(from, to, selected.level);
 		let array = [];
 		for (let i = 0; i < chunkSize; i++) {
 			const newDatetime = selected.increment(_last.datetime, i + 1);
