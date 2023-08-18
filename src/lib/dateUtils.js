@@ -1,4 +1,5 @@
 // @ts-check
+
 import {
 	format,
 	addYears,
@@ -19,7 +20,24 @@ import {
 } from 'date-fns';
 
 /**
- * @typedef {import('./types.d.ts').DateOptions} DateOptions
+ * @enum {number}
+ */
+export const Level = {
+	By10000Year: 0,
+	By1000Year: 1,
+	By100Year: 2,
+	By10Year: 3,
+	ByYear: 4,
+	ByMonth: 5,
+	ByDay: 6,
+	ByHour: 7,
+	ByMinute: 8,
+	BySecond: 9,
+	ByMillisecond: 10
+};
+
+/**
+ * @typedef {import('$lib/types.js').DateOptions} DateOptions
  */
 
 /**
@@ -38,6 +56,7 @@ const formatIfValid = (date, formatFunc) => {
  * @type {DateOptions}
  */
 const by10000Year = {
+	level: Level.By10000Year,
 	label: 'by 10000 years',
 	format: (date) => formatIfValid(date, () => format(date, 'G y年')),
 	increment: (date, inc) => addYears(date, inc * 10000),
@@ -48,6 +67,7 @@ const by10000Year = {
  * @type {DateOptions}
  */
 const by1000Year = {
+	level: Level.By1000Year,
 	label: 'by 1000 years',
 	format: (date) => formatIfValid(date, () => format(date, 'G y年')),
 	increment: (date, inc) => addYears(date, inc * 1000),
@@ -58,6 +78,7 @@ const by1000Year = {
  * @type {DateOptions}
  */
 const by100Year = {
+	level: Level.By100Year,
 	label: 'by 100 years',
 	format: (date) => formatIfValid(date, () => format(date, 'G y年')),
 	increment: (date, inc) => addYears(date, inc * 100),
@@ -68,6 +89,7 @@ const by100Year = {
  * @type {DateOptions}
  */
 const by10Year = {
+	level: Level.By10Year,
 	label: 'by 10 years',
 	format: (date) => formatIfValid(date, () => format(date, 'G y')),
 	increment: (date, inc) => addYears(date, inc * 10),
@@ -78,6 +100,7 @@ const by10Year = {
  * @type {DateOptions}
  */
 const byYear = {
+	level: Level.ByYear,
 	label: 'by year',
 	format: (date) => formatIfValid(date, () => format(date, 'G y年')),
 	increment: addYears,
@@ -88,6 +111,7 @@ const byYear = {
  * @type {DateOptions}
  */
 const byMonth = {
+	level: Level.ByMonth,
 	label: 'by month',
 	format: (date) => formatIfValid(date, () => format(date, 'G y年M月')),
 	increment: addMonths,
@@ -98,6 +122,7 @@ const byMonth = {
  * @type {DateOptions}
  */
 const byDay = {
+	level: Level.ByDay,
 	label: 'by day',
 	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日')),
 	increment: addDays,
@@ -108,6 +133,7 @@ const byDay = {
  * @type {DateOptions}
  */
 const byHour = {
+	level: Level.ByHour,
 	label: 'by hour',
 	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 HH時')),
 	increment: addHours,
@@ -118,6 +144,7 @@ const byHour = {
  * @type {DateOptions}
  */
 const byMinute = {
+	level: Level.ByMinute,
 	label: 'by minute',
 	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 HH時mm分')),
 	increment: addMinutes,
@@ -128,6 +155,7 @@ const byMinute = {
  * @type {DateOptions}
  */
 const bySecond = {
+	level: Level.BySecond,
 	label: 'by second',
 	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 HH時mm分ss秒')),
 	increment: addSeconds,
@@ -138,6 +166,7 @@ const bySecond = {
  * @type {DateOptions}
  */
 const byMillisecond = {
+	level: Level.ByMillisecond,
 	label: 'by millisecond',
 	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 HH時mm分ss.SSS秒')),
 	increment: addMilliseconds,
@@ -202,7 +231,7 @@ export const isOverNext = (date) => {
 	return max < date;
 };
 
-export const types = [
+export const dateTypes = [
 	by10000Year,
 	by1000Year,
 	by100Year,
