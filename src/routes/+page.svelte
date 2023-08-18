@@ -199,9 +199,11 @@
 		text-align: center;
 	}
 	.row-count button {
+		margin-top: 10px;
 		border: none;
 		border-radius: 30px;
 		width: 50px;
+		height: 30px;
 		background-color: rgb(75, 40, 246);
 		color: white;
 	}
