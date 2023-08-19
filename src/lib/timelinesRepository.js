@@ -8,6 +8,19 @@ import { dateTypes } from './dateUtils.js';
  */
 
 /**
+ * @param {Level} level
+ * @returns {DateOptions}
+ */
+function getDateType(level) {
+	/** @type {DateOptions | undefined} */
+	const dateType = dateTypes.find((dateType) => dateType.level === level);
+	if (!dateType) {
+		throw new Error(`Invalid level: ${level}`);
+	}
+	return dateType;
+}
+
+/**
  * @param {Date} from greater than or equal to
  * @param {Date} to less than
  * @returns {Data[]} datas
@@ -17,11 +30,10 @@ export function find(from, to) {
 }
 
 /**
- *
  * @param {Date} from
  * @param {Date} to
  * @param {Level} level
- * @returns {{datetime:Date, count:number}[]} summaries
+ * @returns {{datetime:Date, count:number}[]}
  */
 export function counts(from, to, level) {
 	const list = database.find(from, to);
@@ -42,14 +54,11 @@ export function counts(from, to, level) {
 }
 
 /**
- * @param {Level} level
- * @returns {DateOptions}
+ * @param {Date} from
+ * @param {Date} to
+ * @returns {{id:string, datetime:Date, text:string}[]}
  */
-function getDateType(level) {
-	/** @type {DateOptions | undefined} */
-	const dateType = dateTypes.find((dateType) => dateType.level === level);
-	if (!dateType) {
-		throw new Error(`Invalid level: ${level}`);
-	}
-	return dateType;
+export function summaries(from, to) {
+	const list = database.find(from, to);
+	return list.map((data) => ({ id: data.id, datetime: data.datetime, text: data.content }));
 }
