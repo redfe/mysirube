@@ -1,6 +1,7 @@
 <div class="root">
 	<nav>
 		<a href="/">Home</a>
+		<button>🔍</button>
 	</nav>
 
 	<main>
