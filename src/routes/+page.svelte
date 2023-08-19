@@ -121,11 +121,11 @@
 						<div class="row-title">
 							{selected.format(_value.datetime)}
 						</div>
-						{#if !!_value.count && _value.count > 0}
-							<div class="row-count">
+						<div class="row-count">
+							{#if !!_value.count && _value.count > 0}
 								<button>{_value.count}</button>
-							</div>
-						{/if}
+							{/if}
+						</div>
 					</div>
 					<div class="down">
 						{#if selectedIndex !== dateTypes.length - 1}
@@ -198,12 +198,15 @@
 		display: block;
 		text-align: center;
 	}
+	.row-count {
+		height: 30px;
+	}
 	.row-count button {
 		margin-top: 10px;
 		border: none;
 		border-radius: 30px;
 		width: 50px;
-		height: 30px;
+		height: 100%;
 		background-color: rgb(75, 40, 246);
 		color: white;
 	}

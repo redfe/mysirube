@@ -135,7 +135,7 @@ const byDay = {
 const byHour = {
 	level: Level.ByHour,
 	label: 'by hour',
-	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 HH時')),
+	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 H時')),
 	increment: addHours,
 	startOf: (date) => startOfHour(date)
 };
@@ -146,7 +146,7 @@ const byHour = {
 const byMinute = {
 	level: Level.ByMinute,
 	label: 'by minute',
-	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 HH時mm分')),
+	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 H時m分')),
 	increment: addMinutes,
 	startOf: (date) => startOfMinute(date)
 };
@@ -157,7 +157,7 @@ const byMinute = {
 const bySecond = {
 	level: Level.BySecond,
 	label: 'by second',
-	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 HH時mm分ss秒')),
+	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 H時m分s秒')),
 	increment: addSeconds,
 	startOf: (date) => startOfSecond(date)
 };
@@ -168,7 +168,7 @@ const bySecond = {
 const byMillisecond = {
 	level: Level.ByMillisecond,
 	label: 'by millisecond',
-	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 HH時mm分ss.SSS秒')),
+	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 H時m分s.SSS秒')),
 	increment: addMilliseconds,
 	startOf: (date) => date
 };
