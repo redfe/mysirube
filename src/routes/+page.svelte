@@ -51,7 +51,7 @@
 	 */
 	async function previousChunk(lastValue) {
 		let _last = lastValue ?? createValue(selected.increment(initialDatetime, 1), 0);
-		if (isOverPrevious(_last.datetime)) return !lastValue ? [_last] : [];
+		if (isOverPrevious(selected.increment(_last.datetime, -1))) return !lastValue ? [_last] : [];
 		const to = selected.increment(_last.datetime, 0);
 		const from = selected.increment(_last.datetime, -chunkSize);
 		const counts = (await fetchCounts(from, to, selected.level)).reverse();
@@ -72,7 +72,7 @@
 	 */
 	async function nextChunk(lastValue) {
 		let _last = lastValue ?? createValue(selected.increment(initialDatetime, -1), 0);
-		if (isOverNext(_last.datetime)) return !lastValue ? [_last] : [];
+		if (isOverNext(selected.increment(_last.datetime, 1))) return !lastValue ? [_last] : [];
 		const from = selected.increment(_last.datetime, 1);
 		const to = selected.increment(_last.datetime, 1 + chunkSize);
 		const counts = await fetchCounts(from, to, selected.level);
