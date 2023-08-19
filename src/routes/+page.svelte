@@ -87,6 +87,7 @@
 	}
 	.summaries {
 		width: 500px;
+		transition: left 0.5s ease;
 		height: 100%;
 		box-sizing: border-box;
 		position: absolute;
