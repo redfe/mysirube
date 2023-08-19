@@ -85,7 +85,7 @@ function getDummyTags() {
 		const index = getRandomNumber(0, dummyTags.length - 1);
 		tags.push(dummyTags[index]);
 	}
-	return tags;
+	return [...new Set(tags)];
 }
 
 /**
