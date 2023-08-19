@@ -40,21 +40,18 @@
 	});
 </script>
 
-<svelte:body bind:clientWidth />
-
 <main>
-	{#if isViewSummaries}
-		{#key selectedDatetime}
-			<div
-				class="summaries"
-				style:left={`${(clientWidth - 500) / 2 + 250}px`}
-				transition:fly={{ x: -250 }}
-			>
-				<Summaries />
-				<button class="close" on:click={() => (isViewSummaries = false)}>×</button>
-			</div>
-		{/key}
-	{/if}
+	{#key selectedDatetime}
+		<div
+			class="summaries"
+			style:display={isViewSummaries ? 'block' : 'none'}
+			style:left={`${(clientWidth - 500) / 2 + 250}px`}
+			transition:fly={{ x: -250 }}
+		>
+			<Summaries />
+			<button class="close" on:click={() => (isViewSummaries = false)}>×</button>
+		</div>
+	{/key}
 
 	<!-- スクロール位置を残しておきたいので display:none で非表示にする -->
 	<div
