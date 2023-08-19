@@ -32,3 +32,9 @@ export type DateValue = {
 	datetime: Date;
 	count: number;
 };
+
+export type Summary = {
+	id: string;
+	datetime: Date;
+	text: string;
+};

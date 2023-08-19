@@ -8,7 +8,7 @@ import {
 	addHours,
 	addMinutes,
 	addSeconds,
-	addMilliseconds,
+	//addMilliseconds,
 	getYear,
 	setYear,
 	startOfYear,
@@ -91,7 +91,7 @@ const by100Year = {
 const by10Year = {
 	level: Level.By10Year,
 	label: 'by 10 years',
-	format: (date) => formatIfValid(date, () => format(date, 'G y')),
+	format: (date) => formatIfValid(date, () => format(date, 'G y年')),
 	increment: (date, inc) => addYears(date, inc * 10),
 	startOf: (date) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 10) * 10))
 };
@@ -165,13 +165,13 @@ const bySecond = {
 /**
  * @type {DateOptions}
  */
-const byMillisecond = {
-	level: Level.ByMillisecond,
-	label: 'by millisecond',
-	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 H時m分s.SSS秒')),
-	increment: addMilliseconds,
-	startOf: (date) => date
-};
+// const byMillisecond = {
+// 	level: Level.ByMillisecond,
+// 	label: 'by millisecond',
+// 	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 H時m分s.SSS秒')),
+// 	increment: addMilliseconds,
+// 	startOf: (date) => date
+// };
 
 /**
  * @param {Date} date
@@ -182,14 +182,18 @@ const isInvalidDate = (date) => {
 };
 
 /**
- * @type {(date:Date) => string}
+ * @type {(date:Date, pattern?:string) => string}
  * @returns {string}
  */
-export const formatDate = (date) => {
+export const formatDate = (date, pattern) => {
 	if (isInvalidDate(date)) {
 		return '';
 	}
-	return date.toISOString();
+	if (!pattern) {
+		return date.toISOString();
+	} else {
+		return format(date, pattern);
+	}
 };
 
 /**
@@ -241,6 +245,5 @@ export const dateTypes = [
 	byDay,
 	byHour,
 	byMinute,
-	bySecond,
-	byMillisecond
+	bySecond
 ];

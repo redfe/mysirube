@@ -4,6 +4,7 @@ import { dateTypes } from './dateUtils.js';
 /**
  * @typedef {import('$lib/types.d.ts').Data} Data
  * @typedef {import('$lib/types.d.ts').DateOptions} DateOptions
+ * @typedef {import('$lib/types.d.ts').Summary} Summary
  * @typedef {import('$lib/dateUtils.js').Level} Level
  */
 
@@ -56,9 +57,11 @@ export function counts(from, to, level) {
 /**
  * @param {Date} from
  * @param {Date} to
- * @returns {{id:string, datetime:Date, text:string}[]}
+ * @param {number} offset
+ * @param {number} count
+ * @returns {Summary[]}
  */
-export function summaries(from, to) {
-	const list = database.find(from, to);
+export function summaries(from, to, offset, count) {
+	const list = database.find(from, to, offset, count);
 	return list.map((data) => ({ id: data.id, datetime: data.datetime, text: data.content }));
 }

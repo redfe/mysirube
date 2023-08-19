@@ -7,24 +7,29 @@
 	let isViewSummaries = false;
 
 	/** @type {Date=} */
-	let selectedDatetime;
+	let selectedFrom;
+
+	/** @type {Date=} */
+	let selectedTo;
 
 	$: {
 		if (!isViewSummaries) {
-			selectedDatetime = undefined;
+			selectedFrom = undefined;
 		}
 	}
 
 	/**
-	 * @param {Date} datetime
+	 * @param {Date} from
+	 * @param {Date} to
 	 */
-	function handleOnClickCountButton(datetime) {
-		if (selectedDatetime === datetime) {
+	function handleOnClickCountButton(from, to) {
+		if (selectedFrom === from) {
 			isViewSummaries = !isViewSummaries;
 		} else {
 			isViewSummaries = true;
 		}
-		selectedDatetime = datetime;
+		selectedFrom = from;
+		selectedTo = to;
 	}
 
 	/** @type {number} */
@@ -41,14 +46,14 @@
 </script>
 
 <main>
-	{#key selectedDatetime}
+	{#key selectedFrom}
 		<div
 			class="summaries"
 			style:display={isViewSummaries ? 'block' : 'none'}
 			style:left={`${(clientWidth - 500) / 2 + 250}px`}
 			transition:fly={{ x: -250 }}
 		>
-			<Summaries />
+			<Summaries from={selectedFrom} to={selectedTo} />
 			<button class="close" on:click={() => (isViewSummaries = false)}>×</button>
 		</div>
 	{/key}
@@ -60,7 +65,7 @@
 			? `${(clientWidth - 500) / 2 - 250}px`
 			: `${(clientWidth - 500) / 2}px`}
 	>
-		<Timeline {handleOnClickCountButton} {selectedDatetime} />
+		<Timeline {handleOnClickCountButton} selectedDatetime={selectedFrom} />
 	</div>
 </main>
 
@@ -73,7 +78,7 @@
 		width: 100%;
 		display: flex;
 		justify-content: center;
-		background-image: url(/actionvance-t7EL2iG3jMc-unsplash.jpg);
+		/* background-image: url(/actionvance-t7EL2iG3jMc-unsplash.jpg); */
 		background-size: cover;
 		background-blend-mode: overlay;
 		position: relative;

@@ -3,11 +3,12 @@
 	import { dateTypes, formatDate, isOverPrevious, isOverNext } from '$lib/dateUtils.js';
 
 	/**
-	 * @param {Date} datetime;
+	 * @param {Date} from;
+	 * @param {Date} to;
 	 * @returns {void}
 	 */
-	export let handleOnClickCountButton = (datetime) => {
-		console.log('handleOnClickCountButton', datetime);
+	export let handleOnClickCountButton = (from, to) => {
+		console.log('handleOnClickCountButton', from, to);
 	};
 
 	/** @type {Date=} */
@@ -135,8 +136,12 @@
 						</div>
 						<div class="row-count">
 							{#if !!_value.count && _value.count > 0}
-								<button on:click={() => handleOnClickCountButton(_value.datetime)}
-									>{_value.count}</button
+								<button
+									on:click={() =>
+										handleOnClickCountButton(
+											_value.datetime,
+											selected.increment(_value.datetime, 1)
+										)}>{_value.count}</button
 								>
 							{/if}
 						</div>
@@ -223,7 +228,7 @@
 		cursor: pointer;
 	}
 	.now {
-		background-color: rgb(247, 243, 43);
+		background-color: rgba(112, 248, 146, 0.8);
 	}
 	.selected {
 		background-color: rgb(239, 168, 151, 0.8);

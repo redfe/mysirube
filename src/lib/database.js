@@ -114,13 +114,27 @@ function createDummyDatas() {
 /**
  * @param {Date} from inclusive
  * @param {Date} to exclusive
+ * @param {number=} offset
+ * @param {number=} count
  * @returns {Data[]} datas
  */
-function find(from, to) {
-	return getDatas().filter((data) => {
-		const date = new Date(data.datetime);
-		return from <= date && date < to;
-	});
+function find(from, to, offset, count) {
+	if (!offset) {
+		offset = 0;
+	}
+	const results = getDatas()
+		.filter((data) => {
+			const date = new Date(data.datetime);
+			return from <= date && date < to;
+		})
+		.sort((a, b) => {
+			return a.datetime > b.datetime ? 1 : -1;
+		});
+	if (!count) {
+		return results.slice(offset);
+	} else {
+		return results.slice(offset, offset + count);
+	}
 }
 
 export default { find };
