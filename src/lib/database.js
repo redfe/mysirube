@@ -96,7 +96,7 @@ function getDummyTags() {
  */
 function createDummyDatas() {
 	const datas = [];
-	for (let i = 0; i < 1000; i++) {
+	for (let i = 0; i < 2000; i++) {
 		const id = i.toString().padStart(3, '0'); // 3桁の0埋めIDを生成
 
 		const data = {
