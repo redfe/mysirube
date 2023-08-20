@@ -8,8 +8,17 @@
 		<slot />
 	</main>
 	<nav>
-		<a href="/">Home</a>
-		<button>🔍</button>
+		<div class="left">
+			<a href="/">Home</a>
+			<button>🔍</button>
+		</div>
+		<div class="center">
+			<button class="add">+</button>
+		</div>
+		<div class="right">
+			<a href="/">Login</a>
+			<a href="/">Signup</a>
+		</div>
 	</nav>
 </div>
 
@@ -34,10 +43,28 @@
 		background-color: black;
 		color: white;
 		padding: 10px;
-		box-shadow: 0 -20px 80px rgba(255, 255, 255, 0.3);
+		box-shadow: 0 0 80px 20px rgba(255, 255, 255, 0.3);
+		display: flex;
+	}
+	nav a {
+		color: white;
 	}
 	nav a:visited {
 		color: white;
+	}
+	nav .center {
+		flex-grow: 1;
+		display: flex;
+		justify-content: center;
+	}
+	nav .add {
+		width: 30px;
+		height: 30px;
+		border-radius: 50%;
+		font-size: 1.3rem;
+		border: none;
+		background-color: rgba(255, 255, 255, 0.8);
+		cursor: pointer;
 	}
 	main {
 		height: calc(100% - 50px);
