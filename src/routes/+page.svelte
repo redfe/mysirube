@@ -55,10 +55,6 @@
 </script>
 
 <main>
-	<header>
-		<button class="add">+</button>
-	</header>
-
 	<article>
 		{#key selectedDatetime}
 			<div
@@ -82,6 +78,7 @@
 			<Timeline {handleOnClickCountButton} {selectedDatetime} {selectedLevel} />
 		</div>
 	</article>
+	<button class="add">+</button>
 </main>
 
 <style>
@@ -90,25 +87,24 @@
 	}
 	main {
 		height: 100%;
+		width: 100%;
+		position: relative;
 	}
-	header {
-		padding: 10px;
+	.add {
+		position: absolute;
+		bottom: 50px;
+		left: calc(50% - 25px);
+		width: 50px;
 		height: 50px;
-		display: flex;
-		justify-content: center;
-		box-sizing: border-box;
-	}
-	header .add {
-		width: 30px;
-		height: 30px;
 		border-radius: 50%;
-		font-size: 1.3rem;
+		font-size: 1.5rem;
 		border: none;
-		background-color: efefef;
+		background-color: #efefef;
 		cursor: pointer;
+		box-shadow: 0 0 20px -5px rgba(0, 0, 0, 0.8);
 	}
 	article {
-		height: calc(100% - 50px);
+		height: 100%;
 		width: 100%;
 		display: flex;
 		justify-content: center;
