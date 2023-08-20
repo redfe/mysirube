@@ -25,7 +25,10 @@ function getRandomNumber(min, max) {
  * @returns {Date} date
  */
 function getRandomDate() {
-	const year = getRandomNumber(0, 2120); // 0から2020の範囲で年を生成
+	const now = new Date();
+	const [minYear, maxYear] =
+		Math.random() < 0.9 ? [0, now.getFullYear() + 10] : [now.getFullYear(), now.getFullYear()];
+	const year = getRandomNumber(minYear, maxYear); // 0から2020の範囲で年を生成
 	const month = getRandomNumber(1, 12); // 1から12の範囲で月を生成
 	const day = getRandomNumber(1, 28); // 1から28の範囲で日を生成
 	const hour = getRandomNumber(0, 23); // 0から23の範囲で時を生成
