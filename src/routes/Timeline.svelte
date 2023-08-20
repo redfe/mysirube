@@ -136,7 +136,7 @@
 				>
 					<div class="up">
 						{#if selectedIndex !== 0}
-							<button on:click={() => changeLevel(_value)}><img src="/up.svg" alt="up" /></button>
+							<button on:click={() => changeLevel(_value)}>&lt;</button>
 						{/if}
 					</div>
 					<div class="row-main">
@@ -153,9 +153,7 @@
 					</div>
 					<div class="down">
 						{#if selectedIndex !== dateTypes.length - 1}
-							<button on:click={() => changeLevel(_value, false)}
-								><img src="/down.svg" alt="down" /></button
-							>
+							<button on:click={() => changeLevel(_value, false)}>&gt;</button>
 						{/if}
 					</div>
 				</div>
@@ -194,20 +192,16 @@
 	}
 	.up button,
 	.down button {
+		width: 30px;
+		height: 30px;
+		font-size: 1rem;
+		border-radius: 50%;
 		padding: 0;
 		margin: 0;
-		width: 36px;
-		display: flex;
-		justify-content: center;
 		align-items: center;
 		border: solid 1px rgba(0, 0, 0, 0.1);
 		cursor: pointer;
-		background-color: transparent;
-	}
-	.up button img,
-	.down button img {
-		width: 100%;
-		height: 100%;
+		background-color: #efefef;
 	}
 	.row-main {
 		flex-grow: 1;
