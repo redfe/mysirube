@@ -5,20 +5,6 @@ export type Data = {
 	tags: string[];
 };
 
-export enum Level {
-	By10000Year,
-	By1000Year,
-	By100Year,
-	By10Year,
-	ByYear,
-	ByMonth,
-	ByDay,
-	ByHour,
-	ByMinute,
-	BySecond,
-	ByMillisecond
-}
-
 export type DateOptions = {
 	level: Level;
 	label: string;
