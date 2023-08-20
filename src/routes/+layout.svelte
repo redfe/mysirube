@@ -10,12 +10,10 @@
 	<nav>
 		<div class="left">
 			<a href="/">Home</a>
-			<button>🔍</button>
 		</div>
-		<div class="center">
-			<button class="add">+</button>
-		</div>
+		<div class="center" />
 		<div class="right">
+			<button class="search">🔍</button>
 			<a href="/">Login</a>
 			<a href="/">Signup</a>
 		</div>
@@ -57,13 +55,13 @@
 		display: flex;
 		justify-content: center;
 	}
-	nav .add {
+	nav .search {
 		width: 30px;
 		height: 30px;
 		border-radius: 50%;
-		font-size: 1.3rem;
+		font-size: 1rem;
 		border: none;
-		background-color: rgba(255, 255, 255, 0.8);
+		background-color: efefef;
 		cursor: pointer;
 	}
 	main {

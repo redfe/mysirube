@@ -55,27 +55,33 @@
 </script>
 
 <main>
-	{#key selectedDatetime}
-		<div
-			class="summaries"
-			style:display={isViewSummaries ? 'block' : 'none'}
-			style:left={`${(clientWidth - 500) / 2 + 250}px`}
-			transition:fly={{ x: -250 }}
-		>
-			<Summaries from={selectedDatetime} to={selectedTo} />
-			<button class="close" on:click={() => (isViewSummaries = false)}>×</button>
-		</div>
-	{/key}
+	<header>
+		<button class="add">+</button>
+	</header>
 
-	<!-- スクロール位置を残しておきたいので display:none で非表示にする -->
-	<div
-		class="timeline"
-		style:left={isViewSummaries
-			? `${(clientWidth - 500) / 2 - 250}px`
-			: `${(clientWidth - 500) / 2}px`}
-	>
-		<Timeline {handleOnClickCountButton} {selectedDatetime} {selectedLevel} />
-	</div>
+	<article>
+		{#key selectedDatetime}
+			<div
+				class="summaries"
+				style:display={isViewSummaries ? 'block' : 'none'}
+				style:left={`${(clientWidth - 500) / 2 + 250}px`}
+				transition:fly={{ x: -250 }}
+			>
+				<Summaries from={selectedDatetime} to={selectedTo} />
+				<button class="close" on:click={() => (isViewSummaries = false)}>×</button>
+			</div>
+		{/key}
+
+		<!-- スクロール位置を残しておきたいので display:none で非表示にする -->
+		<div
+			class="timeline"
+			style:left={isViewSummaries
+				? `${(clientWidth - 500) / 2 - 250}px`
+				: `${(clientWidth - 500) / 2}px`}
+		>
+			<Timeline {handleOnClickCountButton} {selectedDatetime} {selectedLevel} />
+		</div>
+	</article>
 </main>
 
 <style>
@@ -84,6 +90,25 @@
 	}
 	main {
 		height: 100%;
+	}
+	header {
+		padding: 10px;
+		height: 50px;
+		display: flex;
+		justify-content: center;
+		box-sizing: border-box;
+	}
+	header .add {
+		width: 30px;
+		height: 30px;
+		border-radius: 50%;
+		font-size: 1.3rem;
+		border: none;
+		background-color: efefef;
+		cursor: pointer;
+	}
+	article {
+		height: calc(100% - 50px);
 		width: 100%;
 		display: flex;
 		justify-content: center;
@@ -114,7 +139,7 @@
 		height: 30px;
 		border-radius: 50%;
 		border: none;
-		background-color: rgba(255, 255, 255, 0.8);
+		background-color: #efefef;
 		cursor: pointer;
 	}
 </style>
