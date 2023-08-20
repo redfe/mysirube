@@ -3,16 +3,24 @@
 	import { dateTypes, formatDate, isOverPrevious, isOverNext } from '$lib/dateUtils.js';
 
 	/**
-	 * @param {Date} from;
-	 * @param {Date} to;
+	 * @typedef {import('$lib/dateUtils.js').Level} Level
+	 * @typedef {import('$lib/types.d.ts').DateOptions} DateOptions
+	 */
+
+	/**
+	 * @param {Date} datetime;
+	 * @param {DateOptions} dateOptions;
 	 * @returns {void}
 	 */
-	export let handleOnClickCountButton = (from, to) => {
-		console.log('handleOnClickCountButton', from, to);
+	export let handleOnClickCountButton = (datetime, dateOptions) => {
+		console.log('handleOnClickCountButton', datetime, dateOptions);
 	};
 
 	/** @type {Date=} */
 	export let selectedDatetime = undefined;
+
+	/** @type {Level=} */
+	export let selectedLevel = undefined;
 
 	const chunkSize = 20;
 	const triggerRangeRatio = 0.3;
@@ -123,7 +131,8 @@
 					class="row"
 					class:now={_value.datetime <= new Date() &&
 						new Date() < selected.increment(_value.datetime, 1)}
-					class:selected={_value.datetime === selectedDatetime}
+					class:selected={selected.level === selectedLevel &&
+						_value.datetime.getTime() === selectedDatetime?.getTime()}
 				>
 					<div class="up">
 						{#if selectedIndex !== 0}
@@ -136,12 +145,8 @@
 						</div>
 						<div class="row-count">
 							{#if !!_value.count && _value.count > 0}
-								<button
-									on:click={() =>
-										handleOnClickCountButton(
-											_value.datetime,
-											selected.increment(_value.datetime, 1)
-										)}>{_value.count}</button
+								<button on:click={() => handleOnClickCountButton(_value.datetime, selected)}
+									>{_value.count}</button
 								>
 							{/if}
 						</div>

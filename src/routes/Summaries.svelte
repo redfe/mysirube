@@ -2,6 +2,10 @@
 	import { formatDate } from '$lib/dateUtils';
 	import { DynamicScroll } from 'svelte-dynamic-scroll';
 
+	/**
+	 * @typedef {import('$lib/types').Summary} Summary
+	 */
+
 	/** @type {Date} */
 	export let from = new Date();
 
@@ -12,10 +16,6 @@
 
 	/** @type {string[]} */
 	let loadedIds = [];
-
-	/**
-	 * @typedef {import('$lib/types').Summary} Summary
-	 */
 
 	/**
 	 * @param {Date} from

@@ -4,32 +4,41 @@
 	import { fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
 
+	/**
+	 * @typedef {import('$lib/dateUtils.js').Level} Level
+	 * @typedef {import('$lib/types.d.ts').DateOptions} DateOptions
+	 */
+
 	let isViewSummaries = false;
 
 	/** @type {Date=} */
-	let selectedFrom;
+	let selectedDatetime;
 
 	/** @type {Date=} */
 	let selectedTo;
 
+	/** @type {Level=} */
+	let selectedLevel;
+
 	$: {
 		if (!isViewSummaries) {
-			selectedFrom = undefined;
+			selectedDatetime = undefined;
 		}
 	}
 
 	/**
-	 * @param {Date} from
-	 * @param {Date} to
+	 * @param {Date} datetime
+	 * @param {DateOptions} dateOptions
 	 */
-	function handleOnClickCountButton(from, to) {
-		if (selectedFrom === from) {
+	function handleOnClickCountButton(datetime, dateOptions) {
+		if (selectedDatetime === datetime) {
 			isViewSummaries = !isViewSummaries;
 		} else {
 			isViewSummaries = true;
 		}
-		selectedFrom = from;
-		selectedTo = to;
+		selectedDatetime = datetime;
+		selectedTo = dateOptions.increment(datetime, 1);
+		selectedLevel = dateOptions.level;
 	}
 
 	/** @type {number} */
@@ -46,14 +55,14 @@
 </script>
 
 <main>
-	{#key selectedFrom}
+	{#key selectedDatetime}
 		<div
 			class="summaries"
 			style:display={isViewSummaries ? 'block' : 'none'}
 			style:left={`${(clientWidth - 500) / 2 + 250}px`}
 			transition:fly={{ x: -250 }}
 		>
-			<Summaries from={selectedFrom} to={selectedTo} />
+			<Summaries from={selectedDatetime} to={selectedTo} />
 			<button class="close" on:click={() => (isViewSummaries = false)}>×</button>
 		</div>
 	{/key}
@@ -65,7 +74,7 @@
 			? `${(clientWidth - 500) / 2 - 250}px`
 			: `${(clientWidth - 500) / 2}px`}
 	>
-		<Timeline {handleOnClickCountButton} selectedDatetime={selectedFrom} />
+		<Timeline {handleOnClickCountButton} {selectedDatetime} {selectedLevel} />
 	</div>
 </main>
 
