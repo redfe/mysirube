@@ -125,7 +125,7 @@ function createDummyDatas() {
 }
 
 /**
- * @typedef {import('./types.d.ts').Data} Data
+ * @typedef {import('$lib/types.d.ts').Data} Data
  */
 
 /**
