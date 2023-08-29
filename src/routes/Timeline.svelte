@@ -61,8 +61,9 @@
 		};
 		const searchParams = new URLSearchParams(params);
 		const response = await fetch(`/api/timelines/counts?${searchParams.toString()}`);
+		/** @type {{counts:{datetime:string, count:number}[]}}*/
 		const { counts } = await response.json();
-		return counts;
+		return counts.map(c => ({...c, datetime: new Date(c.datetime)}));
 	}
 
 	/**
@@ -74,16 +75,19 @@
 		if (isOverPrevious(selected.increment(_last.datetime, -1))) {
 			return !lastValue ? [_last] : [];
 		}
-		const to = selected.increment(_last.datetime, 0);
-		const from = selected.increment(_last.datetime, -1 * chunkSize);
+		const to = selected.startOf(selected.increment(_last.datetime, 0));
+		const from = selected.startOf(selected.increment(_last.datetime, -1 * chunkSize));
 		const counts = (await fetchCounts(from, to, selected.level)).reverse();
+		/** @type {DateValue[]} */
 		let array = [];
 		for (let i = 0; i < chunkSize; i++) {
 			const newDatetime = selected.increment(_last.datetime, -(i + 1));
 			if (isOverPrevious(newDatetime)) {
 				return array.reverse();
 			}
-			array.push(createValue(newDatetime, counts[i]?.count ?? 0));
+			const end = selected.increment(newDatetime, 1);
+			const count = counts.find(c => newDatetime <= c.datetime && c.datetime < end)?.count ?? 0;
+			array.push(createValue(newDatetime, count));
 		}
 		return array.reverse();
 	}
@@ -100,14 +104,16 @@
 		const from = selected.increment(_last.datetime, 1);
 		const to = selected.increment(_last.datetime, 1 + chunkSize);
 		const counts = await fetchCounts(from, to, selected.level);
+		/** @type {DateValue[]} */
 		let array = [];
 		for (let i = 0; i < chunkSize; i++) {
 			const newDatetime = selected.increment(_last.datetime, i + 1);
 			if (isOverNext(newDatetime)) {
 				return array;
 			}
-			// @ts-ignore
-			array.push(createValue(newDatetime, counts[i]?.count ?? 0));
+			const end = selected.increment(newDatetime, 1);
+			const count = counts.find(c => newDatetime <= c.datetime && c.datetime < end)?.count ?? 0;
+			array.push(createValue(newDatetime, count));
 		}
 		return array;
 	}

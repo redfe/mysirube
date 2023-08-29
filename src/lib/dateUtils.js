@@ -59,7 +59,7 @@ const by10000Year = {
 	level: Level.By10000Year,
 	label: 'by 10000 years',
 	format: (date) => formatIfValid(date, () => format(date, 'G y年')),
-	increment: (date, inc) => addYears(by10000Year.startOf(date), inc * 10000),
+	increment: (date, inc) => addYears(date, inc * 10000),
 	startOf: (date) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 10000) * 10000))
 };
 
@@ -70,7 +70,7 @@ const by1000Year = {
 	level: Level.By1000Year,
 	label: 'by 1000 years',
 	format: (date) => formatIfValid(date, () => format(date, 'G y年')),
-	increment: (date, inc) => addYears(by1000Year.startOf(date), inc * 1000),
+	increment: (date, inc) => addYears(date, inc * 1000),
 	startOf: (date) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 1000) * 1000))
 };
 
@@ -81,7 +81,7 @@ const by100Year = {
 	level: Level.By100Year,
 	label: 'by 100 years',
 	format: (date) => formatIfValid(date, () => format(date, 'G y年')),
-	increment: (date, inc) => addYears(by100Year.startOf(date), inc * 100),
+	increment: (date, inc) => addYears(date, inc * 100),
 	startOf: (date) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 100) * 100))
 };
 
@@ -92,7 +92,7 @@ const by10Year = {
 	level: Level.By10Year,
 	label: 'by 10 years',
 	format: (date) => formatIfValid(date, () => format(date, 'G y年')),
-	increment: (date, inc) => addYears(by10Year.startOf(date), inc * 10),
+	increment: (date, inc) => addYears(date, inc * 10),
 	startOf: (date) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 10) * 10))
 };
 
@@ -103,7 +103,7 @@ const byYear = {
 	level: Level.ByYear,
 	label: 'by year',
 	format: (date) => formatIfValid(date, () => format(date, 'G y年')),
-	increment: (date, inc) => addYears(byYear.startOf(date), inc),
+	increment: (date, inc) => addYears(date, inc),
 	startOf: (date) => startOfYear(date)
 };
 
@@ -114,7 +114,7 @@ const byMonth = {
 	level: Level.ByMonth,
 	label: 'by month',
 	format: (date) => formatIfValid(date, () => format(date, 'G y年M月')),
-	increment: (date, inc) => addMonths(byMonth.startOf(date), inc),
+	increment: (date, inc) => addMonths(date, inc),
 	startOf: (date) => startOfMonth(date)
 };
 
@@ -125,7 +125,7 @@ const byDay = {
 	level: Level.ByDay,
 	label: 'by day',
 	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日')),
-	increment: (date, inc) => addDays(byDay.startOf(date), inc),
+	increment: (date, inc) => addDays(date, inc),
 	startOf: (date) => startOfDay(date)
 };
 
@@ -136,7 +136,7 @@ const byHour = {
 	level: Level.ByHour,
 	label: 'by hour',
 	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 H時')),
-	increment: (date, inc) => addHours(byHour.startOf(date), inc),
+	increment: (date, inc) => addHours(date, inc),
 	startOf: (date) => startOfHour(date)
 };
 
@@ -147,7 +147,7 @@ const byMinute = {
 	level: Level.ByMinute,
 	label: 'by minute',
 	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 H時m分')),
-	increment: (date, inc) => addMinutes(byMinute.startOf(date), inc),
+	increment: (date, inc) => addMinutes(date, inc),
 	startOf: (date) => startOfMinute(date)
 };
 
@@ -158,7 +158,7 @@ const bySecond = {
 	level: Level.BySecond,
 	label: 'by second',
 	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 H時m分s秒')),
-	increment: (date, inc) => addSeconds(bySecond.startOf(date), inc),
+	increment: (date, inc) => addSeconds(date, inc),
 	startOf: (date) => startOfSecond(date)
 };
 

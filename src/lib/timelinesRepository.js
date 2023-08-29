@@ -43,7 +43,7 @@ export function counts(from, to, level) {
 	/** @type {Date} */
 	let datetime = from;
 	while (datetime < to) {
-		const next = dateType.increment(datetime, 1);
+		const next = dateType.increment(from, results.length + 1);
 		const count = list.filter((data) => datetime <= data.datetime && data.datetime < next).length;
 		results.push({
 			datetime: datetime,
