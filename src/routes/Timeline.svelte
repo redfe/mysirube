@@ -63,7 +63,7 @@
 		const response = await fetch(`/api/timelines/counts?${searchParams.toString()}`);
 		/** @type {{counts:{datetime:string, count:number}[]}}*/
 		const { counts } = await response.json();
-		return counts.map(c => ({...c, datetime: new Date(c.datetime)}));
+		return counts.map((c) => ({ ...c, datetime: new Date(c.datetime) }));
 	}
 
 	/**
@@ -86,7 +86,7 @@
 				return array.reverse();
 			}
 			const end = selected.increment(newDatetime, 1);
-			const count = counts.find(c => newDatetime <= c.datetime && c.datetime < end)?.count ?? 0;
+			const count = counts.find((c) => newDatetime <= c.datetime && c.datetime < end)?.count ?? 0;
 			array.push(createValue(newDatetime, count));
 		}
 		return array.reverse();
@@ -112,7 +112,7 @@
 				return array;
 			}
 			const end = selected.increment(newDatetime, 1);
-			const count = counts.find(c => newDatetime <= c.datetime && c.datetime < end)?.count ?? 0;
+			const count = counts.find((c) => newDatetime <= c.datetime && c.datetime < end)?.count ?? 0;
 			array.push(createValue(newDatetime, count));
 		}
 		return array;
