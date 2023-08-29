@@ -1,3 +1,8 @@
+import { exec } from 'child_process';
+import { readFileSync, writeFileSync } from 'fs';
+
+const DUMMY_DATA_FILE = './.dev/dummy_data.json';
+
 /**
  * @type {Data[]}
  */
@@ -8,7 +13,16 @@ let datas;
  */
 function getDatas() {
 	if (!datas || datas.length === 0) {
-		datas = createDummyDatas();
+		try {
+			datas = JSON.parse(readFileSync(DUMMY_DATA_FILE, 'utf-8'));
+			datas = datas.map((data) => ({ ...data, datetime: new Date(data.datetime) }));
+		} catch (error) {
+			datas = createDummyDatas();
+			// 書き込み
+			exec(`mkdir -p "$(dirname "${DUMMY_DATA_FILE}")" && touch  "${DUMMY_DATA_FILE}"`, () => {
+				writeFileSync(DUMMY_DATA_FILE, JSON.stringify(datas));
+			});
+		}
 	}
 	return datas;
 }
