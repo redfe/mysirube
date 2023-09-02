@@ -99,9 +99,12 @@
 		border-radius: 50%;
 		font-size: 1.5rem;
 		border: none;
-		background-color: #efefef;
+		background-color: #efefefaf;
 		cursor: pointer;
 		box-shadow: 0 0 20px -5px rgba(0, 0, 0, 0.8);
+	}
+	.add:hover {
+		background-color: #efefefff;
 	}
 	article {
 		height: 100%;
