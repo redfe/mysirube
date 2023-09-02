@@ -1,5 +1,4 @@
 import database from '$lib/database.js';
-import { dateTypes } from './dateUtils.js';
 
 /**
  * @typedef {import('$lib/types.d.ts').Data} Data
@@ -7,19 +6,6 @@ import { dateTypes } from './dateUtils.js';
  * @typedef {import('$lib/types.d.ts').Summary} Summary
  * @typedef {import('$lib/dateUtils.js').Level} Level
  */
-
-/**
- * @param {Level} level
- * @returns {DateOptions}
- */
-function getDateType(level) {
-	/** @type {DateOptions | undefined} */
-	const dateType = dateTypes.find((dateType) => dateType.level === level);
-	if (!dateType) {
-		throw new Error(`Invalid level: ${level}`);
-	}
-	return dateType;
-}
 
 /**
  * @param {Date} from greater than or equal to
@@ -31,25 +17,23 @@ export function find(from, to) {
 }
 
 /**
- * @param {Date} from
- * @param {Date} to
- * @param {Level} level
+ * @param {Date[]} datetimes
  * @returns {{datetime:Date, count:number}[]}
  */
-export function counts(from, to, level) {
-	const list = database.find(from, to);
-	const dateType = getDateType(level);
+export function counts(datetimes) {
+	if (!datetimes || datetimes.length < 2) {
+		return [];
+	}
 	const results = [];
-	/** @type {Date} */
-	let datetime = from;
-	while (datetime < to) {
-		const next = dateType.increment(from, results.length + 1);
-		const count = list.filter((data) => datetime <= data.datetime && data.datetime < next).length;
+	const datas = database.find(datetimes[0], datetimes[datetimes.length - 1]);
+	for (let i = 0; i <= datetimes.length; i++) {
+		const from = datetimes[i];
+		const to = datetimes[i + 1];
+		const count = datas.filter((data) => from <= data.datetime && data.datetime < to).length;
 		results.push({
-			datetime: datetime,
+			datetime: from,
 			count
 		});
-		datetime = next;
 	}
 	return results;
 }
