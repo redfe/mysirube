@@ -3,42 +3,82 @@
 	import Summaries from './Summaries.svelte';
 	import { fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
+	import { dateTypes, formatDate, getDateType } from '$lib/dateUtils.js';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+	import { browser } from '$app/environment';
 
 	/**
 	 * @typedef {import('$lib/dateUtils.js').Level} Level
 	 * @typedef {import('$lib/types.d.ts').DateOptions} DateOptions
 	 */
 
-	let isViewSummaries = false;
+	/**
+	 * @param {string} name
+	 */
+	function getParam(name) {
+		return $page.url.searchParams.get(name);
+	}
+
+	let datetime = new Date(getParam('datetime') ?? formatDate(new Date()));
+
+	let dateType = getDateType(getParam('dateType') ?? dateTypes[6].label) ?? dateTypes[6];
+
+	$: {
+		if (browser) {
+			$page.url.searchParams.set('datetime', formatDate(datetime));
+			$page.url.searchParams.set('dateType', dateType.label);
+			if (summariesFrom) {
+				$page.url.searchParams.set('summariesDatetime', formatDate(summariesFrom));
+			} else {
+				$page.url.searchParams.delete('summariesDatetime');
+			}
+			if (summariesDateType) {
+				$page.url.searchParams.set('summariesDateType', summariesDateType.label);
+			} else {
+				$page.url.searchParams.delete('summariesDateType');
+			}
+			goto(`?${$page.url.searchParams.toString()}`);
+		}
+	}
+
+	let isViewSummaries = !!getParam('summariesDatetime') && !!getParam('summariesDateType');
 
 	/** @type {Date=} */
-	let summariesFrom;
+	let summariesFrom = new Date(getParam('summariesDatetime') ?? formatDate(new Date()));
 
-	/** @type {Date=} */
-	let summariesTo;
-
-	/** @type {Level=} */
-	let summariesLevel;
+	/** @type {DateOptions=} */
+	let summariesDateType = getDateType(getParam('summariesDateType') ?? dateTypes[6].label);
 
 	$: {
 		if (!isViewSummaries) {
 			summariesFrom = undefined;
+			summariesDateType = undefined;
 		}
 	}
 
 	/**
 	 * @param {Date} datetime
-	 * @param {DateOptions} dateOptions
+	 * @param {DateOptions} dateType
 	 */
-	function handleOnClickCountButton(datetime, dateOptions) {
+	function handleOnClickCountButton(datetime, dateType) {
 		if (summariesFrom === datetime) {
 			isViewSummaries = !isViewSummaries;
 		} else {
 			isViewSummaries = true;
 		}
 		summariesFrom = datetime;
-		summariesTo = dateOptions.increment(datetime, 1);
-		summariesLevel = dateOptions.level;
+		summariesDateType = dateType;
+	}
+
+	/**
+	 * @param {Date} _datetime;
+	 * @param {DateOptions} _dateType;
+	 * @returns {void}
+	 */
+	function handleOnChangeLevel(_datetime, _dateType) {
+		datetime = _datetime;
+		dateType = _dateType;
 	}
 
 	/** @type {number} */
@@ -63,7 +103,7 @@
 				style:left={`${(clientWidth - 500) / 2 + 250}px`}
 				transition:fly={{ x: -250 }}
 			>
-				<Summaries from={summariesFrom} to={summariesTo} />
+				<Summaries from={summariesFrom} to={dateType.increment(summariesFrom ?? new Date(), 1)} />
 				<button class="close" on:click={() => (isViewSummaries = false)}>×</button>
 			</div>
 		{/key}
@@ -75,11 +115,16 @@
 				? `${(clientWidth - 500) / 2 - 250}px`
 				: `${(clientWidth - 500) / 2}px`}
 		>
-			<Timeline
-				{handleOnClickCountButton}
-				markedDatetime={summariesFrom}
-				markedLevel={summariesLevel}
-			/>
+			{#key datetime}
+				<Timeline
+					{datetime}
+					{dateType}
+					{handleOnClickCountButton}
+					{handleOnChangeLevel}
+					markedDatetime={summariesFrom}
+					markedLevel={summariesDateType?.level}
+				/>
+			{/key}
 		</div>
 	</article>
 	<button class="add">+</button>

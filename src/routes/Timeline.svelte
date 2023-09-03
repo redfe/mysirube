@@ -2,9 +2,15 @@
 	import { DynamicScroll } from 'svelte-dynamic-scroll';
 	import { dateTypes, formatDate, isOverPrevious, isOverNext } from '$lib/dateUtils.js';
 
+	export let dateType = dateTypes[6];
+	export let datetime = dateType.startOf(new Date());
+	$: initialDatetime = dateType.startOf(datetime);
+	$: selectedIndex = dateTypes.indexOf(dateType);
+
 	/**
 	 * @typedef {import('$lib/dateUtils.js').Level} Level
 	 * @typedef {import('$lib/types.d.ts').DateOptions} DateOptions
+	 * @typedef {import('$lib/types.d.ts').DateValue} DateValue
 	 */
 
 	/**
@@ -14,6 +20,15 @@
 	 */
 	export let handleOnClickCountButton = (datetime, dateOptions) => {
 		console.log('handleOnClickCountButton', datetime, dateOptions);
+	};
+
+	/**
+	 * @param {Date} datetime;
+	 * @param {DateOptions} dateType;
+	 * @returns {void}
+	 */
+	export let handleOnChangeLevel = (datetime, dateType) => {
+		console.log('handleOnChangeLevel', datetime, dateType);
 	};
 
 	/** @type {Date=} */
@@ -26,15 +41,6 @@
 	const triggerRangeRatio = 0.3;
 
 	/**
-	 * @typedef {import('$lib/types.d.ts').DateValue} DateValue
-	 */
-
-	let selected = dateTypes[6];
-	let initialDatetime = selected.startOf(new Date());
-
-	$: selectedIndex = dateTypes.indexOf(selected);
-
-	/**
 	 * @type {HTMLDivElement}
 	 */
 	let timelineElement;
@@ -45,7 +51,7 @@
 	 * @returns {DateValue}
 	 */
 	function createValue(datetime, count) {
-		return { id: selected.format(datetime), datetime: datetime, count: count };
+		return { id: dateType.format(datetime), datetime: datetime, count: count };
 	}
 
 	/**
@@ -72,7 +78,7 @@
 		let current = from;
 		while (current <= to) {
 			datetimes.push(current);
-			current = selected.increment(current, 1);
+			current = dateType.increment(current, 1);
 		}
 		return datetimes;
 	}
@@ -82,22 +88,22 @@
 	 * @returns {Promise<DateValue[]>}
 	 */
 	async function previousChunk(lastValue) {
-		let _last = lastValue ?? createValue(selected.increment(initialDatetime, 1), 0);
-		if (isOverPrevious(selected.increment(_last.datetime, -1))) {
+		let _last = lastValue ?? createValue(dateType.increment(initialDatetime, 1), 0);
+		if (isOverPrevious(dateType.increment(_last.datetime, -1))) {
 			return !lastValue ? [_last] : [];
 		}
-		const to = selected.startOf(_last.datetime);
-		const from = selected.startOf(selected.increment(_last.datetime, -1 * chunkSize));
+		const to = dateType.startOf(_last.datetime);
+		const from = dateType.startOf(dateType.increment(_last.datetime, -1 * chunkSize));
 		const datetimes = createDatetimes(from, to);
 		const counts = await fetchCounts(datetimes);
 		/** @type {DateValue[]} */
 		let array = [];
 		for (let i = 0; i < chunkSize; i++) {
-			const newDatetime = selected.increment(_last.datetime, -(i + 1));
+			const newDatetime = dateType.increment(_last.datetime, -(i + 1));
 			if (isOverPrevious(newDatetime)) {
 				return array.reverse();
 			}
-			const end = selected.increment(newDatetime, 1);
+			const end = dateType.increment(newDatetime, 1);
 			const count = counts.find((c) => newDatetime <= c.datetime && c.datetime < end)?.count ?? 0;
 			array.push(createValue(newDatetime, count));
 		}
@@ -109,22 +115,22 @@
 	 * @returns {Promise<DateValue[]>}
 	 */
 	async function nextChunk(lastValue) {
-		let _last = lastValue ?? createValue(selected.increment(initialDatetime, -1), 0);
-		if (isOverNext(selected.increment(_last.datetime, 1))) {
+		let _last = lastValue ?? createValue(dateType.increment(initialDatetime, -1), 0);
+		if (isOverNext(dateType.increment(_last.datetime, 1))) {
 			return !lastValue ? [_last] : [];
 		}
-		const from = selected.increment(_last.datetime, 1);
-		const to = selected.increment(_last.datetime, 1 + chunkSize);
+		const from = dateType.increment(_last.datetime, 1);
+		const to = dateType.increment(_last.datetime, 1 + chunkSize);
 		const datetimes = createDatetimes(from, to);
 		const counts = await fetchCounts(datetimes);
 		/** @type {DateValue[]} */
 		let array = [];
 		for (let i = 0; i < chunkSize; i++) {
-			const newDatetime = selected.increment(_last.datetime, i + 1);
+			const newDatetime = dateType.increment(_last.datetime, i + 1);
 			if (isOverNext(newDatetime)) {
 				return array;
 			}
-			const end = selected.increment(newDatetime, 1);
+			const end = dateType.increment(newDatetime, 1);
 			const count = counts.find((c) => newDatetime <= c.datetime && c.datetime < end)?.count ?? 0;
 			array.push(createValue(newDatetime, count));
 		}
@@ -136,52 +142,50 @@
 	 * @param {boolean=} isUp
 	 */
 	function changeLevel(value, isUp = true) {
-		const i = dateTypes.indexOf(selected);
+		const i = dateTypes.indexOf(dateType);
 		const nextIndex = isUp ? i - 1 : i + 1;
 		if (nextIndex < 0 || nextIndex > dateTypes.length - 1) return;
-		selected = dateTypes[nextIndex];
-		initialDatetime = selected.startOf(value.datetime);
+		const _type = dateTypes[nextIndex];
+		handleOnChangeLevel(_type.startOf(value.datetime), _type);
 	}
 </script>
 
 <div class="app">
 	<div class="timeline" bind:this={timelineElement}>
-		{#key initialDatetime}
-			<DynamicScroll {previousChunk} {nextChunk} {triggerRangeRatio} bufferSize={1000} let:value>
-				{@const _value = /** @type DateValue */ (value)}
-				<div class="loading" slot="loading">loading...</div>
-				<div
-					class="row"
-					class:now={_value.datetime <= new Date() &&
-						new Date() < selected.increment(_value.datetime, 1)}
-					class:marked={selected.level === markedLevel &&
-						_value.datetime.getTime() === markedDatetime?.getTime()}
-				>
-					<div class="up">
-						{#if selectedIndex !== 0}
-							<button on:click={() => changeLevel(_value)}>&lt;</button>
-						{/if}
+		<DynamicScroll {previousChunk} {nextChunk} {triggerRangeRatio} bufferSize={1000} let:value>
+			{@const _value = /** @type DateValue */ (value)}
+			<div class="loading" slot="loading">loading...</div>
+			<div
+				class="row"
+				class:now={_value.datetime <= new Date() &&
+					new Date() < dateType.increment(_value.datetime, 1)}
+				class:marked={dateType.level === markedLevel &&
+					_value.datetime.getTime() === markedDatetime?.getTime()}
+			>
+				<div class="up">
+					{#if selectedIndex !== 0}
+						<button on:click={() => changeLevel(_value)}>&lt;</button>
+					{/if}
+				</div>
+				<div class="row-main">
+					<div class="row-title">
+						{dateType.format(_value.datetime)}
 					</div>
-					<div class="row-main">
-						<div class="row-title">
-							{selected.format(_value.datetime)}
-						</div>
-						<div class="row-count">
-							{#if !!_value.count && _value.count > 0}
-								<button on:click={() => handleOnClickCountButton(_value.datetime, selected)}
-									>{_value.count}</button
-								>
-							{/if}
-						</div>
-					</div>
-					<div class="down">
-						{#if selectedIndex !== dateTypes.length - 1}
-							<button on:click={() => changeLevel(_value, false)}>&gt;</button>
+					<div class="row-count">
+						{#if !!_value.count && _value.count > 0}
+							<button on:click={() => handleOnClickCountButton(_value.datetime, dateType)}
+								>{_value.count}</button
+							>
 						{/if}
 					</div>
 				</div>
-			</DynamicScroll>
-		{/key}
+				<div class="down">
+					{#if selectedIndex !== dateTypes.length - 1}
+						<button on:click={() => changeLevel(_value, false)}>&gt;</button>
+					{/if}
+				</div>
+			</div>
+		</DynamicScroll>
 	</div>
 	<div class="end" />
 </div>

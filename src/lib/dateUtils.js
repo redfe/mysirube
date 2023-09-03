@@ -247,3 +247,12 @@ export const dateTypes = [
 	byMinute,
 	bySecond
 ];
+
+/**
+ *
+ * @param {string} label
+ * @returns {DateOptions=}
+ */
+export const getDateType = (label) => {
+	return dateTypes.find((dateType) => dateType.label === label);
+};
