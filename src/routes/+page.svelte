@@ -75,7 +75,11 @@
 				? `${(clientWidth - 500) / 2 - 250}px`
 				: `${(clientWidth - 500) / 2}px`}
 		>
-			<Timeline {handleOnClickCountButton} markedDatetime={summariesFrom} markedLevel={summariesLevel} />
+			<Timeline
+				{handleOnClickCountButton}
+				markedDatetime={summariesFrom}
+				markedLevel={summariesLevel}
+			/>
 		</div>
 	</article>
 	<button class="add">+</button>
