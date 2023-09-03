@@ -12,17 +12,17 @@
 	let isViewSummaries = false;
 
 	/** @type {Date=} */
-	let selectedDatetime;
+	let summariesFrom;
 
 	/** @type {Date=} */
-	let selectedTo;
+	let summariesTo;
 
 	/** @type {Level=} */
-	let selectedLevel;
+	let summariesLevel;
 
 	$: {
 		if (!isViewSummaries) {
-			selectedDatetime = undefined;
+			summariesFrom = undefined;
 		}
 	}
 
@@ -31,14 +31,14 @@
 	 * @param {DateOptions} dateOptions
 	 */
 	function handleOnClickCountButton(datetime, dateOptions) {
-		if (selectedDatetime === datetime) {
+		if (summariesFrom === datetime) {
 			isViewSummaries = !isViewSummaries;
 		} else {
 			isViewSummaries = true;
 		}
-		selectedDatetime = datetime;
-		selectedTo = dateOptions.increment(datetime, 1);
-		selectedLevel = dateOptions.level;
+		summariesFrom = datetime;
+		summariesTo = dateOptions.increment(datetime, 1);
+		summariesLevel = dateOptions.level;
 	}
 
 	/** @type {number} */
@@ -56,14 +56,14 @@
 
 <main>
 	<article>
-		{#key selectedDatetime}
+		{#key summariesFrom}
 			<div
 				class="summaries"
 				style:display={isViewSummaries ? 'block' : 'none'}
 				style:left={`${(clientWidth - 500) / 2 + 250}px`}
 				transition:fly={{ x: -250 }}
 			>
-				<Summaries from={selectedDatetime} to={selectedTo} />
+				<Summaries from={summariesFrom} to={summariesTo} />
 				<button class="close" on:click={() => (isViewSummaries = false)}>×</button>
 			</div>
 		{/key}
@@ -75,7 +75,7 @@
 				? `${(clientWidth - 500) / 2 - 250}px`
 				: `${(clientWidth - 500) / 2}px`}
 		>
-			<Timeline {handleOnClickCountButton} {selectedDatetime} {selectedLevel} />
+			<Timeline {handleOnClickCountButton} markedDatetime={summariesFrom} markedLevel={summariesLevel} />
 		</div>
 	</article>
 	<button class="add">+</button>

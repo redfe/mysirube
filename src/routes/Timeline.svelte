@@ -17,10 +17,10 @@
 	};
 
 	/** @type {Date=} */
-	export let selectedDatetime = undefined;
+	export let markedDatetime = undefined;
 
 	/** @type {Level=} */
-	export let selectedLevel = undefined;
+	export let markedLevel = undefined;
 
 	const chunkSize = 20;
 	const triggerRangeRatio = 0.3;
@@ -154,8 +154,8 @@
 					class="row"
 					class:now={_value.datetime <= new Date() &&
 						new Date() < selected.increment(_value.datetime, 1)}
-					class:selected={selected.level === selectedLevel &&
-						_value.datetime.getTime() === selectedDatetime?.getTime()}
+					class:marked={selected.level === markedLevel &&
+						_value.datetime.getTime() === markedDatetime?.getTime()}
 				>
 					<div class="up">
 						{#if selectedIndex !== 0}
@@ -252,7 +252,7 @@
 	.now {
 		background-color: rgba(112, 248, 146, 0.8);
 	}
-	.selected {
+	.marked {
 		background-color: rgb(239, 168, 151, 0.8);
 	}
 	.loading {
