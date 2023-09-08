@@ -133,6 +133,7 @@
 <style>
 	:global(body) {
 		width: 100%;
+		overflow-y: hidden;
 	}
 	main {
 		height: 100%;
