@@ -13,6 +13,8 @@
 	 * @typedef {import('$lib/types.d.ts').DateOptions} DateOptions
 	 */
 
+	const timelineWidth = 500;
+
 	/**
 	 * @param {string} name
 	 */
@@ -23,6 +25,8 @@
 	let datetime = new Date(getParam('datetime') ?? formatDate(new Date()));
 
 	let dateType = getDateType(getParam('dateType') ?? dateTypes[6].label) ?? dateTypes[6];
+
+	let isLevelUp = false;
 
 	$: {
 		if (browser) {
@@ -77,6 +81,7 @@
 	 * @returns {void}
 	 */
 	function handleOnChangeLevel(_datetime, _dateType) {
+		isLevelUp = dateTypes.indexOf(dateType) < dateTypes.indexOf(_dateType);
 		datetime = _datetime;
 		dateType = _dateType;
 	}
@@ -97,25 +102,32 @@
 <main>
 	<article>
 		{#key summariesFrom}
+			<!-- アニメーションさせたいので display:none で非表示にする -->
 			<div
 				class="summaries"
 				style:display={isViewSummaries ? 'block' : 'none'}
-				style:left={`${(clientWidth - 500) / 2 + 250}px`}
-				transition:fly={{ x: -250 }}
+				style:width={timelineWidth + 'px'}
+				style:left={`${(clientWidth - timelineWidth) / 2 + timelineWidth / 2}px`}
+				transition:fly={{ x: -timelineWidth, duration: 500 }}
 			>
-				<Summaries from={summariesFrom} to={dateType.increment(summariesFrom ?? new Date(), 1)} />
+				<Summaries
+					from={summariesFrom}
+					to={summariesDateType?.increment(summariesFrom ?? new Date(), 1)}
+				/>
 				<button class="close" on:click={() => (isViewSummaries = false)}>×</button>
 			</div>
 		{/key}
 
-		<!-- スクロール位置を残しておきたいので display:none で非表示にする -->
-		<div
-			class="timeline"
-			style:left={isViewSummaries
-				? `${(clientWidth - 500) / 2 - 250}px`
-				: `${(clientWidth - 500) / 2}px`}
-		>
-			{#key datetime}
+		{#key datetime}
+			<div
+				class="timeline"
+				style:width={timelineWidth + 'px'}
+				style:left={isViewSummaries
+					? `${(clientWidth - timelineWidth) / 2 - timelineWidth / 2}px`
+					: `${(clientWidth - timelineWidth) / 2}px`}
+				in:fly={{ x: timelineWidth * (isLevelUp ? 1 : -1), duration: 500 }}
+				out:fly={{ x: timelineWidth * (isLevelUp ? -1 : 1), duration: 500, opacity: 0.2 }}
+			>
 				<Timeline
 					{datetime}
 					{dateType}
@@ -124,8 +136,8 @@
 					markedDatetime={summariesFrom}
 					markedLevel={summariesDateType?.level}
 				/>
-			{/key}
-		</div>
+			</div>
+		{/key}
 	</article>
 	<button class="add">+</button>
 </main>
@@ -168,13 +180,11 @@
 	}
 	.timeline {
 		transition: left 0.5s ease;
-		width: 500px;
 		height: 100%;
 		box-sizing: border-box;
 		position: absolute;
 	}
 	.summaries {
-		width: 500px;
 		transition: left 0.5s ease;
 		height: 100%;
 		box-sizing: border-box;
