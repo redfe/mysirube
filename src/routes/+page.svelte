@@ -8,7 +8,7 @@
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
 	import Form from './Form.svelte';
-	import easing from 'svelte/easing';
+	import { cubicInOut } from 'svelte/easing';
 
 	/**
 	 * @typedef {import('$lib/dateUtils.js').Level} Level
@@ -173,7 +173,7 @@
 	</article>
 	<button class="add" on:click={() => (isViewForm = true)}>+</button>
 	{#if isViewForm}
-		<div class="form" transition:fade={{ easing: easing.cubicInOut }}>
+		<div class="form" transition:fade={{ easing: cubicInOut }}>
 			<Form
 				handleOnClickCancelButton={() => (isViewForm = false)}
 				handleOnSave={async (datetimeValue, content, tags) => {
