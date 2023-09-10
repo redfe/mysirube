@@ -1,5 +1,5 @@
 <script>
-	import { formatDate, parseDate } from '$lib/dateUtils';
+	import { formatDate } from '$lib/dateUtils';
 
 	export let handleOnClickCancelButton = () => {};
 

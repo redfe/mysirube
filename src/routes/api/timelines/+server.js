@@ -1,4 +1,4 @@
-import { error, fail, json } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 import { save } from '$lib/timelinesRepository';
 
 /** @type {import('./$types').RequestHandler} */
