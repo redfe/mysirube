@@ -1,4 +1,5 @@
 import { exec } from 'child_process';
+import { randomUUID } from 'crypto';
 import { readFileSync, writeFileSync } from 'fs';
 
 const DUMMY_DATA_FILE = './.dev/dummy_data.json';
@@ -111,7 +112,7 @@ function getDummyTags() {
 function createDummyDatas() {
 	const datas = [];
 	for (let i = 0; i < 2000; i++) {
-		const id = i.toString().padStart(3, '0'); // 3桁の0埋めIDを生成
+		const id = 'dummy_' + i.toString().padStart(3, '0'); // 3桁の0埋めIDを生成
 
 		const data = {
 			id: id,
@@ -154,4 +155,36 @@ function find(from, to, offset, count) {
 	}
 }
 
-export default { find };
+/**
+ * @param {Data} data
+ */
+function register(data) {
+	const datas = getDatas();
+	datas.push(data);
+	writeFileSync(DUMMY_DATA_FILE, JSON.stringify(datas));
+}
+
+/**
+ * @param {Data} data
+ */
+function update(data) {
+	const datas = getDatas();
+	datas.push(data);
+}
+
+/**
+ * @param {string} id
+ */
+function remove(id) {
+	const datas = getDatas();
+	const index = datas.findIndex((data) => data.id === id);
+	if (index !== -1) {
+		datas.splice(index, 1);
+	}
+}
+
+function createId() {
+	return randomUUID();
+}
+
+export default { find, register, update, remove, createId };

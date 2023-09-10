@@ -1,9 +1,13 @@
-export type Data = {
-	id: string;
+export type SaveData = {
+	id?: string;
 	datetime: Date;
 	content: string;
 	tags: string[];
 };
+
+export type Data = {
+	id: string;
+} & SaveData;
 
 export type DateOptions = {
 	level: Level;

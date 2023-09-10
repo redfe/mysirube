@@ -1,12 +1,14 @@
 <script>
 	import Timeline from './Timeline.svelte';
 	import Summaries from './Summaries.svelte';
-	import { fly } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import { dateTypes, formatDate, getDateType } from '$lib/dateUtils.js';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
+	import Form from './Form.svelte';
+	import easing from 'svelte/easing';
 
 	/**
 	 * @typedef {import('$lib/dateUtils.js').Level} Level
@@ -27,6 +29,8 @@
 	let dateType = getDateType(getParam('dateType') ?? dateTypes[6].label) ?? dateTypes[6];
 
 	let isLevelUp = false;
+
+	let isViewForm = false;
 
 	$: {
 		if (browser) {
@@ -97,6 +101,34 @@
 		initializeClientWidth();
 		window.addEventListener('resize', initializeClientWidth);
 	});
+
+	/** @type {string=}*/
+	let formError;
+	$: if (!isViewForm) formError = undefined;
+
+	/**
+	 * @param {string} datetimeValue
+	 * @param {string} content
+	 * @param {string} tags
+	 */
+	async function save(datetimeValue, content, tags) {
+		const ret = await fetch('/api/timelines', {
+			method: 'POST',
+			body: JSON.stringify({
+				datetime: datetimeValue,
+				content,
+				tags
+			})
+		});
+		if (!ret.ok) {
+			/** @type {{message: string}}*/
+			const json = await ret.json();
+			formError = json.message;
+			isViewForm = true;
+		} else {
+			isViewForm = false;
+		}
+	}
 </script>
 
 <main>
@@ -139,7 +171,18 @@
 			</div>
 		{/key}
 	</article>
-	<button class="add">+</button>
+	<button class="add" on:click={() => (isViewForm = true)}>+</button>
+	{#if isViewForm}
+		<div class="form" transition:fade={{ easing: easing.cubicInOut }}>
+			<Form
+				handleOnClickCancelButton={() => (isViewForm = false)}
+				handleOnSave={async (datetimeValue, content, tags) => {
+					await save(datetimeValue, content, tags);
+				}}
+				errorMessage={formError}
+			/>
+		</div>
+	{/if}
 </main>
 
 <style>
@@ -200,5 +243,25 @@
 		border: none;
 		background-color: #efefef;
 		cursor: pointer;
+	}
+	.form {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		backdrop-filter: blur(2px);
+	}
+	.form > :global(*) {
+		position: absolute;
+		left: 50%;
+		top: 50px;
+		height: 80%;
+		transform: translate(-50%);
+		padding: 10px;
+		width: 700px;
+		background-color: white;
+		box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5);
+		border-radius: 5px;
 	}
 </style>

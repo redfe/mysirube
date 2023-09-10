@@ -1,6 +1,7 @@
 import database from '$lib/database.js';
 
 /**
+ * @typedef {import('$lib/types.d.ts').SaveData} SaveData
  * @typedef {import('$lib/types.d.ts').Data} Data
  * @typedef {import('$lib/types.d.ts').DateOptions} DateOptions
  * @typedef {import('$lib/types.d.ts').Summary} Summary
@@ -48,4 +49,15 @@ export function counts(datetimes) {
 export function summaries(from, to, offset, count) {
 	const list = database.find(from, to, offset, count);
 	return list.map((data) => ({ id: data.id, datetime: data.datetime, text: data.content }));
+}
+
+/**
+ * @param {SaveData} data
+ */
+export function save(data) {
+	if (!data.id) {
+		database.register({ ...data, id: database.createId() });
+	} else {
+		database.update({ ...data, id: data.id });
+	}
 }
