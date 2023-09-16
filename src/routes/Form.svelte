@@ -1,5 +1,5 @@
 <script>
-	import { formatDate } from '$lib/dateUtils';
+	import { dateTypes, formatDate } from '$lib/dateUtils';
 
 	export let handleOnClickCancelButton = () => {};
 
@@ -12,10 +12,13 @@
 		console.log(datetimeValue, content, tags);
 	};
 
+	/** @type {import('$lib/types').DateOptions} */
+	export let dateType = dateTypes[6];
+
 	/** @type {string=} */
 	export let errorMessage;
 
-	let datetime = new Date();
+	let datetime = dateType.startOf(new Date());
 	$: year = datetime.getFullYear();
 	$: month = datetime.getMonth() + 1;
 	$: day = datetime.getDate();

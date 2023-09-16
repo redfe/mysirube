@@ -111,13 +111,18 @@
 	 * @param {string} content
 	 * @param {string} tags
 	 */
-	async function save(datetimeValue, content, tags) {
+	async function handleOnSave(datetimeValue, content, tags) {
+		const normalizedTagsString = tags
+			.split(/[,、\x20\u3000]/)
+			.map((tag) => tag.trim())
+			.filter((tag) => tag !== '')
+			.join(',');
 		const ret = await fetch('/api/timelines', {
 			method: 'POST',
 			body: JSON.stringify({
 				datetime: datetimeValue,
 				content,
-				tags
+				tags: normalizedTagsString
 			})
 		});
 		if (!ret.ok) {
@@ -176,9 +181,8 @@
 		<div class="form" transition:fade={{ easing: cubicInOut }}>
 			<Form
 				handleOnClickCancelButton={() => (isViewForm = false)}
-				handleOnSave={async (datetimeValue, content, tags) => {
-					await save(datetimeValue, content, tags);
-				}}
+				{handleOnSave}
+				{dateType}
 				errorMessage={formError}
 			/>
 		</div>
