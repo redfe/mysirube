@@ -136,7 +136,7 @@
 	}
 </script>
 
-<main>
+<div class="main">
 	<article>
 		{#key summariesFrom}
 			<!-- アニメーションさせたいので display:none で非表示にする -->
@@ -187,14 +187,14 @@
 			/>
 		</div>
 	{/if}
-</main>
+</div>
 
 <style>
 	:global(body) {
 		width: 100%;
 		overflow-y: hidden;
 	}
-	main {
+	.main {
 		height: 100%;
 		width: 100%;
 		position: relative;
@@ -261,9 +261,9 @@
 		left: 50%;
 		top: 50px;
 		height: 80%;
+		width: 90%;
 		transform: translate(-50%);
 		padding: 10px;
-		width: 700px;
 		background-color: white;
 		box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5);
 		border-radius: 5px;
