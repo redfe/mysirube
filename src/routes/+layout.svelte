@@ -1,3 +1,7 @@
+<script>
+	import './style.css';
+</script>
+
 <svelte:head>
 	<title>My Sirube</title>
 </svelte:head>

@@ -1,5 +1,6 @@
 <script>
 	import { DynamicScroll } from 'svelte-dynamic-scroll';
+	import CircleButton from '$lib/components/button/CircleButton.svelte';
 	import { dateTypes, formatDate, isOverPrevious, isOverNext } from '$lib/dateUtils.js';
 
 	export let dateType = dateTypes[6];
@@ -162,11 +163,14 @@
 				class:marked={dateType.level === markedLevel &&
 					_value.datetime.getTime() === markedDatetime?.getTime()}
 			>
+				<!-- レベルアップボタン -->
 				<div class="up">
 					{#if selectedIndex !== 0}
-						<button on:click={() => changeLevel(_value)}>&lt;</button>
+						<CircleButton on:click={() => changeLevel(_value)}>&lt;</CircleButton>
 					{/if}
 				</div>
+
+				<!-- メイン -->
 				<div class="row-main">
 					<div class="row-title">
 						{dateType.format(_value.datetime)}
@@ -179,9 +183,11 @@
 						{/if}
 					</div>
 				</div>
+
+				<!-- レベルダウンボタン -->
 				<div class="down">
 					{#if selectedIndex !== dateTypes.length - 1}
-						<button on:click={() => changeLevel(_value, false)}>&gt;</button>
+						<CircleButton on:click={() => changeLevel(_value, false)}>&gt;</CircleButton>
 					{/if}
 				</div>
 			</div>
@@ -215,20 +221,8 @@
 	}
 	.up,
 	.down {
-		width: 50px;
-	}
-	.up button,
-	.down button {
 		width: 30px;
 		height: 30px;
-		font-size: 1rem;
-		border-radius: 50%;
-		padding: 0;
-		margin: 0;
-		align-items: center;
-		border: solid 1px rgba(0, 0, 0, 0.1);
-		cursor: pointer;
-		background-color: #efefef;
 	}
 	.row-main {
 		flex-grow: 1;
@@ -246,11 +240,11 @@
 	.row-count button {
 		margin-top: 10px;
 		border: none;
-		border-radius: 30px;
+		border-radius: var(--basic-border-radius);
 		width: 50px;
 		height: 100%;
-		background-color: rgb(75, 40, 246);
-		color: white;
+		background-color: var(--primary-color);
+		color: var(--primary-font-color);
 		cursor: pointer;
 	}
 	.now {

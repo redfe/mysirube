@@ -9,6 +9,7 @@
 	import { browser } from '$app/environment';
 	import Form from './Form.svelte';
 	import { cubicInOut } from 'svelte/easing';
+	import CircleButton from '$lib/components/button/CircleButton.svelte';
 
 	/**
 	 * @typedef {import('$lib/dateUtils.js').Level} Level
@@ -151,7 +152,9 @@
 					from={summariesFrom}
 					to={summariesDateType?.increment(summariesFrom ?? new Date(), 1)}
 				/>
-				<button class="close" on:click={() => (isViewSummaries = false)}>×</button>
+				<div class="close">
+					<CircleButton on:click={() => (isViewSummaries = false)}>×</CircleButton>
+				</div>
 			</div>
 		{/key}
 
@@ -176,7 +179,9 @@
 			</div>
 		{/key}
 	</article>
-	<button class="add" on:click={() => (isViewForm = true)}>+</button>
+	<div class="add">
+		<CircleButton on:click={() => (isViewForm = true)}>+</CircleButton>
+	</div>
 	{#if isViewForm}
 		<div class="form" transition:fade={{ easing: cubicInOut }}>
 			<Form
@@ -199,21 +204,20 @@
 		width: 100%;
 		position: relative;
 	}
+	.add > :global(*) {
+		font-size: 1.5rem;
+		box-shadow: 0 0 20px -5px rgba(0, 0, 0, 0.8);
+	}
 	.add {
 		position: absolute;
 		bottom: 50px;
 		left: calc(50% - 25px);
 		width: 50px;
 		height: 50px;
-		border-radius: 50%;
-		font-size: 1.5rem;
-		border: none;
-		background-color: #efefefaf;
-		cursor: pointer;
-		box-shadow: 0 0 20px -5px rgba(0, 0, 0, 0.8);
+		opacity: 0.7;
 	}
 	.add:hover {
-		background-color: #efefefff;
+		opacity: 1;
 	}
 	article {
 		height: 100%;
@@ -243,9 +247,6 @@
 		right: 20px;
 		width: 30px;
 		height: 30px;
-		border-radius: 50%;
-		border: none;
-		background-color: #efefef;
 		cursor: pointer;
 	}
 	.form {
@@ -266,6 +267,6 @@
 		padding: 10px;
 		background-color: white;
 		box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5);
-		border-radius: 5px;
+		border-radius: var(--basic-border-radius);
 	}
 </style>

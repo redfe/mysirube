@@ -1,6 +1,6 @@
 <script>
-	import InputDatetime from '$lib/components/InputDatetime.svelte';
-	import InputTags from '$lib/components/InputTags.svelte';
+	import InputDatetime from '$lib/components/input/InputDatetime.svelte';
+	import InputTags from '$lib/components/input/InputTags.svelte';
 	import { dateTypes, formatDate } from '$lib/dateUtils';
 
 	export let handleOnClickCancelButton = () => {};
@@ -62,11 +62,11 @@
 	<label for="datetime">日時</label>
 	<InputDatetime bind:value={datetime} />
 
-	<label for="content">記事</label>
-	<textarea required id="content" name="content" style="height:200px" bind:value={content} />
-
 	<label for="message">タグ</label>
 	<InputTags {selectableTags} bind:tags />
+
+	<label for="content">記事</label>
+	<textarea required id="content" name="content" style="height:200px" bind:value={content} />
 
 	<div class="inline">
 		<button

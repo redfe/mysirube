@@ -1,5 +1,6 @@
 <script>
 	import { slide } from 'svelte/transition';
+	import CircleButton from '$lib/components/button/CircleButton.svelte';
 
 	/** @type {string[]} */
 	export let selectableTags = [];
@@ -34,10 +35,10 @@
 	}
 
 	/** @type {HTMLDivElement} */
-	let container;
+	let input;
 
 	/** @type {HTMLDivElement} */
-	let input;
+	let selectableTagContainer;
 
 	/**
 	 * @param {any[]} array
@@ -62,35 +63,54 @@
 
 <svelte:body
 	on:click={(e) => {
-		if (e.target !== container && e.target !== input) {
+		if (!(e.target instanceof Element)) return;
+
+		/** @type {Element}*/
+		const elm = e.target;
+
+		if (
+			e.target === input ||
+			elm?.className?.includes('container') ||
+			elm?.className?.includes('selectable-tag')
+		) {
+			focused = true;
+		} else {
 			focused = false;
 		}
 	}}
 />
 
-<div class="container" bind:this={container}>
+<div class="container">
 	<div class="input-area">
+		<!-- inputed tags -->
 		{#each tags as tag (tag)}
-			<!-- svelte-ignore a11y-no-static-element-interactions -->
 			<div class="selected-tag" transition:slide={{ axis: 'x' }}>
 				{tag}
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<!-- svelte-ignore a11y-no-static-element-interactions -->
-				<div
-					class="delete-tag"
-					on:click={() => {
-						tags = tags.filter((t) => t !== tag);
-					}}
-				>
-					✕
+				<div class="delete-tag">
+					<CircleButton
+						on:click={() => {
+							tags = tags.filter((t) => t !== tag);
+						}}
+					>
+						✕
+					</CircleButton>
 				</div>
 			</div>
 		{/each}
+
+		<!-- input -->
 		<input
 			type="text"
 			bind:this={input}
 			bind:value={inputValue}
 			on:focus={() => (focused = true)}
+			on:blur={(e) => {
+				if (e.relatedTarget) {
+					focused = false;
+				} else {
+					focused = true;
+				}
+			}}
 			on:keypress={(e) => {
 				if (e.key === 'Enter') {
 					if (selectingIndex >= 0 && selectingIndex < filteredSelectableTags.length) {
@@ -116,9 +136,11 @@
 			}}
 		/>
 	</div>
+
+	<!-- selectable tags -->
 	{#key inputValue}
 		{#if (inputValue !== undefined && inputValue !== '') || focused}
-			<div class="selectable-tag-container">
+			<div class="selectable-tag-container" bind:this={selectableTagContainer}>
 				{#each filteredSelectableTags as tag, i (tag)}
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -144,41 +166,44 @@
 		position: relative;
 	}
 	.input-area {
-		border: solid 1px;
-		border-radius: 5px;
-		height: 1.85rem;
-		padding: 5px;
+		border: var(--basic-border);
+		border-radius: var(--basic-border-radius);
+		min-height: 1.85rem;
+		padding: var(--basic-border-radius);
 		display: flex;
+		flex-wrap: wrap;
+		row-gap: 0.25rem;
 	}
 	.selected-tag {
-		display: inline-block;
+		display: flex;
 		font-size: 0.8rem;
 		padding: 0.25rem;
 		margin: 0 0.25rem;
-		background-color: #ccc;
-		border-radius: 5px;
+		background-color: var(--secondary-color);
+		color: var(--secondary-font-color);
+		border-radius: var(--basic-border-radius);
+		border: var(--basic-border);
 		overflow: hidden;
+		text-wrap: nowrap;
 	}
 	.delete-tag {
 		display: inline-block;
 		margin-left: 0.25rem;
-		cursor: pointer;
-		color: #0005;
 		width: 1.25rem;
 		height: 1.25rem;
-		padding: 0 0.25rem;
 		font-size: 0.75rem;
-		border: solid 1px #0005;
-		border-radius: 50%;
-		text-align: center;
 		box-sizing: border-box;
+		opacity: 0.3;
+	}
+	.delete-tag:hover {
+		opacity: 1;
 	}
 	input {
 		font-size: 0.8rem;
 		border: none;
 		box-sizing: border-box;
 		flex-grow: 1;
-		height: 100%;
+		height: 1.75rem;
 	}
 	input:focus {
 		outline: none;
@@ -186,19 +211,22 @@
 	.selectable-tag-container {
 		position: absolute;
 		background-color: white;
-		border-left: solid 1px #000a;
-		border-right: solid 1px #000a;
-		left: 5px;
-		width: calc(100% - 10px);
+		border-left: solid 1px #0005;
+		border-right: solid 1px #0005;
+		left: var(--basic-border-radius);
+		width: calc(100% - var(--basic-border-radius) * 2);
 		overflow-y: scroll;
 	}
 	.selectable-tag {
 		display: block;
 		padding: 0.25rem;
-		border-bottom: 1px solid #000a;
+		border-bottom: 1px solid #0005;
 		cursor: pointer;
 	}
+	.selectable-tag:hover {
+		background-color: var(--secondary-color);
+	}
 	.selecting {
-		background-color: #ccc;
+		background-color: var(--secondary-color);
 	}
 </style>
