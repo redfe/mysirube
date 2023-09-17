@@ -35,6 +35,9 @@
 	}
 
 	/** @type {HTMLDivElement} */
+	let container;
+
+	/** @type {HTMLDivElement} */
 	let input;
 
 	/** @type {HTMLDivElement} */
@@ -59,6 +62,17 @@
 		inputValue = '';
 		selectingIndex = -1;
 	}
+
+	/** @param {Element} elm */
+	function isChildrenOfContainer(elm) {
+		if (elm === container) {
+			return true;
+		} else if (elm.parentElement) {
+			return isChildrenOfContainer(elm.parentElement);
+		} else {
+			return false;
+		}
+	}
 </script>
 
 <svelte:body
@@ -68,11 +82,7 @@
 		/** @type {Element}*/
 		const elm = e.target;
 
-		if (
-			e.target === input ||
-			elm?.className?.includes('container') ||
-			elm?.className?.includes('selectable-tag')
-		) {
+		if (isChildrenOfContainer(elm)) {
 			focused = true;
 		} else {
 			focused = false;
@@ -80,7 +90,7 @@
 	}}
 />
 
-<div class="container">
+<div class="container" bind:this={container}>
 	<div class="input-area">
 		<!-- inputed tags -->
 		{#each tags as tag (tag)}
