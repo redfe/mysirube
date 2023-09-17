@@ -226,6 +226,8 @@
 		left: var(--basic-border-radius);
 		width: calc(100% - var(--basic-border-radius) * 2);
 		overflow-y: scroll;
+		box-sizing: border-box;
+		box-shadow: 0 0 20px -10px rgba(0, 0, 0, 0.8);
 	}
 	.selectable-tag {
 		display: block;
