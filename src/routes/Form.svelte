@@ -29,12 +29,20 @@
 
 	let content = '';
 	let tags = '';
+
+	let submitting = false;
 </script>
 
 <form
 	method="post"
 	on:submit|preventDefault={async () => {
-		await handleOnSave(datetimeValue, content, tags);
+		try {
+			submitting = true;
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+			await handleOnSave(datetimeValue, content, tags);
+		} finally {
+			submitting = false;
+		}
 	}}
 >
 	{#if errorMessage}
@@ -103,8 +111,14 @@
 	<input required type="text" id="tags" name="tags" bind:value={tags} />
 
 	<div class="inline">
-		<button on:click|preventDefault={handleOnClickCancelButton}>キャンセル</button>
-		<button type="submit">保存</button>
+		<button
+			on:click|preventDefault={handleOnClickCancelButton}
+			aria-disabled={submitting}
+			disabled={submitting}>キャンセル</button
+		>
+		<button type="submit" aria-disabled={submitting} disabled={submitting}
+			>{submitting ? '送信中' : '保存'}</button
+		>
 	</div>
 </form>
 
