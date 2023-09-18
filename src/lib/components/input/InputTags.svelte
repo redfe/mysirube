@@ -16,7 +16,7 @@
 	export let tags = [];
 
 	/** @type {string} */
-	let inputValue;
+	let inputValue = '';
 
 	let focused = false;
 
@@ -91,7 +91,7 @@
 />
 
 <div class="container" bind:this={container}>
-	<div class="input-area">
+	<div class="input-area" class:focused>
 		<!-- inputed tags -->
 		{#each tags as tag (tag)}
 			<div class="selected-tag" transition:slide={{ axis: 'x' }}>
@@ -115,6 +115,10 @@
 			bind:value={inputValue}
 			on:focus={() => (focused = true)}
 			on:blur={(e) => {
+				if (!!inputValue && inputValue.trim() !== '') {
+					tags = [...tags, inputValue];
+				}
+				reset();
 				if (e.relatedTarget) {
 					focused = false;
 				} else {
@@ -178,7 +182,7 @@
 	.input-area {
 		border: var(--basic-border);
 		border-radius: var(--basic-border-radius);
-		min-height: 1.85rem;
+		min-height: 2.75rem;
 		padding: var(--basic-border-radius);
 		display: flex;
 		flex-wrap: wrap;
@@ -228,6 +232,7 @@
 		overflow-y: scroll;
 		box-sizing: border-box;
 		box-shadow: 0 0 20px -10px rgba(0, 0, 0, 0.8);
+		border-radius: 0 0 var(--basic-border-radius) var(--basic-border-radius);
 	}
 	.selectable-tag {
 		display: block;
@@ -240,5 +245,8 @@
 	}
 	.selecting {
 		background-color: var(--secondary-color);
+	}
+	.focused {
+		border: var(--focused-border);
 	}
 </style>

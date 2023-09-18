@@ -4,19 +4,84 @@
 
 	const srcDatetime = value;
 
-	$: year = srcDatetime.getFullYear();
-	$: month = srcDatetime.getMonth() + 1;
-	$: day = srcDatetime.getDate();
-	$: hour = srcDatetime.getHours();
-	$: minute = srcDatetime.getMinutes();
-	$: second = srcDatetime.getSeconds();
-	$: value = new Date(year, month - 1, day, hour, minute, second);
+	console.log(srcDatetime);
+
+	$: era = srcDatetime.getFullYear() < 0 ? 'BC' : 'AC';
+	$: year =
+		era === 'BC'
+			? (-1 * srcDatetime.getFullYear() + 1).toString()
+			: srcDatetime.getFullYear().toString();
+	$: month = (srcDatetime.getMonth() + 1).toString();
+	$: day = srcDatetime.getDate().toString();
+	$: hour = srcDatetime.getHours().toString();
+	$: minute = srcDatetime.getMinutes().toString();
+	$: second = srcDatetime.getSeconds().toString();
+
+	$: value = new Date(
+		era === 'BC' ? -1 * (parseInt(year) - 1) : parseInt(year),
+		parseInt(month) - 1,
+		parseInt(day),
+		parseInt(hour),
+		parseInt(minute),
+		parseInt(second)
+	);
+
+	/**
+	 * @param {any} value
+	 * @param {number} min
+	 * @param {number} max
+	 * @returns {string}
+	 */
+	function adjust(value, min, max) {
+		if (!value) {
+			return '0';
+		}
+		const intValue = parseInt(value);
+		if (intValue < min) {
+			return min.toString();
+		}
+		if (intValue > max) {
+			return max.toString();
+		}
+		return intValue.toString();
+	}
+	$: {
+		year = adjust(year, 1, 99999999);
+	}
+	$: {
+		month = adjust(month, 1, 12);
+	}
+	$: {
+		day = adjust(day, 1, 31);
+	}
+	$: {
+		hour = adjust(hour, 0, 23);
+	}
+	$: {
+		minute = adjust(minute, 0, 59);
+	}
+	$: {
+		second = adjust(second, 0, 59);
+	}
 </script>
 
 <div class="inline datetime">
-	<input style:width="5rem" required type="number" id="year" name="year" bind:value={year} />年
+	<select bind:value={era} style:width="4rem">
+		<option value="BC">BC</option>
+		<option value="AC">AC</option>
+	</select>
+
 	<input
-		style:width="2rem"
+		style:width="5rem"
+		required
+		type="number"
+		min="0"
+		id="year"
+		name="year"
+		bind:value={year}
+	/>年
+	<input
+		style:width="3rem"
 		required
 		type="number"
 		min="1"
@@ -26,7 +91,7 @@
 		bind:value={month}
 	/>月
 	<input
-		style:width="2rem"
+		style:width="3rem"
 		required
 		type="number"
 		min="1"
@@ -36,7 +101,7 @@
 		bind:value={day}
 	/>日
 	<input
-		style:width="2rem"
+		style:width="3rem"
 		required
 		type="number"
 		min="0"
@@ -46,7 +111,7 @@
 		bind:value={hour}
 	/>時
 	<input
-		style:width="2rem"
+		style:width="3rem"
 		required
 		type="number"
 		min="0"
@@ -56,7 +121,7 @@
 		bind:value={minute}
 	/>分
 	<input
-		style:width="2rem"
+		style:width="3rem"
 		required
 		type="number"
 		min="0"
@@ -66,3 +131,9 @@
 		bind:value={second}
 	/>秒
 </div>
+
+<style>
+	select {
+		height: 2rem;
+	}
+</style>

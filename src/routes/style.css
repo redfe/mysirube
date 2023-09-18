@@ -3,7 +3,36 @@
 	--primary-font-color: #fff;
 	--secondary-color: #efefef;
 	--secondary-font-color: #000;
+	--focused-border: 2px solid var(--primary-color);
 	--basic-border-radius: 5px;
 	--basic-border-color: rgba(0, 0, 0, 0.3);
 	--basic-border: 1px solid var(--basic-border-color);
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+	outline: none;
+	border: var(--focused-border);
+}
+
+input,
+textarea,
+select {
+	border: var(--basic-border);
+	border-radius: var(--basic-border-radius);
+	padding: 5px;
+}
+
+button {
+	border: var(--basic-border);
+	border-radius: var(--basic-border-radius);
+	padding: 5px;
+	cursor: pointer;
 }

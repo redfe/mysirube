@@ -138,6 +138,7 @@
 </script>
 
 <div class="main">
+	{dateType.format(new Date(-2001, 1, 1))}
 	<article>
 		{#key summariesFrom}
 			<!-- アニメーションさせたいので display:none で非表示にする -->
@@ -146,7 +147,7 @@
 				style:display={isViewSummaries ? 'block' : 'none'}
 				style:width={timelineWidth + 'px'}
 				style:left={`${(clientWidth - timelineWidth) / 2 + timelineWidth / 2}px`}
-				transition:fly={{ x: -timelineWidth, duration: 500 }}
+				transition:fly={{ x: -timelineWidth, duration: 800, easing: cubicInOut }}
 			>
 				<Summaries
 					from={summariesFrom}
@@ -165,8 +166,16 @@
 				style:left={isViewSummaries
 					? `${(clientWidth - timelineWidth) / 2 - timelineWidth / 2}px`
 					: `${(clientWidth - timelineWidth) / 2}px`}
-				in:fly={{ x: timelineWidth * (isLevelUp ? 1 : -1), duration: 500 }}
-				out:fly={{ x: timelineWidth * (isLevelUp ? -1 : 1), duration: 500, opacity: 0.2 }}
+				in:fly={{
+					x: timelineWidth * (isLevelUp ? 1 : -1),
+					duration: 800,
+					easing: cubicInOut
+				}}
+				out:fly={{
+					x: timelineWidth * (isLevelUp ? -1 : 1),
+					duration: 800,
+					easing: cubicInOut
+				}}
 			>
 				<Timeline
 					{datetime}
@@ -180,7 +189,9 @@
 		{/key}
 	</article>
 	<div class="add">
-		<CircleButton on:click={() => (isViewForm = true)}>+</CircleButton>
+		<CircleButton on:click={() => (isViewForm = true)}>
+			<span class="button-text">+</span>
+		</CircleButton>
 	</div>
 	{#if isViewForm}
 		<div class="form" transition:fade={{ easing: cubicInOut }}>
@@ -205,8 +216,10 @@
 		position: relative;
 	}
 	.add > :global(*) {
-		font-size: 1.5rem;
 		box-shadow: 0 0 20px -5px rgba(0, 0, 0, 0.8);
+	}
+	.button-text {
+		font-size: 1.5rem;
 	}
 	.add {
 		position: absolute;
