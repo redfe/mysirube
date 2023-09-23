@@ -1,4 +1,5 @@
 <script>
+	import BasicButton from '$lib/components/button/BasicButton.svelte';
 	import InputDatetime from '$lib/components/input/InputDatetime.svelte';
 	import InputTags from '$lib/components/input/InputTags.svelte';
 	import { dateTypes, formatDate } from '$lib/dateUtils';
@@ -68,15 +69,17 @@
 	<label for="content">記事</label>
 	<textarea required id="content" name="content" style="height:200px" bind:value={content} />
 
-	<div class="inline">
-		<button
-			type="button"
-			on:click|preventDefault={handleOnClickCancelButton}
+	<div class="inline buttons">
+		<BasicButton
+			on:click={(e) => {
+				e.preventDefault();
+				handleOnClickCancelButton();
+			}}
 			aria-disabled={submitting}
-			disabled={submitting}>キャンセル</button
+			disabled={submitting}>キャンセル</BasicButton
 		>
-		<button type="submit" aria-disabled={submitting} disabled={submitting}
-			>{submitting ? '送信中' : '保存'}</button
+		<BasicButton type="submit" kind="primary" aria-disabled={submitting} disabled={submitting}
+			>{submitting ? '送信中' : '保存'}</BasicButton
 		>
 	</div>
 </form>
@@ -93,8 +96,11 @@
 	.inline {
 		display: flex;
 		flex-direction: row;
+		gap: 0.5rem;
 	}
-	form button {
+	form .buttons :global(button) {
 		margin: 0.5rem 0;
+		height: 2rem;
+		width: 6rem;
 	}
 </style>

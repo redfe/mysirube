@@ -247,6 +247,6 @@
 		background-color: var(--secondary-color);
 	}
 	.focused {
-		border: var(--focused-border);
+		outline: var(--focused-border);
 	}
 </style>

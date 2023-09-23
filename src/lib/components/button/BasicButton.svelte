@@ -6,7 +6,7 @@
 	export let type = 'button';
 </script>
 
-<button on:click {type} class={kind}><slot /></button>
+<button on:click {type} class={kind} {...$$restProps}><slot /></button>
 
 <style>
 	.primary {

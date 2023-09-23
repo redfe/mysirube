@@ -1,9 +1,10 @@
+/** 開発中にリロードしなくても CSS が反映されるようにするため、import する方式にしている */
 :root {
 	--primary-color: rgb(75, 40, 246);
 	--primary-font-color: #fff;
 	--secondary-color: #efefef;
 	--secondary-font-color: #000;
-	--focused-border: 2px solid var(--primary-color);
+	--focused-border: 2px solid #f00a;
 	--basic-border-radius: 5px;
 	--basic-border-color: rgba(0, 0, 0, 0.3);
 	--basic-border: 1px solid var(--basic-border-color);
@@ -15,16 +16,15 @@
 	box-sizing: border-box;
 }
 
-input:focus,
-textarea:focus,
-select:focus {
-	outline: none;
-	border: var(--focused-border);
+*:focus {
+	/** outline を none にするとタブ移動が効かなくなってしまう */
+	outline: var(--focused-border);
 }
 
 input,
 textarea,
-select {
+select,
+button {
 	border: var(--basic-border);
 	border-radius: var(--basic-border-radius);
 	padding: 5px;
@@ -35,4 +35,9 @@ button {
 	border-radius: var(--basic-border-radius);
 	padding: 5px;
 	cursor: pointer;
+}
+
+button:disabled {
+	cursor: not-allowed;
+	opacity: 0.6;
 }
