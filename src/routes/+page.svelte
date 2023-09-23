@@ -138,7 +138,6 @@
 </script>
 
 <div class="main">
-	{dateType.format(new Date(-2001, 1, 1))}
 	<article>
 		{#key summariesFrom}
 			<!-- アニメーションさせたいので display:none で非表示にする -->
@@ -147,14 +146,14 @@
 				style:display={isViewSummaries ? 'block' : 'none'}
 				style:width={timelineWidth + 'px'}
 				style:left={`${(clientWidth - timelineWidth) / 2 + timelineWidth / 2}px`}
-				transition:fly={{ x: -timelineWidth, duration: 800, easing: cubicInOut }}
+				transition:fly={{ x: -timelineWidth / 2, duration: 800 }}
 			>
 				<Summaries
 					from={summariesFrom}
 					to={summariesDateType?.increment(summariesFrom ?? new Date(), 1)}
 				/>
 				<div class="close">
-					<CircleButton on:click={() => (isViewSummaries = false)}>×</CircleButton>
+					<CircleButton on:click={() => (isViewSummaries = false)}>✕</CircleButton>
 				</div>
 			</div>
 		{/key}
