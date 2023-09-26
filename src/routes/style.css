@@ -4,7 +4,7 @@
 	--primary-font-color: #fff;
 	--secondary-color: #efefef;
 	--secondary-font-color: #000;
-	--focused-border: 2px solid #f00a;
+	--focused-border: 2px solid #55fa;
 	--basic-border-radius: 5px;
 	--basic-border-color: rgba(0, 0, 0, 0.3);
 	--basic-border: 1px solid var(--basic-border-color);
@@ -38,6 +38,6 @@ button {
 }
 
 button:disabled {
-	cursor: not-allowed;
+	cursor: not-allowed !important;
 	opacity: 0.6;
 }

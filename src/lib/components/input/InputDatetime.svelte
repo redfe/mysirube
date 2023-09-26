@@ -2,29 +2,93 @@
 	/** @type {Date} */
 	export let value;
 
-	const srcDatetime = value;
+	export let isValid = true;
 
-	console.log(srcDatetime);
+	/** @type {string} */
+	let era;
 
-	$: era = srcDatetime.getFullYear() < 0 ? 'BC' : 'AC';
-	$: year =
-		era === 'BC'
-			? (-1 * srcDatetime.getFullYear() + 1).toString()
-			: srcDatetime.getFullYear().toString();
-	$: month = (srcDatetime.getMonth() + 1).toString();
-	$: day = srcDatetime.getDate().toString();
-	$: hour = srcDatetime.getHours().toString();
-	$: minute = srcDatetime.getMinutes().toString();
-	$: second = srcDatetime.getSeconds().toString();
+	/** @type {string} */
+	let year;
 
-	$: value = new Date(
-		era === 'BC' ? -1 * (parseInt(year) - 1) : parseInt(year),
-		parseInt(month) - 1,
-		parseInt(day),
-		parseInt(hour),
-		parseInt(minute),
-		parseInt(second)
-	);
+	/** @type {string} */
+	let month;
+
+	/** @type {string} */
+	let day;
+
+	/** @type {string} */
+	let hour;
+
+	/** @type {string} */
+	let minute;
+
+	/** @type {string} */
+	let second;
+
+	replaceFromDate(value);
+
+	/**
+	 * @param {Date} date
+	 */
+	function replaceFromDate(date) {
+		era = date.getFullYear() < 0 ? 'BC' : 'AC';
+		year = era === 'BC' ? (-1 * date.getFullYear() + 1).toString() : date.getFullYear().toString();
+		month = (date.getMonth() + 1).toString();
+		day = date.getDate().toString();
+		hour = date.getHours().toString();
+		minute = date.getMinutes().toString();
+		second = date.getSeconds().toString();
+	}
+
+	function toDatetimeString() {
+		return `${padd('' + getYear(era, year), 4)}-${padd(month)}-${padd(day)}T${padd(hour)}:${padd(
+			minute
+		)}:${padd(second)}`;
+	}
+
+	/**
+	 * @param {string} value
+	 * @param {number=} length
+	 * @returns {string}
+	 */
+	function padd(value, length = 2) {
+		return value.padStart(length, '0');
+	}
+
+	/**
+	 * @param {Date} date
+	 * @returns {boolean}
+	 */
+	function isValidDate(date) {
+		return (
+			date.getFullYear() === getYear(era, year) &&
+			date.getMonth() + 1 === parseInt(month) &&
+			date.getDate() === parseInt(day) &&
+			date.getHours() === parseInt(hour) &&
+			date.getMinutes() === parseInt(minute) &&
+			date.getSeconds() === parseInt(second)
+		);
+	}
+
+	/**
+	 * @param {string} era
+	 * @param {string} year
+	 * @returns {number}
+	 */
+	function getYear(era, year) {
+		return era === 'BC' ? -1 * (parseInt(year) - 1) : parseInt(year);
+	}
+
+	$: {
+		era, year, month, day, hour, minute, second;
+		const str = toDatetimeString();
+		console.log(str);
+		const temp = new Date(toDatetimeString());
+		if ((isValid = isValidDate(temp))) {
+			replaceFromDate(temp);
+			value = temp;
+		}
+	}
 
 	/**
 	 * @param {any} value
@@ -65,7 +129,7 @@
 	}
 </script>
 
-<div class="inline datetime">
+<div>
 	<select bind:value={era} style:width="4rem">
 		<option value="BC">BC</option>
 		<option value="AC">AC</option>

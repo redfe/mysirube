@@ -42,6 +42,10 @@
 	let tags = [];
 
 	let submitting = false;
+
+	let isValidDatetime = true;
+
+	$: isValid = isValidDatetime;
 </script>
 
 <form
@@ -60,8 +64,13 @@
 		<p style="color: red">{errorMessage}</p>
 	{/if}
 
-	<label for="datetime">日時</label>
-	<InputDatetime bind:value={datetime} />
+	<label for="datetime"
+		>日時
+		{#if !isValidDatetime}
+			<span class="error">不正な日時です</span>
+		{/if}
+	</label>
+	<InputDatetime bind:value={datetime} bind:isValid={isValidDatetime} />
 
 	<label for="message">タグ</label>
 	<InputTags {selectableTags} bind:tags />
@@ -75,11 +84,14 @@
 				e.preventDefault();
 				handleOnClickCancelButton();
 			}}
-			aria-disabled={submitting}
-			disabled={submitting}>キャンセル</BasicButton
+			aria-disabled={submitting || !isValid}
+			disabled={submitting || !isValid}>キャンセル</BasicButton
 		>
-		<BasicButton type="submit" kind="primary" aria-disabled={submitting} disabled={submitting}
-			>{submitting ? '送信中' : '保存'}</BasicButton
+		<BasicButton
+			type="submit"
+			kind="primary"
+			aria-disabled={submitting || !isValid}
+			disabled={submitting || !isValid}>{submitting ? '送信中' : '保存'}</BasicButton
 		>
 	</div>
 </form>
@@ -102,5 +114,8 @@
 		margin: 0.5rem 0;
 		height: 2rem;
 		width: 6rem;
+	}
+	.error {
+		color: red;
 	}
 </style>
