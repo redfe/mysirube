@@ -81,8 +81,6 @@
 
 	$: {
 		era, year, month, day, hour, minute, second;
-		const str = toDatetimeString();
-		console.log(str);
 		const temp = new Date(toDatetimeString());
 		if ((isValid = isValidDate(temp))) {
 			replaceFromDate(temp);
