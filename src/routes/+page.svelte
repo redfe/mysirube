@@ -14,7 +14,11 @@
 	/**
 	 * @typedef {import('$lib/dateUtils.js').Level} Level
 	 * @typedef {import('$lib/types.d.ts').DateOptions} DateOptions
+	 * @typedef {import('$lib/types.d.ts').DateValue} DateValue
 	 */
+
+	/** @type {DateValue[]}*/
+	export let list = [];
 
 	const timelineWidth = 500;
 
@@ -87,6 +91,7 @@
 	 */
 	function handleOnChangeLevel(_datetime, _dateType) {
 		isLevelUp = dateTypes.indexOf(dateType) < dateTypes.indexOf(_dateType);
+		list = [];
 		datetime = _datetime;
 		dateType = _dateType;
 	}
@@ -134,6 +139,15 @@
 		} else {
 			isViewForm = false;
 		}
+		// 表示済みのデータを更新する
+		const formatted = dateType.format(new Date(datetimeValue));
+		const index = list.findIndex((value) => dateType.format(value.datetime) === formatted);
+		if (index > -1) {
+			const target = list[index];
+			target.count = target.count + 1;
+			// 部分的に再レンダリングさせるために、配列の要素を直接更新する
+			list[index] = target;
+		}
 	}
 </script>
 
@@ -158,7 +172,7 @@
 			</div>
 		{/key}
 
-		{#key datetime}
+		{#key dateType}
 			<div
 				class="timeline"
 				style:width={timelineWidth + 'px'}
@@ -177,6 +191,7 @@
 				}}
 			>
 				<Timeline
+					bind:list
 					{datetime}
 					{dateType}
 					{handleOnClickCountButton}

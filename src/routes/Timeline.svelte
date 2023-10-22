@@ -3,6 +3,8 @@
 	import CircleButton from '$lib/components/button/CircleButton.svelte';
 	import { dateTypes, formatDate, isOverPrevious, isOverNext } from '$lib/dateUtils.js';
 
+	/** @type {DateValue[]}*/
+	export let list = [];
 	export let dateType = dateTypes[6];
 	export let datetime = dateType.startOf(new Date());
 	$: initialDatetime = dateType.startOf(datetime);
@@ -153,7 +155,14 @@
 
 <div class="app">
 	<div class="timeline" bind:this={timelineElement}>
-		<DynamicScroll {previousChunk} {nextChunk} {triggerRangeRatio} bufferSize={1000} let:value>
+		<DynamicScroll
+			bind:list
+			{previousChunk}
+			{nextChunk}
+			{triggerRangeRatio}
+			bufferSize={1000}
+			let:value
+		>
 			{@const _value = /** @type DateValue */ (value)}
 			<div class="loading" slot="loading">loading...</div>
 			<div
