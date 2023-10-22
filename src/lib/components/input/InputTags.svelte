@@ -58,9 +58,9 @@
 		selectingIndex = -1;
 	}
 
-	function reset() {
+	function reset(lastIndex = -1) {
 		inputValue = '';
-		selectingIndex = -1;
+		selectingIndex = lastIndex;
 	}
 
 	/** @param {Element} elm */
@@ -129,7 +129,7 @@
 				if (e.key === 'Enter') {
 					if (selectingIndex >= 0 && selectingIndex < filteredSelectableTags.length) {
 						tags = unique([...tags, filteredSelectableTags[selectingIndex]]);
-						reset();
+						reset(selectingIndex);
 						e.preventDefault();
 					} else if (inputValue && inputValue.trim() !== '') {
 						tags = unique([...tags, inputValue]);
@@ -164,6 +164,7 @@
 						on:click={() => {
 							tags = [...tags, tag];
 							reset();
+							focused = false;
 						}}
 						transition:slide
 					>
