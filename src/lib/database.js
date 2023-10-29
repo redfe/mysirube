@@ -130,6 +130,16 @@ function createDummyDatas() {
  */
 
 /**
+ *
+ * @param {string} id
+ * @returns {Data=}
+ */
+function findById(id) {
+	const datas = getDatas();
+	return datas.find((data) => data.id === id);
+}
+
+/**
  * @param {Date} from inclusive
  * @param {Date} to exclusive
  * @param {number=} offset
@@ -169,7 +179,11 @@ function register(data) {
  */
 function update(data) {
 	const datas = getDatas();
-	datas.push(data);
+	const index = datas.findIndex((d) => d.id === data.id);
+	if (index > -1) {
+		datas[index] = data;
+	}
+	writeFileSync(DUMMY_DATA_FILE, JSON.stringify(datas));
 }
 
 /**
@@ -187,4 +201,4 @@ function createId() {
 	return randomUUID();
 }
 
-export default { find, register, update, remove, createId };
+export default { findById, find, register, update, remove, createId };

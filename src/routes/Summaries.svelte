@@ -12,6 +12,11 @@
 	/** @type {Date} */
 	export let to = new Date();
 
+	/** @type {(id: string) => Promise<Void>} */
+	export let handleOnSelect = async () => {
+		console.log('handleOnSelect');
+	};
+
 	let isFetchedAll = false;
 
 	/** @type {string[]} */
@@ -65,9 +70,9 @@
 			<div class="loading" slot="loading">loading...</div>
 			<div class="row">
 				<div class="datetime">{formatDate(_value.datetime, 'G y年M月d日 H時m分s.SSS秒')}</div>
-				<div class="text">
+				<button class="text" on:click={() => handleOnSelect(_value.id)}>
 					{_value.text}
-				</div>
+				</button>
 			</div>
 		</DynamicScroll>
 	</div>
@@ -93,7 +98,7 @@
 		height: 100px;
 		width: 100%;
 		overflow: hidden;
-		padding: 20px;
+		padding: 20px 20px 2px 20px;
 		box-sizing: border-box;
 		display: flex;
 		flex-direction: column;
@@ -103,6 +108,11 @@
 		font-size: 0.8rem;
 		color: rgba(0, 0, 0, 0.5);
 		cursor: pointer;
+		background: none;
+		text-align: left;
+		border: none;
+		height: 100%;
+		overflow: hidden;
 	}
 	.loading {
 		text-align: center;

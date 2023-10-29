@@ -9,6 +9,14 @@ import database from '$lib/database.js';
  */
 
 /**
+ * @param {string} id
+ * @returns {Data=} data
+ */
+export function findById(id) {
+	return database.findById(id);
+}
+
+/**
  * @param {Date} from greater than or equal to
  * @param {Date} to less than
  * @returns {Data[]} datas

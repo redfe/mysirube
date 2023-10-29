@@ -4,6 +4,11 @@
 	import InputTags from '$lib/components/input/InputTags.svelte';
 	import { dateTypes, formatDate } from '$lib/dateUtils';
 
+	/**
+	 * @typedef {import('$lib/types.d.ts').Data} Data
+	 */
+
+	/** */
 	export let handleOnClickCancelButton = () => {};
 
 	/**
@@ -21,9 +26,12 @@
 	/** @type {string=} */
 	export let errorMessage;
 
-	let datetime = dateType.startOf(new Date());
+	/** @type {Data=} */
+	export let data = undefined;
 
-	let content = '';
+	let datetime = data?.datetime || dateType.startOf(new Date());
+
+	let content = data?.content || '';
 
 	const selectableTags = [
 		'日記',
@@ -38,8 +46,9 @@
 		'スポーツ',
 		'メモ'
 	];
+
 	/** @type {string[]} */
-	let tags = [];
+	let tags = data?.tags || [];
 
 	let submitting = false;
 

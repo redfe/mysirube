@@ -15,12 +15,31 @@
 	 * @typedef {import('$lib/dateUtils.js').Level} Level
 	 * @typedef {import('$lib/types.d.ts').DateOptions} DateOptions
 	 * @typedef {import('$lib/types.d.ts').DateValue} DateValue
+	 * @typedef {import('$lib/types.d.ts').Data} Data
 	 */
 
 	/** @type {DateValue[]}*/
 	export let list = [];
 
+	/**
+	 * @param {string} id
+	 */
+	export let handleOnSelectSummary = async (id) => {
+		const response = await fetch(`/api/timelines/${id}`);
+		const { data } = await response.json();
+		selectedData = { ...data, datetime: new Date(data.datetime) };
+		isViewForm = true;
+	};
+
 	const timelineWidth = 500;
+
+	/** @type {Data=} */
+	let selectedData = undefined;
+	$: {
+		if (!isViewForm) {
+			selectedData = undefined;
+		}
+	}
 
 	/**
 	 * @param {string} name
@@ -123,9 +142,10 @@
 			.map((tag) => tag.trim())
 			.filter((tag) => tag !== '')
 			.join(',');
-		const ret = await fetch('/api/timelines', {
-			method: 'POST',
+		const ret = await fetch(`/api/timelines${selectedData ? '/' + selectedData.id : ''}`, {
+			method: selectedData ? 'PUT' : 'POST',
 			body: JSON.stringify({
+				id: selectedData?.id ?? undefined,
 				datetime: datetimeValue,
 				content,
 				tags: normalizedTagsString
@@ -139,14 +159,16 @@
 		} else {
 			isViewForm = false;
 		}
-		// 表示済みのデータを更新する
-		const formatted = dateType.format(new Date(datetimeValue));
-		const index = list.findIndex((value) => dateType.format(value.datetime) === formatted);
-		if (index > -1) {
-			const target = list[index];
-			target.count = target.count + 1;
-			// 部分的に再レンダリングさせるために、配列の要素を直接更新する
-			list[index] = target;
+		// 新規登録した場合、表示済みのデータを更新する
+		if (!selectedData) {
+			const formatted = dateType.format(new Date(datetimeValue));
+			const index = list.findIndex((value) => dateType.format(value.datetime) === formatted);
+			if (index > -1) {
+				const target = list[index];
+				target.count = target.count + 1;
+				// 部分的に再レンダリングさせるために、配列の要素を直接更新する
+				list[index] = target;
+			}
 		}
 	}
 </script>
@@ -165,6 +187,7 @@
 				<Summaries
 					from={summariesFrom}
 					to={summariesDateType?.increment(summariesFrom ?? new Date(), 1)}
+					handleOnSelect={handleOnSelectSummary}
 				/>
 				<div class="close">
 					<CircleButton on:click={() => (isViewSummaries = false)}>✕</CircleButton>
@@ -214,6 +237,7 @@
 				{handleOnSave}
 				{dateType}
 				errorMessage={formError}
+				data={selectedData}
 			/>
 		</div>
 	{/if}
