@@ -154,7 +154,7 @@
 	<!-- selectable tags -->
 	{#key inputValue}
 		{#if (inputValue !== undefined && inputValue !== '') || focused}
-			<div class="selectable-tag-container" bind:this={selectableTagContainer}>
+			<div class="selectable-tag-container" bind:this={selectableTagContainer} in:slide>
 				{#each filteredSelectableTags as tag, i (tag)}
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-static-element-interactions -->
