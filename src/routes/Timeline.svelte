@@ -226,7 +226,7 @@
 		padding: 20px;
 		box-sizing: border-box;
 		display: flex;
-		background-color: rgba(255, 255, 255, 0.8);
+		background-color: var(--basic-bg-color);
 	}
 	.up,
 	.down {
@@ -260,7 +260,7 @@
 		background-color: rgba(112, 248, 146, 0.8);
 	}
 	.marked {
-		background-color: rgb(239, 168, 151, 0.8);
+		background-color: var(--content-bg-color);
 	}
 	.loading {
 		text-align: center;

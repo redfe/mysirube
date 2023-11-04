@@ -85,7 +85,7 @@
 	<InputTags {selectableTags} bind:tags />
 
 	<label for="content">記事</label>
-	<textarea required id="content" name="content" style="height:200px" bind:value={content} />
+	<textarea required id="content" name="content" bind:value={content} />
 
 	<div class="inline buttons">
 		<BasicButton
@@ -110,13 +110,18 @@
 		display: flex;
 		flex-direction: column;
 		overflow-y: visible;
+		max-width: 800px;
 	}
 	form > * {
 		margin: 0.5rem 0;
 	}
+	#content {
+		height: 100%;
+	}
 	.inline {
 		display: flex;
 		flex-direction: row;
+		justify-content: center;
 		gap: 0.5rem;
 	}
 	form .buttons :global(button) {

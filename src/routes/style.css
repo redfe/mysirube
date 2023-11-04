@@ -1,13 +1,20 @@
 /** 開発中にリロードしなくても CSS が反映されるようにするため、import する方式にしている */
 :root {
+	/** ボタン等部品の色 */
 	--primary-color: rgb(75, 40, 246);
 	--primary-font-color: #fff;
 	--secondary-color: #efefef;
 	--secondary-font-color: #000;
 	--focused-border: 2px solid #55fa;
+
+	/** 標準的な色 */
 	--basic-border-radius: 5px;
 	--basic-border-color: rgba(0, 0, 0, 0.3);
 	--basic-border: 1px solid var(--basic-border-color);
+	--basic-bg-color: rgba(255, 255, 255, 0.8);
+	--basic-font-color: #000;
+	--content-bg-color: rgba(255, 247, 177, 0.8);
+	--basic-font-color: #000;
 }
 
 * {

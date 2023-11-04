@@ -89,7 +89,7 @@
 	.summaries {
 		height: 100%;
 		width: 100%;
-		background-color: rgb(239, 168, 151, 0.8);
+		background-color: var(--content-bg-color);
 		overflow-y: hidden;
 	}
 	.row {
