@@ -181,10 +181,10 @@
 		position: relative;
 	}
 	.input-area {
-		border: var(--basic-border);
-		border-radius: var(--basic-border-radius);
+		border: var(--border-base);
+		border-radius: var(--radius-base-border);
 		min-height: 2.75rem;
-		padding: var(--basic-border-radius);
+		padding: var(--radius-base-border);
 		display: flex;
 		flex-wrap: wrap;
 		row-gap: 0.25rem;
@@ -194,10 +194,10 @@
 		font-size: 0.8rem;
 		padding: 0.25rem;
 		margin: 0 0.25rem;
-		background-color: var(--secondary-color);
-		color: var(--secondary-font-color);
-		border-radius: var(--basic-border-radius);
-		border: var(--basic-border);
+		background-color: var(--color-secondary-bg);
+		color: var(--color-secondary-font);
+		border-radius: var(--radius-base-border);
+		border: var(--border-base);
 		overflow: hidden;
 		text-wrap: nowrap;
 	}
@@ -228,12 +228,12 @@
 		background-color: white;
 		border-left: solid 1px #0005;
 		border-right: solid 1px #0005;
-		left: var(--basic-border-radius);
-		width: calc(100% - var(--basic-border-radius) * 2);
+		left: var(--radius-base-border);
+		width: calc(100% - var(--radius-base-border) * 2);
 		overflow-y: scroll;
 		box-sizing: border-box;
 		box-shadow: 0 0 20px -10px rgba(0, 0, 0, 0.8);
-		border-radius: 0 0 var(--basic-border-radius) var(--basic-border-radius);
+		border-radius: 0 0 var(--radius-base-border) var(--radius-base-border);
 	}
 	.selectable-tag {
 		display: block;
@@ -242,12 +242,12 @@
 		cursor: pointer;
 	}
 	.selectable-tag:hover {
-		background-color: var(--secondary-color);
+		background-color: var(--color-secondary-bg);
 	}
 	.selecting {
-		background-color: var(--secondary-color);
+		background-color: var(--color-secondary-bg);
 	}
 	.focused {
-		outline: var(--focused-border);
+		outline: var(--outline-focused);
 	}
 </style>

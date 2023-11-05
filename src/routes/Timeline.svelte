@@ -226,7 +226,7 @@
 		padding: 20px;
 		box-sizing: border-box;
 		display: flex;
-		background-color: var(--basic-bg-color);
+		background-color: var(--color-base-bg);
 	}
 	.up,
 	.down {
@@ -249,18 +249,18 @@
 	.row-count button {
 		margin-top: 10px;
 		border: none;
-		border-radius: var(--basic-border-radius);
+		border-radius: var(--radius-base-border);
 		width: 50px;
 		height: 100%;
-		background-color: var(--primary-color);
-		color: var(--primary-font-color);
+		background-color: var(--color-primary-bg);
+		color: var(--color-primary-font);
 		cursor: pointer;
 	}
 	.now {
-		background-color: rgba(112, 248, 146, 0.8);
+		background-color: var(--color-heighlight-bg);
 	}
 	.marked {
-		background-color: var(--content-bg-color);
+		background-color: var(--color-content-bg);
 	}
 	.loading {
 		text-align: center;

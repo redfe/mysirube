@@ -16,7 +16,7 @@
 		width: 100%;
 		height: 100%;
 		border-radius: 50%;
-		border: var(--basic-border);
+		border: var(--border-base);
 	}
 	div > :global(button) {
 		border: none;

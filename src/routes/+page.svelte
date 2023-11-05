@@ -318,6 +318,6 @@
 		padding: 10px;
 		background-color: white;
 		box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5);
-		border-radius: var(--basic-border-radius);
+		border-radius: var(--radius-base-border);
 	}
 </style>

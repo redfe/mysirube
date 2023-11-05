@@ -1,20 +1,43 @@
 /** 開発中にリロードしなくても CSS が反映されるようにするため、import する方式にしている */
 :root {
-	/** ボタン等部品の色 */
-	--primary-color: rgb(75, 40, 246);
-	--primary-font-color: #fff;
-	--secondary-color: #efefef;
-	--secondary-font-color: #000;
-	--focused-border: 2px solid #55fa;
+	/** 
+	 * カスタムプロパティの命名ルール
+	 * --[値名]-[値の種類]-[値の適用箇所]
+	 */
+	/** color */
+	--color-primary-bg: #3f51b5;
+	--color-primary-font: #fff;
+	--color-secondary-bg: #efefef;
+	--color-secondar-font: #000;
+	--color-base-bg: rgba(255, 255, 255, 0.8);
+	--color-base-font: #000;
+	--color-base-border: rgba(0, 0, 0, 0.3);
+	--color-content-bg: rgba(255, 247, 177, 0.8);
+	--color-content-font: #000;
+	--color-focused-border: #55fa;
+	--color-error-font: #f44336;
+	--color-heighlight-bg: rgba(112, 248, 146, 0.8);
+	--color-heighlight-font: #000;
 
-	/** 標準的な色 */
-	--basic-border-radius: 5px;
-	--basic-border-color: rgba(0, 0, 0, 0.3);
-	--basic-border: 1px solid var(--basic-border-color);
-	--basic-bg-color: rgba(255, 255, 255, 0.8);
-	--basic-font-color: #000;
-	--content-bg-color: rgba(255, 247, 177, 0.8);
-	--basic-font-color: #000;
+	/** width */
+	--width-base-border: 1px;
+	--width-focused-border: 2px;
+
+	/** radius */
+	--radius-base-border: 5px;
+	--radius-focused-border: 5px;
+
+	/** style */
+	--style-base-border: solid;
+	--style-focused-border: solid;
+
+	/** padding */
+	--padding-base: 5px;
+
+	/** 一括指定 */
+	--border-base: var(--width-base-border) var(--style-base-border) var(--color-base-border);
+	--outline-focused: var(--width-focused-border) var(--style-focused-border)
+		var(--color-focused-border);
 }
 
 * {
@@ -25,22 +48,25 @@
 
 *:focus {
 	/** outline を none にするとタブ移動が効かなくなってしまう */
-	outline: var(--focused-border);
+	outline: var(--outline-focused);
 }
 
 input,
 textarea,
 select,
 button {
-	border: var(--basic-border);
-	border-radius: var(--basic-border-radius);
-	padding: 5px;
+	border: var(--border-base);
+	border-radius: var(--radius-base-border);
+	padding: var(--padding-base);
+}
+
+textarea {
+	resize: none;
 }
 
 button {
-	border: var(--basic-border);
-	border-radius: var(--basic-border-radius);
-	padding: 5px;
+	border: var(--border-base);
+	padding: var(--padding-base);
 	cursor: pointer;
 }
 

@@ -130,6 +130,6 @@
 		width: 6rem;
 	}
 	.error {
-		color: red;
+		color: var(--color-error-font);
 	}
 </style>
