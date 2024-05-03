@@ -35,7 +35,7 @@ export function counts(datetimes) {
 	}
 	const results = [];
 	const datas = database.find(datetimes[0], datetimes[datetimes.length - 1]);
-	for (let i = 0; i <= datetimes.length; i++) {
+	for (let i = 0; i < datetimes.length; i++) {
 		const from = datetimes[i];
 		const to = datetimes[i + 1];
 		const count = datas.filter((data) => from <= data.datetime && data.datetime < to).length;

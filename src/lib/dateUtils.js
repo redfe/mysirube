@@ -1,7 +1,6 @@
 // @ts-check
 
 import {
-	format,
 	addYears,
 	addMonths,
 	addDays,
@@ -18,7 +17,8 @@ import {
 	startOfMinute,
 	startOfSecond
 } from 'date-fns';
-
+import { ja } from 'date-fns/locale';
+import { formatInTimeZone, fromZonedTime } from 'date-fns-tz';
 /**
  * @enum {number}
  */
@@ -52,13 +52,16 @@ const formatIfValid = (date, formatFunc) => {
 	return formatFunc();
 };
 
+export const TZ = 'Asia/Tokyo';
+const LC = ja;
+
 /**
  * @type {DateOptions}
  */
-const by10000Year = {
+export const by10000Year = {
 	level: Level.By10000Year,
 	label: 'by 10000 years',
-	format: (date) => formatIfValid(date, () => format(date, 'G y年')),
+	format: (date) => formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年', { locale: LC })),
 	increment: (date, inc) => addYears(date, inc * 10000),
 	startOf: (date) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 10000) * 10000))
 };
@@ -66,10 +69,10 @@ const by10000Year = {
 /**
  * @type {DateOptions}
  */
-const by1000Year = {
+export const by1000Year = {
 	level: Level.By1000Year,
 	label: 'by 1000 years',
-	format: (date) => formatIfValid(date, () => format(date, 'G y年')),
+	format: (date) => formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年', { locale: LC })),
 	increment: (date, inc) => addYears(date, inc * 1000),
 	startOf: (date) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 1000) * 1000))
 };
@@ -77,10 +80,10 @@ const by1000Year = {
 /**
  * @type {DateOptions}
  */
-const by100Year = {
+export const by100Year = {
 	level: Level.By100Year,
 	label: 'by 100 years',
-	format: (date) => formatIfValid(date, () => format(date, 'G y年')),
+	format: (date) => formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年', { locale: LC })),
 	increment: (date, inc) => addYears(date, inc * 100),
 	startOf: (date) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 100) * 100))
 };
@@ -88,10 +91,10 @@ const by100Year = {
 /**
  * @type {DateOptions}
  */
-const by10Year = {
+export const by10Year = {
 	level: Level.By10Year,
 	label: 'by 10 years',
-	format: (date) => formatIfValid(date, () => format(date, 'G y年')),
+	format: (date) => formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年', { locale: LC })),
 	increment: (date, inc) => addYears(date, inc * 10),
 	startOf: (date) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 10) * 10))
 };
@@ -99,67 +102,72 @@ const by10Year = {
 /**
  * @type {DateOptions}
  */
-const byYear = {
+export const byYear = {
 	level: Level.ByYear,
 	label: 'by year',
-	format: (date) => formatIfValid(date, () => format(date, 'G y年')),
+	format: (date) => formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年', { locale: LC })),
 	increment: (date, inc) => addYears(date, inc),
-	startOf: (date) => startOfYear(date)
+	startOf: (date) => fromZonedTime(startOfYear(date), TZ)
 };
 
 /**
  * @type {DateOptions}
  */
-const byMonth = {
+export const byMonth = {
 	level: Level.ByMonth,
 	label: 'by month',
-	format: (date) => formatIfValid(date, () => format(date, 'G y年M月')),
+	format: (date) =>
+		formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年M月', { locale: LC })),
 	increment: (date, inc) => addMonths(date, inc),
-	startOf: (date) => startOfMonth(date)
+	startOf: (date) => fromZonedTime(startOfMonth(date), TZ)
 };
 
 /**
  * @type {DateOptions}
  */
-const byDay = {
+export const byDay = {
 	level: Level.ByDay,
 	label: 'by day',
-	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日')),
+	format: (date) =>
+		formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年M月d日', { locale: LC })),
 	increment: (date, inc) => addDays(date, inc),
-	startOf: (date) => startOfDay(date)
+	startOf: (date) => fromZonedTime(startOfDay(date), TZ)
 };
 
 /**
  * @type {DateOptions}
  */
-const byHour = {
+export const byHour = {
 	level: Level.ByHour,
 	label: 'by hour',
-	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 H時')),
+	format: (date) =>
+		formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年M月d日 H時', { locale: LC })),
 	increment: (date, inc) => addHours(date, inc),
-	startOf: (date) => startOfHour(date)
+	startOf: (date) => fromZonedTime(startOfHour(date), TZ)
 };
 
 /**
  * @type {DateOptions}
  */
-const byMinute = {
+export const byMinute = {
 	level: Level.ByMinute,
 	label: 'by minute',
-	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 H時m分')),
+	format: (date) =>
+		formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年M月d日 H時m分', { locale: LC })),
 	increment: (date, inc) => addMinutes(date, inc),
-	startOf: (date) => startOfMinute(date)
+	startOf: (date) => fromZonedTime(startOfMinute(date), TZ)
 };
 
 /**
  * @type {DateOptions}
  */
-const bySecond = {
+export const bySecond = {
 	level: Level.BySecond,
 	label: 'by second',
-	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 H時m分s秒')),
+	format: (date) =>
+		formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年M月d日 H時m分s秒', { locale: LC })),
 	increment: (date, inc) => addSeconds(date, inc),
-	startOf: (date) => startOfSecond(date)
+	startOf: (date) => fromZonedTime(startOfSecond(date), TZ)
 };
 
 /**
@@ -168,7 +176,7 @@ const bySecond = {
 // const byMillisecond = {
 // 	level: Level.ByMillisecond,
 // 	label: 'by millisecond',
-// 	format: (date) => formatIfValid(date, () => format(date, 'G y年M月d日 H時m分s.SSS秒')),
+// 	format: (date) => formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年M月d日 H時m分s.SSS秒')),
 // 	increment: addMilliseconds,
 // 	startOf: (date) => date
 // };
@@ -192,7 +200,7 @@ export const formatDate = (date, pattern) => {
 	if (!pattern) {
 		return date.toISOString();
 	} else {
-		return format(date, pattern);
+		return formatInTimeZone(date, TZ, pattern);
 	}
 };
 

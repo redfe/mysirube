@@ -71,6 +71,6 @@
 	main {
 		height: calc(100% - 50px);
 		box-sizing: border-box;
-		background-image: url(/actionvance-t7EL2iG3jMc-unsplash.jpg);
+		padding: 2rem;
 	}
 </style>
