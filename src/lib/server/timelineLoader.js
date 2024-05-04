@@ -1,5 +1,5 @@
-import { counts } from '$lib/timelinesRepository.js';
-import { getChildUnit } from './dateUtils';
+import { counts } from './timelinesRepository.js';
+import { getChildUnit } from '../dateUtils';
 
 /** @typedef {import("$lib/types").TimelineUnit} TimelineUnit */
 

@@ -1,4 +1,4 @@
-import { saveData } from './save';
+import { saveData } from './save.server';
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request }) {

@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
-import { findById } from '$lib/timelinesRepository';
-import { saveData } from '../save';
+import { findById } from '$lib/server/timelinesRepository';
+import { saveData } from '../save.server';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ params }) {

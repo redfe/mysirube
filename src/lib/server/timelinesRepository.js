@@ -1,4 +1,4 @@
-import database from '$lib/database.js';
+import database from './database.js';
 
 /**
  * @typedef {import('$lib/types.d.ts').SaveData} SaveData

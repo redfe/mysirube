@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { counts } from '$lib/timelinesRepository';
+import { counts } from '$lib/server/timelinesRepository';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ url }) {

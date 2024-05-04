@@ -1,5 +1,5 @@
 import { selectUnit } from '$lib/dateUtils';
-import { loadTimeline } from '$lib/timelineLoader.js';
+import { loadTimeline } from '$lib/server/timelineLoader.js';
 
 export async function load({ params }) {
 	const unit = selectUnit(params.unit);

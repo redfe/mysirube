@@ -1,5 +1,5 @@
 import { error, json } from '@sveltejs/kit';
-import { save } from '$lib/timelinesRepository';
+import { save } from '$lib/server/timelinesRepository';
 
 /**
  * @param {any} formData
