@@ -55,7 +55,8 @@ export const by10000Year = {
 	getUrl: (date, tz) =>
 		`/timeline/${pathName(Level.By10000Year)}/${formatDate(date, undefined, tz)}`,
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
-	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc)
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc),
+	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'y年', tz, lc)
 };
 
 /**
@@ -69,7 +70,8 @@ export const by1000Year = {
 	getUrl: (date, tz) =>
 		`/timeline/${pathName(Level.By1000Year)}/${formatDate(date, undefined, tz)}`,
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
-	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc)
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc),
+	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'y年', tz, lc)
 };
 
 /**
@@ -82,7 +84,8 @@ export const by100Year = {
 	startOf: (date, tz) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 100) * 100), tz),
 	getUrl: (date, tz) => `/timeline/${pathName(Level.By100Year)}/${formatDate(date, undefined, tz)}`,
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
-	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc)
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc),
+	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'y年', tz, lc)
 };
 
 /**
@@ -95,7 +98,8 @@ export const by10Year = {
 	startOf: (date, tz) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 10) * 10), tz),
 	getUrl: (date, tz) => `/timeline/${pathName(Level.By10Year)}/${formatDate(date, undefined, tz)}`,
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
-	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc)
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc),
+	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'y年', tz, lc)
 };
 
 /**
@@ -108,7 +112,8 @@ export const byYear = {
 	startOf: (date, tz) => fromZonedTime(startOfYear(date), tz ?? TZ),
 	getUrl: (date, tz) => `/timeline/${pathName(Level.ByYear)}/${formatDate(date, undefined, tz)}`,
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
-	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc)
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc),
+	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'y年', tz, lc)
 };
 
 /**
@@ -121,7 +126,8 @@ export const byMonth = {
 	startOf: (date, tz) => fromZonedTime(startOfMonth(date), tz ?? TZ),
 	getUrl: (date, tz) => `/timeline/${pathName(Level.ByMonth)}/${formatDate(date, undefined, tz)}`,
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y-MM', tz),
-	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月', tz, lc)
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月', tz, lc),
+	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'M月', tz, lc)
 };
 
 /**
@@ -134,7 +140,8 @@ export const byDay = {
 	startOf: (date, tz) => fromZonedTime(startOfDay(date), tz ?? TZ),
 	getUrl: (date, tz) => `/timeline/${pathName(Level.ByDay)}/${formatDate(date, undefined, tz)}`,
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y-MM-dd', tz),
-	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日', tz, lc)
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日', tz, lc),
+	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'd日', tz, lc)
 };
 
 /**
@@ -147,7 +154,8 @@ export const byHour = {
 	startOf: (date, tz) => fromZonedTime(startOfHour(date), tz ?? TZ),
 	getUrl: (date, tz) => `/timeline/${pathName(Level.ByHour)}/${formatDate(date, undefined, tz)}`,
 	getDatetimeAttr: (date, tz) => formatDate(date, "y-MM-dd'T'HH", tz),
-	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日 H時', tz, lc)
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日 H時', tz, lc),
+	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'H時', tz, lc)
 };
 
 /**
@@ -160,7 +168,8 @@ export const byMinute = {
 	startOf: (date, tz) => fromZonedTime(startOfMinute(date), tz ?? TZ),
 	getUrl: (date, tz) => `/timeline/${pathName(Level.ByMinute)}/${formatDate(date, undefined, tz)}`,
 	getDatetimeAttr: (date, tz) => formatDate(date, "y-MM-dd'T'HH:mm", tz),
-	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日 H時m分', tz, lc)
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日 H時m分', tz, lc),
+	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'm分', tz, lc)
 };
 
 /**
@@ -174,7 +183,8 @@ export const bySecond = {
 	getUrl: (date, tz) =>
 		`/timeline/${pathName(Level.BySecond)}/${formatDate(date, "y-MM-dd'T'HH:mm:ss", tz)}`,
 	getDatetimeAttr: (date, tz) => formatDate(date, "y-MM-dd'T'HH:mm:ss", tz),
-	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日 H時m分s秒', tz, lc)
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日 H時m分s秒', tz, lc),
+	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 's秒', tz, lc)
 };
 
 /**

@@ -25,6 +25,13 @@ export type TimelineUnit = {
 	 * @param lc ロケール
 	 */
 	getDatetimeLabel: (date: Date, tz?: string, lc?: Locale) => string;
+
+	/**
+	 * @param date
+	 * @param tz タイムゾーン
+	 * @param lc ロケール
+	 */
+	getDatetimeLabelShort: (date: Date, tz?: string, lc?: Locale) => string;
 };
 
 export type DateValue = {

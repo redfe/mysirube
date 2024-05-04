@@ -7,13 +7,9 @@
 </svelte:head>
 
 <div class="root">
-	<div class="nav-dummy" />
-	<main>
-		<slot />
-	</main>
 	<nav>
 		<div class="left">
-			<a href="/">Home</a>
+			<a href="/" data-sveltekit-reload>Home</a>
 		</div>
 		<div class="center" />
 		<div class="right">
@@ -22,6 +18,12 @@
 			<a href="/">Signup</a>
 		</div>
 	</nav>
+	<main>
+		<slot />
+	</main>
+	<footer>
+		<p>© 2024 My Sirube</p>
+	</footer>
 </div>
 
 <style>
@@ -29,20 +31,11 @@
 		margin: 0;
 		font-family: sans-serif;
 	}
-	.root {
-		height: 100svh;
-	}
-	.nav-dummy {
-		height: 50px;
-		box-sizing: border-box;
-	}
 	nav {
-		position: absolute;
-		top: 0;
 		height: 50px;
 		width: 100%;
 		box-sizing: border-box;
-		background-color: black;
+		background-color: rgb(22, 18, 144);
 		color: white;
 		padding: 10px;
 		box-shadow: 0 0 80px 20px rgba(255, 255, 255, 0.3);
@@ -72,5 +65,18 @@
 		height: calc(100% - 50px);
 		box-sizing: border-box;
 		padding: 2rem;
+	}
+	footer {
+		margin-top: 5rem;
+		height: 50px;
+		width: 100%;
+		box-sizing: border-box;
+		background-color: rgb(22, 18, 144);
+		color: white;
+		padding: 10px;
+		box-shadow: 0 0 80px 20px rgba(255, 255, 255, 0.3);
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 </style>
