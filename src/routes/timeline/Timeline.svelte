@@ -1,5 +1,5 @@
 <script>
-	import { getChildUnit, getListUrl, getParentUnit, getUnit } from '$lib/dateUtils';
+	import { getChildUnit, getParentUnit, getUnit } from '$lib/dateUtils';
 
 	/** @type number */
 	export let unitLevel;
