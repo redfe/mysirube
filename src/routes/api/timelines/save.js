@@ -16,7 +16,7 @@ export async function saveData(formData, id) {
 	const tags = formData.tags;
 
 	if (!datetime || !content || !tags) {
-		throw error(400, '未入力がありますー。');
+		error(400, '未入力がありますー。');
 	}
 
 	/** @type {import('$lib/types').SaveData} */
