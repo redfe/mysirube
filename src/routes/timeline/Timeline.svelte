@@ -1,6 +1,5 @@
 <script>
 	import { getChildUnit, getParentUnit, getUnit } from '$lib/dateUtils';
-
 	/** @type number */
 	export let unitLevel;
 
@@ -10,14 +9,13 @@
 	/** @type {{datetime:Date, count:number}[]} */
 	export let timelineFrames;
 
-	const unit = getUnit(unitLevel);
-	const parentUnit = getParentUnit(unit);
-	const childUnit = getOrThrowIfUndefined(getChildUnit(unit));
-	const grandChildUnit = childUnit ? getChildUnit(childUnit) : undefined;
-	const pageTitle = unit.getDatetimeLabel(start);
-
-	const previouseDate = unit.increment(start, -1);
-	const nextDate = unit.increment(start, 1);
+	$: unit = getUnit(unitLevel);
+	$: parentUnit = getParentUnit(unit);
+	$: childUnit = getOrThrowIfUndefined(getChildUnit(unit));
+	$: grandChildUnit = childUnit ? getChildUnit(childUnit) : undefined;
+	$: pageTitle = unit.getDatetimeLabel(start);
+	$: previouseDate = unit.increment(start, -1);
+	$: nextDate = unit.increment(start, 1);
 
 	/** @typedef {import('$lib/types').TimelineUnit} TimelineUnit*/
 	/**
@@ -37,14 +35,10 @@
 
 <svelte:window bind:scrollY />
 
-<!-- FIXME なぜか data-sveltekit-reload を指定しないと画面遷移してくれない。（URLは書き換わっている）-->
-
 {#if parentUnit}
-	<a class="to-parent" href={parentUnit?.getUrl(start)} data-sveltekit-reload>大観</a>
+	<a class="to-parent" href={parentUnit?.getUrl(start)}>大観</a>
 {/if}
-<a class="to-previouse" href={unit.getUrl(previouseDate)} data-sveltekit-reload
-	>{unit.getDatetimeLabel(previouseDate)}</a
->
+<a class="to-previouse" href={unit.getUrl(previouseDate)}>{unit.getDatetimeLabel(previouseDate)}</a>
 
 <h1>{pageTitle}</h1>
 
@@ -58,19 +52,17 @@
 			>
 			<data value={frame.count}>{frame.count === 0 ? '' : frame.count + '件'}</data>
 			{#if grandChildUnit}
-				<a href={childUnit.getUrl(frame.datetime)} data-sveltekit-reload>詳細</a>
+				<a href={childUnit.getUrl(frame.datetime)}>詳細</a>
 			{:else}
 				<span></span>
 			{/if}
 			<!--
-			<a href={getListUrl(childUnit, frame.datetime)} data-sveltekit-reload>一覧</a>
+			<a href={getListUrl(childUnit, frame.datetime)}>一覧</a>
 			-->
 		</li>
 	{/each}
 </ul>
-<a class="to-next" href={unit.getUrl(nextDate)} data-sveltekit-reload
-	>{unit.getDatetimeLabel(nextDate)}</a
->
+<a class="to-next" href={unit.getUrl(nextDate)}>{unit.getDatetimeLabel(nextDate)}</a>
 
 <style>
 	ul {
