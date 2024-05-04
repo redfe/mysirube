@@ -19,6 +19,7 @@ import {
 } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { formatInTimeZone, fromZonedTime } from 'date-fns-tz';
+
 /**
  * @enum {number}
  */
@@ -32,154 +33,149 @@ export const Level = {
 	ByDay: 6,
 	ByHour: 7,
 	ByMinute: 8,
-	BySecond: 9,
-	ByMillisecond: 10
+	BySecond: 9
 };
 
 /**
- * @typedef {import('$lib/types.js').DateOptions} DateOptions
+ * @typedef {import('$lib/types.js').TimelineUnit} TimelineUnit
  */
-
-/**
- * @param {Date} date
- * @param {() => string} formatFunc
- * @returns {string}
- */
-const formatIfValid = (date, formatFunc) => {
-	if (isInvalidDate(date)) {
-		return '';
-	}
-	return formatFunc();
-};
 
 export const TZ = 'Asia/Tokyo';
 const LC = ja;
 
 /**
- * @type {DateOptions}
+ * @type {TimelineUnit}
  */
 export const by10000Year = {
 	level: Level.By10000Year,
 	label: 'by 10000 years',
-	format: (date) => formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年', { locale: LC })),
 	increment: (date, inc) => addYears(date, inc * 10000),
-	startOf: (date) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 10000) * 10000))
+	startOf: (date, tz) =>
+		byYear.startOf(setYear(date, Math.floor(getYear(date) / 10000) * 10000), tz),
+	getUrl: (date, tz) =>
+		`/timeline/${pathName(Level.By10000Year)}/${formatDate(date, undefined, tz)}`,
+	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc)
 };
 
 /**
- * @type {DateOptions}
+ * @type {TimelineUnit}
  */
 export const by1000Year = {
 	level: Level.By1000Year,
 	label: 'by 1000 years',
-	format: (date) => formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年', { locale: LC })),
 	increment: (date, inc) => addYears(date, inc * 1000),
-	startOf: (date) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 1000) * 1000))
+	startOf: (date, tz) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 1000) * 1000), tz),
+	getUrl: (date, tz) =>
+		`/timeline/${pathName(Level.By1000Year)}/${formatDate(date, undefined, tz)}`,
+	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc)
 };
 
 /**
- * @type {DateOptions}
+ * @type {TimelineUnit}
  */
 export const by100Year = {
 	level: Level.By100Year,
 	label: 'by 100 years',
-	format: (date) => formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年', { locale: LC })),
 	increment: (date, inc) => addYears(date, inc * 100),
-	startOf: (date) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 100) * 100))
+	startOf: (date, tz) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 100) * 100), tz),
+	getUrl: (date, tz) => `/timeline/${pathName(Level.By100Year)}/${formatDate(date, undefined, tz)}`,
+	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc)
 };
 
 /**
- * @type {DateOptions}
+ * @type {TimelineUnit}
  */
 export const by10Year = {
 	level: Level.By10Year,
 	label: 'by 10 years',
-	format: (date) => formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年', { locale: LC })),
 	increment: (date, inc) => addYears(date, inc * 10),
-	startOf: (date) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 10) * 10))
+	startOf: (date, tz) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 10) * 10), tz),
+	getUrl: (date, tz) => `/timeline/${pathName(Level.By10Year)}/${formatDate(date, undefined, tz)}`,
+	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc)
 };
 
 /**
- * @type {DateOptions}
+ * @type {TimelineUnit}
  */
 export const byYear = {
 	level: Level.ByYear,
 	label: 'by year',
-	format: (date) => formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年', { locale: LC })),
 	increment: (date, inc) => addYears(date, inc),
-	startOf: (date) => fromZonedTime(startOfYear(date), TZ)
+	startOf: (date, tz) => fromZonedTime(startOfYear(date), tz ?? TZ),
+	getUrl: (date, tz) => `/timeline/${pathName(Level.ByYear)}/${formatDate(date, undefined, tz)}`,
+	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc)
 };
 
 /**
- * @type {DateOptions}
+ * @type {TimelineUnit}
  */
 export const byMonth = {
 	level: Level.ByMonth,
 	label: 'by month',
-	format: (date) =>
-		formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年M月', { locale: LC })),
 	increment: (date, inc) => addMonths(date, inc),
-	startOf: (date) => fromZonedTime(startOfMonth(date), TZ)
+	startOf: (date, tz) => fromZonedTime(startOfMonth(date), tz ?? TZ),
+	getUrl: (date, tz) => `/timeline/${pathName(Level.ByMonth)}/${formatDate(date, undefined, tz)}`,
+	getDatetimeAttr: (date, tz) => formatDate(date, 'y-MM', tz),
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月', tz, lc)
 };
 
 /**
- * @type {DateOptions}
+ * @type {TimelineUnit}
  */
 export const byDay = {
 	level: Level.ByDay,
 	label: 'by day',
-	format: (date) =>
-		formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年M月d日', { locale: LC })),
 	increment: (date, inc) => addDays(date, inc),
-	startOf: (date) => fromZonedTime(startOfDay(date), TZ)
+	startOf: (date, tz) => fromZonedTime(startOfDay(date), tz ?? TZ),
+	getUrl: (date, tz) => `/timeline/${pathName(Level.ByDay)}/${formatDate(date, undefined, tz)}`,
+	getDatetimeAttr: (date, tz) => formatDate(date, 'y-MM-dd', tz),
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日', tz, lc)
 };
 
 /**
- * @type {DateOptions}
+ * @type {TimelineUnit}
  */
 export const byHour = {
 	level: Level.ByHour,
 	label: 'by hour',
-	format: (date) =>
-		formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年M月d日 H時', { locale: LC })),
 	increment: (date, inc) => addHours(date, inc),
-	startOf: (date) => fromZonedTime(startOfHour(date), TZ)
+	startOf: (date, tz) => fromZonedTime(startOfHour(date), tz ?? TZ),
+	getUrl: (date, tz) => `/timeline/${pathName(Level.ByHour)}/${formatDate(date, undefined, tz)}`,
+	getDatetimeAttr: (date, tz) => formatDate(date, "y-MM-dd'T'HH", tz),
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日 H時', tz, lc)
 };
 
 /**
- * @type {DateOptions}
+ * @type {TimelineUnit}
  */
 export const byMinute = {
 	level: Level.ByMinute,
 	label: 'by minute',
-	format: (date) =>
-		formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年M月d日 H時m分', { locale: LC })),
 	increment: (date, inc) => addMinutes(date, inc),
-	startOf: (date) => fromZonedTime(startOfMinute(date), TZ)
+	startOf: (date, tz) => fromZonedTime(startOfMinute(date), tz ?? TZ),
+	getUrl: (date, tz) => `/timeline/${pathName(Level.ByMinute)}/${formatDate(date, undefined, tz)}`,
+	getDatetimeAttr: (date, tz) => formatDate(date, "y-MM-dd'T'HH:mm", tz),
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日 H時m分', tz, lc)
 };
 
 /**
- * @type {DateOptions}
+ * @type {TimelineUnit}
  */
 export const bySecond = {
 	level: Level.BySecond,
 	label: 'by second',
-	format: (date) =>
-		formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年M月d日 H時m分s秒', { locale: LC })),
 	increment: (date, inc) => addSeconds(date, inc),
-	startOf: (date) => fromZonedTime(startOfSecond(date), TZ)
+	startOf: (date, tz) => fromZonedTime(startOfSecond(date), tz ?? TZ),
+	getUrl: (date, tz) =>
+		`/timeline/${pathName(Level.BySecond)}/${formatDate(date, "y-MM-dd'T'HH:mm:ss", tz)}`,
+	getDatetimeAttr: (date, tz) => formatDate(date, "y-MM-dd'T'HH:mm:ss", tz),
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日 H時m分s秒', tz, lc)
 };
-
-/**
- * @type {DateOptions}
- */
-// const byMillisecond = {
-// 	level: Level.ByMillisecond,
-// 	label: 'by millisecond',
-// 	format: (date) => formatIfValid(date, () => formatInTimeZone(date, TZ, 'G y年M月d日 H時m分s.SSS秒')),
-// 	increment: addMilliseconds,
-// 	startOf: (date) => date
-// };
 
 /**
  * @param {Date} date
@@ -190,17 +186,20 @@ const isInvalidDate = (date) => {
 };
 
 /**
- * @type {(date:Date, pattern?:string) => string}
+ * @param {Date} date
+ * @param {string=} pattern パターン (デフォルト: ISO8601)
+ * @param {string=} tz タイムゾーン (デフォルト: Asia/Tokyo)
+ * @param {import('date-fns').Locale=} locale ロケール (デフォルト: ja)
  * @returns {string}
  */
-export const formatDate = (date, pattern) => {
+export const formatDate = (date, pattern, tz, locale) => {
 	if (isInvalidDate(date)) {
 		return '';
 	}
 	if (!pattern) {
 		return date.toISOString();
 	} else {
-		return formatInTimeZone(date, TZ, pattern);
+		return formatInTimeZone(date, tz ?? TZ, pattern, { locale: locale ?? LC });
 	}
 };
 
@@ -243,7 +242,7 @@ export const isOverNext = (date) => {
 	return max < date;
 };
 
-export const dateTypes = [
+export const timelineUnits = [
 	by10000Year,
 	by1000Year,
 	by100Year,
@@ -257,10 +256,99 @@ export const dateTypes = [
 ];
 
 /**
+ * @param {number} level
+ */
+export const getUnit = (level) => {
+	const unit = timelineUnits.find((unit) => unit.level === level);
+	if (!unit) {
+		throw new Error('unit not found');
+	}
+	return unit;
+};
+
+/**
+ * @param {import('$lib/types.js').TimelineUnit} currentUnit
+ * @return {import('$lib/types.js').TimelineUnit=}
+ */
+export const getParentUnit = (currentUnit) => {
+	const index = timelineUnits.findIndex((unit) => unit.label === currentUnit.label);
+	if (index <= 0) {
+		return undefined;
+	}
+	return timelineUnits[index - 1];
+};
+
+/**
+ * @param {import('$lib/types.js').TimelineUnit} currentUnit
+ * @return {import('$lib/types.js').TimelineUnit=}
+ */
+export const getChildUnit = (currentUnit) => {
+	const index = timelineUnits.findIndex((unit) => unit.label === currentUnit.label);
+	if (index < 0 || timelineUnits.length - 1 <= index) {
+		return undefined;
+	}
+	return timelineUnits[index + 1];
+};
+
+/**
  *
  * @param {string} label
- * @returns {DateOptions=}
+ * @returns {TimelineUnit=}
  */
 export const getDateType = (label) => {
-	return dateTypes.find((dateType) => dateType.label === label);
+	return timelineUnits.find((dateType) => dateType.label === label);
+};
+
+/**
+ *
+ * @param {TimelineUnit} unit
+ * @param {Date} date
+ * @returns {string}
+ */
+export const getListUrl = (unit, date) => `/list/?start=${unit.startOf(date).toISOString()}`;
+
+/**
+ *
+ * @param {string} unitName
+ */
+export const selectUnit = (unitName) => {
+	const unit = UNIT_MAP[unitName];
+	if (!unit) {
+		throw new Error('unit not found');
+	}
+	return unit;
+};
+
+/**
+ *
+ * @param {number} unitLevel
+ */
+export const getUnitPathName = (unitLevel) => {
+	const target = Object.entries(UNIT_MAP).find(([, value]) => {
+		return value.level === unitLevel;
+	});
+	if (target === undefined) {
+		throw new Error('unit not found');
+	}
+	return target[0];
+};
+
+const pathName = getUnitPathName;
+
+/**
+ * key: URLのパスパラメータの単位名
+ *
+ * @type {Record<string, TimelineUnit>}
+ */
+const UNIT_MAP = {
+	'10000year': by10000Year,
+	'1000year': by1000Year,
+	'100year': by100Year,
+	'10year': by10Year,
+	year: byYear,
+	month: byMonth,
+	day: byDay,
+	hour: byHour,
+	minute: byMinute,
+	second: bySecond
 };

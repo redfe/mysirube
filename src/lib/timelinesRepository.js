@@ -3,7 +3,7 @@ import database from '$lib/database.js';
 /**
  * @typedef {import('$lib/types.d.ts').SaveData} SaveData
  * @typedef {import('$lib/types.d.ts').Data} Data
- * @typedef {import('$lib/types.d.ts').DateOptions} DateOptions
+ * @typedef {import('$lib/types.d.ts').TimelineUnit} DateOptions
  * @typedef {import('$lib/types.d.ts').Summary} Summary
  * @typedef {import('$lib/dateUtils.js').Level} Level
  */
