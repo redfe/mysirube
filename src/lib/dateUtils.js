@@ -29,7 +29,7 @@ const LC = 'ja-JP';
  */
 export const by10000Year = {
 	level: Level.By10000Year,
-	label: 'by 10000 years',
+	label: '10000年単位',
 	increment: (date, inc) =>
 		fromJSDate(date)
 			.plus({ year: inc * 10000 })
@@ -47,7 +47,7 @@ export const by10000Year = {
  */
 export const by1000Year = {
 	level: Level.By1000Year,
-	label: 'by 1000 years',
+	label: '1000年単位',
 	increment: (date, inc) =>
 		fromJSDate(date)
 			.plus({ year: inc * 1000 })
@@ -65,7 +65,7 @@ export const by1000Year = {
  */
 export const by100Year = {
 	level: Level.By100Year,
-	label: 'by 100 years',
+	label: '100年単位',
 	increment: (date, inc) =>
 		fromJSDate(date)
 			.plus({ year: inc * 100 })
@@ -82,7 +82,7 @@ export const by100Year = {
  */
 export const by10Year = {
 	level: Level.By10Year,
-	label: 'by 10 years',
+	label: '10年単位',
 	increment: (date, inc) =>
 		fromJSDate(date)
 			.plus({ year: inc * 10 })
@@ -92,6 +92,91 @@ export const by10Year = {
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
 	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc),
 	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'y年', tz, lc)
+};
+
+/**
+ * @type {TimelineUnit}
+ */
+export const byYear = {
+	level: Level.ByYear,
+	label: '年単位',
+	increment: (date, inc) => fromJSDate(date).plus({ year: inc }).toJSDate(),
+	startOf: (date, tz) => fromJSDate(date, tz).startOf('year').toJSDate(),
+	getUrl: (date, tz) => `/timeline/${pathName(Level.ByYear)}/${formatDate(date, undefined, tz)}`,
+	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc),
+	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'y年', tz, lc)
+};
+
+/**
+ * @type {TimelineUnit}
+ */
+export const byMonth = {
+	level: Level.ByMonth,
+	label: '月単位',
+	increment: (date, inc) => fromJSDate(date).plus({ month: inc }).toJSDate(),
+	startOf: (date, tz) => fromJSDate(date, tz).startOf('month').toJSDate(),
+	getUrl: (date, tz) => `/timeline/${pathName(Level.ByMonth)}/${formatDate(date, undefined, tz)}`,
+	getDatetimeAttr: (date, tz) => formatDate(date, 'y-MM', tz),
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月', tz, lc),
+	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'M月', tz, lc)
+};
+
+/**
+ * @type {TimelineUnit}
+ */
+export const byDay = {
+	level: Level.ByDay,
+	label: '日単位',
+	increment: (date, inc) => fromJSDate(date).plus({ day: inc }).toJSDate(),
+	startOf: (date, tz) => fromJSDate(date, tz).startOf('day').toJSDate(),
+	getUrl: (date, tz) => `/timeline/${pathName(Level.ByDay)}/${formatDate(date, undefined, tz)}`,
+	getDatetimeAttr: (date, tz) => formatDate(date, 'y-MM-dd', tz),
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日', tz, lc),
+	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'd日', tz, lc)
+};
+
+/**
+ * @type {TimelineUnit}
+ */
+export const byHour = {
+	level: Level.ByHour,
+	label: '時間単位',
+	increment: (date, inc) => fromJSDate(date).plus({ hour: inc }).toJSDate(),
+	startOf: (date, tz) => fromJSDate(date, tz).startOf('hour').toJSDate(),
+	getUrl: (date, tz) => `/timeline/${pathName(Level.ByHour)}/${formatDate(date, undefined, tz)}`,
+	getDatetimeAttr: (date, tz) => formatDate(date, "y-MM-dd'T'HH", tz),
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日 H時', tz, lc),
+	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'H時', tz, lc)
+};
+
+/**
+ * @type {TimelineUnit}
+ */
+export const byMinute = {
+	level: Level.ByMinute,
+	label: '分単位',
+	increment: (date, inc) => fromJSDate(date).plus({ minute: inc }).toJSDate(),
+	startOf: (date, tz) => fromJSDate(date, tz).startOf('minute').toJSDate(),
+	getUrl: (date, tz) => `/timeline/${pathName(Level.ByMinute)}/${formatDate(date, undefined, tz)}`,
+	getDatetimeAttr: (date, tz) => formatDate(date, "y-MM-dd'T'HH:mm", tz),
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日 H時m分', tz, lc),
+	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'm分', tz, lc)
+};
+
+/**
+ * @type {TimelineUnit}
+ */
+export const bySecond = {
+	level: Level.BySecond,
+	label: '秒単位',
+	increment: (date, inc) => fromJSDate(date).plus({ second: inc }).toJSDate(),
+	startOf: (date, tz) => fromJSDate(date, tz).startOf('second').toJSDate(),
+	getUrl: (date, tz) =>
+		`/timeline/${pathName(Level.BySecond)}/${formatDate(date, "y-MM-dd'T'HH:mm:ss", tz)}`,
+	getDatetimeAttr: (date, tz) => formatDate(date, "y-MM-dd'T'HH:mm:ss", tz),
+	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日 H時m分s秒', tz, lc),
+	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 's秒', tz, lc)
 };
 
 /**
@@ -107,91 +192,6 @@ const startOfYear = (interval, date, tz) => {
 	const decade = Math.floor(year / interval) * interval;
 	temp.setFullYear(decade);
 	return temp;
-};
-
-/**
- * @type {TimelineUnit}
- */
-export const byYear = {
-	level: Level.ByYear,
-	label: 'by year',
-	increment: (date, inc) => fromJSDate(date).plus({ year: inc }).toJSDate(),
-	startOf: (date, tz) => fromJSDate(date, tz).startOf('year').toJSDate(),
-	getUrl: (date, tz) => `/timeline/${pathName(Level.ByYear)}/${formatDate(date, undefined, tz)}`,
-	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
-	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc),
-	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'y年', tz, lc)
-};
-
-/**
- * @type {TimelineUnit}
- */
-export const byMonth = {
-	level: Level.ByMonth,
-	label: 'by month',
-	increment: (date, inc) => fromJSDate(date).plus({ month: inc }).toJSDate(),
-	startOf: (date, tz) => fromJSDate(date, tz).startOf('month').toJSDate(),
-	getUrl: (date, tz) => `/timeline/${pathName(Level.ByMonth)}/${formatDate(date, undefined, tz)}`,
-	getDatetimeAttr: (date, tz) => formatDate(date, 'y-MM', tz),
-	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月', tz, lc),
-	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'M月', tz, lc)
-};
-
-/**
- * @type {TimelineUnit}
- */
-export const byDay = {
-	level: Level.ByDay,
-	label: 'by day',
-	increment: (date, inc) => fromJSDate(date).plus({ day: inc }).toJSDate(),
-	startOf: (date, tz) => fromJSDate(date, tz).startOf('day').toJSDate(),
-	getUrl: (date, tz) => `/timeline/${pathName(Level.ByDay)}/${formatDate(date, undefined, tz)}`,
-	getDatetimeAttr: (date, tz) => formatDate(date, 'y-MM-dd', tz),
-	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日', tz, lc),
-	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'd日', tz, lc)
-};
-
-/**
- * @type {TimelineUnit}
- */
-export const byHour = {
-	level: Level.ByHour,
-	label: 'by hour',
-	increment: (date, inc) => fromJSDate(date).plus({ hour: inc }).toJSDate(),
-	startOf: (date, tz) => fromJSDate(date, tz).startOf('hour').toJSDate(),
-	getUrl: (date, tz) => `/timeline/${pathName(Level.ByHour)}/${formatDate(date, undefined, tz)}`,
-	getDatetimeAttr: (date, tz) => formatDate(date, "y-MM-dd'T'HH", tz),
-	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日 H時', tz, lc),
-	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'H時', tz, lc)
-};
-
-/**
- * @type {TimelineUnit}
- */
-export const byMinute = {
-	level: Level.ByMinute,
-	label: 'by minute',
-	increment: (date, inc) => fromJSDate(date).plus({ minute: inc }).toJSDate(),
-	startOf: (date, tz) => fromJSDate(date, tz).startOf('minute').toJSDate(),
-	getUrl: (date, tz) => `/timeline/${pathName(Level.ByMinute)}/${formatDate(date, undefined, tz)}`,
-	getDatetimeAttr: (date, tz) => formatDate(date, "y-MM-dd'T'HH:mm", tz),
-	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日 H時m分', tz, lc),
-	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'm分', tz, lc)
-};
-
-/**
- * @type {TimelineUnit}
- */
-export const bySecond = {
-	level: Level.BySecond,
-	label: 'by second',
-	increment: (date, inc) => fromJSDate(date).plus({ second: inc }).toJSDate(),
-	startOf: (date, tz) => fromJSDate(date, tz).startOf('second').toJSDate(),
-	getUrl: (date, tz) =>
-		`/timeline/${pathName(Level.BySecond)}/${formatDate(date, "y-MM-dd'T'HH:mm:ss", tz)}`,
-	getDatetimeAttr: (date, tz) => formatDate(date, "y-MM-dd'T'HH:mm:ss", tz),
-	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日 H時m分s秒', tz, lc),
-	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 's秒', tz, lc)
 };
 
 /**

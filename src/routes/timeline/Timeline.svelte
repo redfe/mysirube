@@ -35,12 +35,25 @@
 
 <svelte:window bind:scrollY />
 
-{#if parentUnit}
-	<a class="to-parent" href={parentUnit?.getUrl(start)}>大観</a>
-{/if}
-<a class="to-previouse" href={unit.getUrl(previouseDate)}>{unit.getDatetimeLabel(previouseDate)}</a>
+<h1>
+	{childUnit.label}
+</h1>
+<nav class="nav-unit">
+	{#if parentUnit}
+		<a href={parentUnit?.getUrl(start)}>{unit.label}</a>
+	{/if}
+	{#if grandChildUnit}
+		<a href={childUnit?.getUrl(start)}>{grandChildUnit.label}</a>
+	{/if}
+</nav>
 
-<h1>{pageTitle}</h1>
+<h2>
+	{pageTitle}
+</h2>
+<nav class="nav-date">
+	<a href={unit.getUrl(previouseDate)}>{unit.getDatetimeLabelShort(previouseDate)}</a>
+	<a href={unit.getUrl(nextDate)}>{unit.getDatetimeLabelShort(nextDate)}</a>
+</nav>
 
 <p class="fixed-title" class:none={!isViewFixedTitle} aria-hidden="true">{pageTitle}</p>
 
@@ -52,7 +65,7 @@
 			>
 			<data value={frame.count}>{frame.count === 0 ? '' : frame.count + '件'}</data>
 			{#if grandChildUnit}
-				<a href={childUnit.getUrl(frame.datetime)}>詳細</a>
+				<a href={childUnit.getUrl(frame.datetime)}>{grandChildUnit.label}</a>
 			{:else}
 				<span></span>
 			{/if}
@@ -62,7 +75,6 @@
 		</li>
 	{/each}
 </ul>
-<a class="to-next" href={unit.getUrl(nextDate)}>{unit.getDatetimeLabel(nextDate)}</a>
 
 <style>
 	ul {
@@ -87,13 +99,12 @@
 	li span {
 		margin-left: 1rem;
 	}
-	h1 {
+	h1,
+	h2 {
 		text-align: center;
-		font-size: 1.25rem;
 	}
-	.to-parent,
-	.to-previouse,
-	.to-next {
+	.nav-date *,
+	.nav-unit * {
 		display: block;
 		text-align: center;
 		margin: 1rem 0;
@@ -111,5 +122,11 @@
 	}
 	.none {
 		display: none;
+	}
+	.nav-unit,
+	.nav-date {
+		display: flex;
+		gap: 1rem;
+		justify-content: center;
 	}
 </style>
