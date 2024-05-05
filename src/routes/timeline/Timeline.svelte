@@ -33,17 +33,21 @@
 	$: isViewFixedTitle = 220 < scrollY;
 </script>
 
+<svelte:head>
+	<title>My Sirube {unit.label} {pageTitle}</title>
+</svelte:head>
+
 <svelte:window bind:scrollY />
 
 <h1>
-	{childUnit.label}
+	{unit.label}
 </h1>
 <nav class="nav-unit">
 	{#if parentUnit}
-		<a href={parentUnit?.getUrl(start)}>{unit.label}</a>
+		<a href={parentUnit?.getUrl(start)}>{parentUnit.label}</a>
 	{/if}
-	{#if grandChildUnit}
-		<a href={childUnit?.getUrl(start)}>{grandChildUnit.label}</a>
+	{#if childUnit}
+		<a href={childUnit?.getUrl(start)}>{childUnit.label}</a>
 	{/if}
 </nav>
 

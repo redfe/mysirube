@@ -2,10 +2,6 @@
 	import './style.css';
 </script>
 
-<svelte:head>
-	<title>My Sirube</title>
-</svelte:head>
-
 <div class="root">
 	<nav>
 		<div class="left">
