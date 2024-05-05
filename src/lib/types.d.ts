@@ -24,14 +24,14 @@ export type TimelineUnit = {
 	 * @param tz タイムゾーン
 	 * @param lc ロケール
 	 */
-	getDatetimeLabel: (date: Date, tz?: string, lc?: Locale) => string;
+	getDatetimeLabel: (date: Date, tz?: string, lc?: string) => string;
 
 	/**
 	 * @param date
 	 * @param tz タイムゾーン
 	 * @param lc ロケール
 	 */
-	getDatetimeLabelShort: (date: Date, tz?: string, lc?: Locale) => string;
+	getDatetimeLabelShort: (date: Date, tz?: string, lc?: string) => string;
 };
 
 export type DateValue = {

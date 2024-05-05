@@ -1,24 +1,5 @@
 // @ts-check
-
-import {
-	addYears,
-	addMonths,
-	addDays,
-	addHours,
-	addMinutes,
-	addSeconds,
-	//addMilliseconds,
-	getYear,
-	setYear,
-	startOfYear,
-	startOfMonth,
-	startOfDay,
-	startOfHour,
-	startOfMinute,
-	startOfSecond
-} from 'date-fns';
-import { ja } from 'date-fns/locale';
-import { formatInTimeZone, fromZonedTime } from 'date-fns-tz';
+import { DateTime } from 'luxon';
 
 /**
  * @enum {number}
@@ -41,7 +22,7 @@ export const Level = {
  */
 
 export const TZ = 'Asia/Tokyo';
-const LC = ja;
+const LC = 'ja-JP';
 
 /**
  * @type {TimelineUnit}
@@ -49,9 +30,11 @@ const LC = ja;
 export const by10000Year = {
 	level: Level.By10000Year,
 	label: 'by 10000 years',
-	increment: (date, inc) => addYears(date, inc * 10000),
-	startOf: (date, tz) =>
-		byYear.startOf(setYear(date, Math.floor(getYear(date) / 10000) * 10000), tz),
+	increment: (date, inc) =>
+		fromJSDate(date)
+			.plus({ year: inc * 10000 })
+			.toJSDate(),
+	startOf: (date, tz) => startOfYear(10000, date, tz),
 	getUrl: (date, tz) =>
 		`/timeline/${pathName(Level.By10000Year)}/${formatDate(date, undefined, tz)}`,
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
@@ -65,8 +48,11 @@ export const by10000Year = {
 export const by1000Year = {
 	level: Level.By1000Year,
 	label: 'by 1000 years',
-	increment: (date, inc) => addYears(date, inc * 1000),
-	startOf: (date, tz) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 1000) * 1000), tz),
+	increment: (date, inc) =>
+		fromJSDate(date)
+			.plus({ year: inc * 1000 })
+			.toJSDate(),
+	startOf: (date, tz) => startOfYear(1000, date, tz),
 	getUrl: (date, tz) =>
 		`/timeline/${pathName(Level.By1000Year)}/${formatDate(date, undefined, tz)}`,
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
@@ -80,8 +66,11 @@ export const by1000Year = {
 export const by100Year = {
 	level: Level.By100Year,
 	label: 'by 100 years',
-	increment: (date, inc) => addYears(date, inc * 100),
-	startOf: (date, tz) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 100) * 100), tz),
+	increment: (date, inc) =>
+		fromJSDate(date)
+			.plus({ year: inc * 100 })
+			.toJSDate(),
+	startOf: (date, tz) => startOfYear(100, date, tz),
 	getUrl: (date, tz) => `/timeline/${pathName(Level.By100Year)}/${formatDate(date, undefined, tz)}`,
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
 	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc),
@@ -94,12 +83,30 @@ export const by100Year = {
 export const by10Year = {
 	level: Level.By10Year,
 	label: 'by 10 years',
-	increment: (date, inc) => addYears(date, inc * 10),
-	startOf: (date, tz) => byYear.startOf(setYear(date, Math.floor(getYear(date) / 10) * 10), tz),
+	increment: (date, inc) =>
+		fromJSDate(date)
+			.plus({ year: inc * 10 })
+			.toJSDate(),
+	startOf: (date, tz) => startOfYear(10, date, tz),
 	getUrl: (date, tz) => `/timeline/${pathName(Level.By10Year)}/${formatDate(date, undefined, tz)}`,
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
 	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc),
 	getDatetimeLabelShort: (date, tz, lc) => formatDate(date, 'y年', tz, lc)
+};
+
+/**
+ *
+ * @param {10|100|1000|10000} interval
+ * @param {Date} date
+ * @param {string=} tz タイムゾーン (デフォルト: Asia/Tokyo)
+ * @returns
+ */
+const startOfYear = (interval, date, tz) => {
+	const temp = byYear.startOf(date, tz);
+	const year = temp.getFullYear();
+	const decade = Math.floor(year / interval) * interval;
+	temp.setFullYear(decade);
+	return temp;
 };
 
 /**
@@ -108,8 +115,8 @@ export const by10Year = {
 export const byYear = {
 	level: Level.ByYear,
 	label: 'by year',
-	increment: (date, inc) => addYears(date, inc),
-	startOf: (date, tz) => fromZonedTime(startOfYear(date), tz ?? TZ),
+	increment: (date, inc) => fromJSDate(date).plus({ year: inc }).toJSDate(),
+	startOf: (date, tz) => fromJSDate(date, tz).startOf('year').toJSDate(),
 	getUrl: (date, tz) => `/timeline/${pathName(Level.ByYear)}/${formatDate(date, undefined, tz)}`,
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
 	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年', tz, lc),
@@ -122,8 +129,8 @@ export const byYear = {
 export const byMonth = {
 	level: Level.ByMonth,
 	label: 'by month',
-	increment: (date, inc) => addMonths(date, inc),
-	startOf: (date, tz) => fromZonedTime(startOfMonth(date), tz ?? TZ),
+	increment: (date, inc) => fromJSDate(date).plus({ month: inc }).toJSDate(),
+	startOf: (date, tz) => fromJSDate(date, tz).startOf('month').toJSDate(),
 	getUrl: (date, tz) => `/timeline/${pathName(Level.ByMonth)}/${formatDate(date, undefined, tz)}`,
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y-MM', tz),
 	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月', tz, lc),
@@ -136,8 +143,8 @@ export const byMonth = {
 export const byDay = {
 	level: Level.ByDay,
 	label: 'by day',
-	increment: (date, inc) => addDays(date, inc),
-	startOf: (date, tz) => fromZonedTime(startOfDay(date), tz ?? TZ),
+	increment: (date, inc) => fromJSDate(date).plus({ day: inc }).toJSDate(),
+	startOf: (date, tz) => fromJSDate(date, tz).startOf('day').toJSDate(),
 	getUrl: (date, tz) => `/timeline/${pathName(Level.ByDay)}/${formatDate(date, undefined, tz)}`,
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y-MM-dd', tz),
 	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日', tz, lc),
@@ -150,8 +157,8 @@ export const byDay = {
 export const byHour = {
 	level: Level.ByHour,
 	label: 'by hour',
-	increment: (date, inc) => addHours(date, inc),
-	startOf: (date, tz) => fromZonedTime(startOfHour(date), tz ?? TZ),
+	increment: (date, inc) => fromJSDate(date).plus({ hour: inc }).toJSDate(),
+	startOf: (date, tz) => fromJSDate(date, tz).startOf('hour').toJSDate(),
 	getUrl: (date, tz) => `/timeline/${pathName(Level.ByHour)}/${formatDate(date, undefined, tz)}`,
 	getDatetimeAttr: (date, tz) => formatDate(date, "y-MM-dd'T'HH", tz),
 	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日 H時', tz, lc),
@@ -164,8 +171,8 @@ export const byHour = {
 export const byMinute = {
 	level: Level.ByMinute,
 	label: 'by minute',
-	increment: (date, inc) => addMinutes(date, inc),
-	startOf: (date, tz) => fromZonedTime(startOfMinute(date), tz ?? TZ),
+	increment: (date, inc) => fromJSDate(date).plus({ minute: inc }).toJSDate(),
+	startOf: (date, tz) => fromJSDate(date, tz).startOf('minute').toJSDate(),
 	getUrl: (date, tz) => `/timeline/${pathName(Level.ByMinute)}/${formatDate(date, undefined, tz)}`,
 	getDatetimeAttr: (date, tz) => formatDate(date, "y-MM-dd'T'HH:mm", tz),
 	getDatetimeLabel: (date, tz, lc) => formatDate(date, 'G y年M月d日 H時m分', tz, lc),
@@ -178,8 +185,8 @@ export const byMinute = {
 export const bySecond = {
 	level: Level.BySecond,
 	label: 'by second',
-	increment: (date, inc) => addSeconds(date, inc),
-	startOf: (date, tz) => fromZonedTime(startOfSecond(date), tz ?? TZ),
+	increment: (date, inc) => fromJSDate(date).plus({ second: inc }).toJSDate(),
+	startOf: (date, tz) => fromJSDate(date, tz).startOf('second').toJSDate(),
 	getUrl: (date, tz) =>
 		`/timeline/${pathName(Level.BySecond)}/${formatDate(date, "y-MM-dd'T'HH:mm:ss", tz)}`,
 	getDatetimeAttr: (date, tz) => formatDate(date, "y-MM-dd'T'HH:mm:ss", tz),
@@ -197,19 +204,28 @@ const isInvalidDate = (date) => {
 
 /**
  * @param {Date} date
+ * @param {string=} tz タイムゾーン (デフォルト: Asia/Tokyo)
+ * @returns {DateTime}
+ */
+const fromJSDate = (date, tz) => DateTime.fromJSDate(date, { zone: tz ?? TZ });
+
+/**
+ * @param {Date} date
  * @param {string=} pattern パターン (デフォルト: ISO8601)
  * @param {string=} tz タイムゾーン (デフォルト: Asia/Tokyo)
- * @param {import('date-fns').Locale=} locale ロケール (デフォルト: ja)
+ * @param {string=} lc ロケール (デフォルト: ja-JP)
  * @returns {string}
  */
-export const formatDate = (date, pattern, tz, locale) => {
+export const formatDate = (date, pattern, tz, lc) => {
 	if (isInvalidDate(date)) {
 		return '';
 	}
 	if (!pattern) {
 		return date.toISOString();
 	} else {
-		return formatInTimeZone(date, tz ?? TZ, pattern, { locale: locale ?? LC });
+		return fromJSDate(date, tz)
+			.setLocale(lc ?? LC)
+			.toFormat(pattern);
 	}
 };
 
@@ -225,10 +241,16 @@ export const parseDate = (formatted) => {
 
 // 紀元前 271821 年 4 月 20 日
 // 小さい範囲から大きい範囲に変更したときに Invalid Date になるのを予防するため 20000 年足しておく。
-const min = new Date(-271821 + 20000, 3, 20, 23, 59, 59);
+const min = DateTime.fromObject(
+	{ year: -271821 + 20000, month: 3, day: 20, hour: 23, minute: 59, second: 59 },
+	{ zone: 'UTC' }
+).toJSDate();
 
-// 紀元 275760 年 9 月 13 日
-const max = new Date(275760, 8, 13, 0, 0, 0);
+// 西暦 275760 年 9 月 13 日
+const max = DateTime.fromObject(
+	{ year: 275760, month: 8, day: 13, hour: 0, minute: 0, second: 0 },
+	{ zone: 'UTC' }
+).toJSDate();
 
 /**
  * @param {Date} date
