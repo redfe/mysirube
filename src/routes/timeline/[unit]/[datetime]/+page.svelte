@@ -42,7 +42,7 @@
 	{#if parentUnit}
 		<a href={parentUnit?.getUrl(start)}>{parentUnit.label}</a>
 	{/if}
-	{#if childUnit}
+	{#if grandChildUnit}
 		<a href={childUnit?.getUrl(start)}>{childUnit.label}</a>
 	{/if}
 </nav>
