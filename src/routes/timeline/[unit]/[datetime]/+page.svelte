@@ -59,13 +59,13 @@
 
 <ul>
 	{#each timelineFrames as frame}
-		<li>
+		<li class={`unit-level-${unit.level}`}>
 			<time datetime={childUnit?.getDatetimeAttr(frame.datetime)}
 				>{childUnit.getDatetimeLabelShort(frame.datetime)}</time
 			>
 			<data value={frame.count}>{frame.count === 0 ? '' : frame.count + '件'}</data>
 			{#if grandChildUnit}
-				<a href={childUnit.getUrl(frame.datetime)}>{grandChildUnit.label}</a>
+				<a href={childUnit.getUrl(frame.datetime)}>{childUnit.label}</a>
 			{:else}
 				<span></span>
 			{/if}
@@ -87,9 +87,34 @@
 	li {
 		display: flex;
 		justify-content: center;
-		height: 4rem;
 		box-sizing: border-box;
-		align-items: center;
+	}
+	li.unit-level-0 {
+		height: 11rem;
+	}
+	li.unit-level-1 {
+		height: 10rem;
+	}
+	li.unit-level-2 {
+		height: 9rem;
+	}
+	li.unit-level-3 {
+		height: 8rem;
+	}
+	li.unit-level-4 {
+		height: 7rem;
+	}
+	li.unit-level-5 {
+		height: 6rem;
+	}
+	li.unit-level-6 {
+		height: 5rem;
+	}
+	li.unit-level-7 {
+		height: 4rem;
+	}
+	li.unit-level-8 {
+		height: 3rem;
 	}
 	data {
 		text-align: right;
