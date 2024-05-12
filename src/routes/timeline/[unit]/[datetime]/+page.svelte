@@ -86,6 +86,7 @@
 		display: flex;
 		justify-content: center;
 		box-sizing: border-box;
+		align-items: start;
 	}
 	li.unit-level-0 {
 		height: 11rem;
