@@ -74,3 +74,8 @@ button:disabled {
 	cursor: not-allowed !important;
 	opacity: 0.6;
 }
+
+a {
+	/** カンマが下線と被らないように調整 */
+	text-underline-offset: 4px;
+}

@@ -47,9 +47,7 @@
 	{/if}
 </nav>
 
-<h2>
-	{pageTitle}
-</h2>
+<h2>{pageTitle}</h2>
 <nav class="nav-date">
 	<a href={unit.getUrl(previouseDate)}>{unit.getDatetimeLabelShort(previouseDate)}</a>
 	<a href={unit.getUrl(nextDate)}>{unit.getDatetimeLabelShort(nextDate)}</a>
