@@ -64,7 +64,9 @@
 </Heading>
 
 <nav class="nav-date">
-	<Button outline href={parentUnit?.getUrl(start)} disabled={!parentUnit}>俯瞰</Button>
+	<Button outline href={parentUnit?.getUrl(start)} disabled={!parentUnit}
+		><span aria-label={`俯瞰（${parentUnit?.getDatetimeLabel(start)}）`}>俯瞰</span></Button
+	>
 	<Button outline href={unit.getUrl(previouseDate)}
 		>{unit.getDatetimeLabelShort(previouseDate)}</Button
 	>
