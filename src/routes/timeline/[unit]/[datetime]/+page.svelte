@@ -1,6 +1,13 @@
 <script>
-	import { getChildUnit, getParentUnit, getUnit, Level } from '$lib/dateUtils';
-	import { Badge, Button, Heading, Timeline, TimelineItem } from 'flowbite-svelte';
+	import Link from '$lib/components/Link.svelte';
+	import { getChildUnit, getParentUnit, getUnit, isInvalidDate, Level } from '$lib/dateUtils';
+	import { A, Badge, Button, Heading, Timeline, TimelineItem, P, Indicator } from 'flowbite-svelte';
+	import {
+		ZoomInOutline,
+		ZoomOutOutline,
+		CaretUpOutline,
+		CaretDownOutline
+	} from 'flowbite-svelte-icons';
 
 	export let data;
 	/* 注意： $: で設定しておかないと data が変更されたときに unitLevel, start, timelineFrams に変更が適用されない。 */
@@ -13,7 +20,9 @@
 	$: grandChildUnit = childUnit ? getChildUnit(childUnit) : undefined;
 	$: pageTitle = unit.getDatetimeLabel(start);
 	$: previouseDate = unit.increment(start, -1);
+	$: previouseDateIsInvalid = isInvalidDate(previouseDate);
 	$: nextDate = unit.increment(start, 1);
+	$: nextDateIsInvalid = isInvalidDate(nextDate);
 
 	/** @typedef {import('$lib/types').TimelineUnit} TimelineUnit*/
 
@@ -28,84 +37,66 @@
 		return value;
 	}
 
-	function getItemHeight(/** @type {number} */ unitLevel) {
-		switch (unitLevel) {
-			case Level.By10000Year:
-				return 'h-36';
-			case Level.By1000Year:
-				return 'h-32';
-			case Level.By100Year:
-				return 'h-28';
-			case Level.By10Year:
-				return 'h-24';
-			case Level.ByYear:
-				return 'h-20';
-			case Level.ByMonth:
-				return 'h-16';
-			case Level.ByDay:
-				return 'h-14';
-			case Level.ByHour:
-				return 'h-12';
-			default:
-				return 'h-11';
-		}
-	}
-
-	$: itemHeight = getItemHeight(unitLevel);
+	$: titleHelper = unitLevel < Level.ByYear ? `（${unit.label}）` : '';
 </script>
 
 <svelte:head>
-	<title>My Sirube {unit.label} {pageTitle}</title>
+	<title
+		>My Sirube
+		{pageTitle}{titleHelper}</title
+	>
 </svelte:head>
 
 <Heading tag="h1" class="text-center"
 	>{pageTitle}
-	{#if unitLevel < Level.ByYear}<span class="text-lg font-normal">（{unit.label}）</span>{/if}
+	{#if unitLevel < Level.ByYear}<span class="text-lg font-normal">{titleHelper}</span>{/if}
 </Heading>
 
-<nav class="nav-date">
-	<Button outline href={parentUnit?.getUrl(start)} disabled={!parentUnit}
-		><span aria-label={`俯瞰（${parentUnit?.getDatetimeLabel(start)}）`}>俯瞰</span></Button
+<nav class="mb-10 mt-10 flex flex-col items-center gap-5">
+	<Link
+		disabled={previouseDateIsInvalid}
+		href={previouseDateIsInvalid ? '#' : unit.getUrl(previouseDate)}
+		title={unit.getDatetimeLabel(previouseDate)}><CaretUpOutline ariaLabel="前へ" /></Link
 	>
-	<Button outline href={unit.getUrl(previouseDate)}
-		>{unit.getDatetimeLabelShort(previouseDate)}</Button
+	<Link
+		disabled={!parentUnit}
+		href={!parentUnit ? '#' : parentUnit?.getUrl(start)}
+		title={`${parentUnit?.getDatetimeLabel(start)}`}
+		><ZoomOutOutline ariaLabel={`ズームアウト`} /></Link
 	>
-	<Button outline href={unit.getUrl(nextDate)}>{unit.getDatetimeLabelShort(nextDate)}</Button>
+	<Link
+		disabled={nextDateIsInvalid}
+		href={nextDateIsInvalid ? '#' : unit.getUrl(nextDate)}
+		title={unit.getDatetimeLabel(nextDate)}><CaretDownOutline ariaLabel="次へ" /></Link
+	>
 </nav>
 
 <div class="flex justify-center">
-	<Timeline class="w-full lg:w-2/3">
+	<Timeline class="w-full max-w-xl">
 		{#each timelineFrames as frame (`${String(unitLevel)}:${frame.datetime}`)}
 			<TimelineItem>
-				<time datetime={childUnit?.getDatetimeAttr(frame.datetime)} class="text-md">
-					{#if grandChildUnit}
-						<a href={childUnit.getUrl(frame.datetime)} class="underline underline-offset-8"
-							>{childUnit.getDatetimeLabel(frame.datetime)}</a
-						>
-					{:else}
+				<div class="flex flex-wrap items-center">
+					<time datetime={childUnit?.getDatetimeAttr(frame.datetime)} class="text-2xl font-bold">
 						{childUnit.getDatetimeLabel(frame.datetime)}
-					{/if}
-				</time>
-				{#if frame.count !== 0}<Badge border large color="red" class="ml-2">{frame.count}件</Badge
-					>{/if}
-				<div class={`${itemHeight} ml-2 mt-2 max-w-full overflow-hidden md:inline`}>
+					</time>
+					{#if frame.count !== 0}<Badge color="red" class="ml-2"
+							><Indicator color="red" size="xs" class="me-2" />{frame.count}件</Badge
+						>{/if}
+				</div>
+				<div class={`mt-2 flex h-7 max-w-full gap-2 overflow-hidden`}>
 					{#if frame.count !== 0}
-						<span><Badge border large class="mr-2 inline text-base">歴史</Badge></span>
-						<span><Badge border large class="mr-2 inline text-base">日記</Badge></span>
+						<span><Badge border large color="dark">歴史</Badge></span>
+						<span><Badge border large color="dark">日記</Badge></span>
 					{/if}
 				</div>
+				{#if grandChildUnit}
+					<A outline size="xs" class="ml-2 mt-2" href={childUnit.getUrl(frame.datetime)}
+						><ZoomInOutline
+							ariaLabel={`${childUnit.getDatetimeLabel(frame.datetime)}にズームイン`}
+						/></A
+					>
+				{/if}
 			</TimelineItem>
 		{/each}
 	</Timeline>
 </div>
-
-<style>
-	.nav-date,
-	.nav-unit {
-		margin-top: 0.5rem;
-		margin-bottom: 3rem;
-		display: flex;
-		gap: 1rem;
-		justify-content: center;
-	}
-</style>

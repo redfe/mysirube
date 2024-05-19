@@ -16,7 +16,7 @@ export type TimelineUnit = {
 	label: string;
 	increment: (date: Date, inc: number) => Date;
 	startOf: (date: Date, tz?: string) => Date;
-	getUrl: (date: Date, tz?: string) => string;
+	getUrl: (date: Date, tz?: string) => string | undefined;
 	getDatetimeAttr: (date: Date, tz?: string) => string;
 
 	/**
