@@ -1,7 +1,7 @@
 <script>
 	import Link from '$lib/components/Link.svelte';
 	import { getChildUnit, getParentUnit, getUnit, isInvalidDate, Level } from '$lib/dateUtils';
-	import { A, Badge, Button, Heading, Timeline, TimelineItem, P, Indicator } from 'flowbite-svelte';
+	import { A, Badge, Heading, Timeline, TimelineItem, Indicator } from 'flowbite-svelte';
 	import {
 		ZoomInOutline,
 		ZoomOutOutline,
