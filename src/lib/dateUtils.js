@@ -68,8 +68,8 @@ export const by10000Year = {
 			`/timeline/${pathName(Level.By10000Year)}/${formatDate(date, undefined, tz)}`
 		),
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
-	getDatetimeLabel: (date, tz, lc) => addComma(formatDate(date, 'Gy年', tz, lc)),
-	getDatetimeLabelShort: (date, tz, lc) => addComma(formatDate(date, 'y年', tz, lc))
+	getDatetimeLabel: (date, tz, lc) => addComma(formatDate(date, 'Gy年代', tz, lc)),
+	getDatetimeLabelShort: (date, tz, lc) => addComma(formatDate(date, 'y年代', tz, lc))
 };
 
 /**
@@ -89,8 +89,8 @@ export const by1000Year = {
 			`/timeline/${pathName(Level.By1000Year)}/${formatDate(date, undefined, tz)}`
 		),
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
-	getDatetimeLabel: (date, tz, lc) => addComma(formatDate(date, 'Gy年', tz, lc)),
-	getDatetimeLabelShort: (date, tz, lc) => addComma(formatDate(date, 'y年', tz, lc))
+	getDatetimeLabel: (date, tz, lc) => addComma(formatDate(date, 'Gy年代', tz, lc)),
+	getDatetimeLabelShort: (date, tz, lc) => addComma(formatDate(date, 'y年代', tz, lc))
 };
 
 /**
@@ -110,8 +110,8 @@ export const by100Year = {
 			`/timeline/${pathName(Level.By100Year)}/${formatDate(date, undefined, tz)}`
 		),
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
-	getDatetimeLabel: (date, tz, lc) => addComma(formatDate(date, 'Gy年', tz, lc)),
-	getDatetimeLabelShort: (date, tz, lc) => addComma(formatDate(date, 'y年', tz, lc))
+	getDatetimeLabel: (date, tz, lc) => addComma(formatDate(date, 'Gy年代', tz, lc)),
+	getDatetimeLabelShort: (date, tz, lc) => addComma(formatDate(date, 'y年代', tz, lc))
 };
 
 /**
@@ -131,8 +131,8 @@ export const by10Year = {
 			`/timeline/${pathName(Level.By10Year)}/${formatDate(date, undefined, tz)}`
 		),
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
-	getDatetimeLabel: (date, tz, lc) => addComma(formatDate(date, 'Gy年', tz, lc)),
-	getDatetimeLabelShort: (date, tz, lc) => addComma(formatDate(date, 'y年', tz, lc))
+	getDatetimeLabel: (date, tz, lc) => addComma(formatDate(date, 'Gy年代', tz, lc)),
+	getDatetimeLabelShort: (date, tz, lc) => addComma(formatDate(date, 'y年代', tz, lc))
 };
 
 /**

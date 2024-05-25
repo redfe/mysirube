@@ -38,6 +38,8 @@
 	}
 
 	$: titleHelper = unitLevel < Level.ByYear ? `（${unit.label}）` : '';
+	$: titleHelperOfParent = parentUnit?.level < Level.ByYear ? `(${parentUnit?.label})` : '';
+	$: titleHelperOfChild = childUnit?.level < Level.ByYear ? `(${childUnit?.label})` : '';
 </script>
 
 <svelte:head>
@@ -56,25 +58,26 @@
 	<Link
 		disabled={previouseDateIsInvalid}
 		href={previouseDateIsInvalid ? '#' : unit.getUrl(previouseDate)}
-		title={unit.getDatetimeLabel(previouseDate)}><CaretUpOutline ariaLabel="前へ" /></Link
+		title={`${unit.getDatetimeLabel(previouseDate)}へ移動`}
+		><CaretUpOutline ariaLabel="前へ" /></Link
 	>
 	<Link
 		disabled={!parentUnit}
 		href={!parentUnit ? '#' : parentUnit?.getUrl(start)}
-		title={`${parentUnit?.getDatetimeLabel(start)}`}
+		title={`${parentUnit?.getDatetimeLabel(start)}${titleHelperOfParent}にズームアウト`}
 		><ZoomOutOutline ariaLabel={`ズームアウト`} /></Link
 	>
 	<Link
 		disabled={nextDateIsInvalid}
 		href={nextDateIsInvalid ? '#' : unit.getUrl(nextDate)}
-		title={unit.getDatetimeLabel(nextDate)}><CaretDownOutline ariaLabel="次へ" /></Link
+		title={`${unit.getDatetimeLabel(nextDate)}へ移動`}><CaretDownOutline ariaLabel="次へ" /></Link
 	>
 </nav>
 
 <div class="flex justify-center">
-	<Timeline class="w-full max-w-xl">
+	<Timeline class="w-full max-w-xl border-gray-400">
 		{#each timelineFrames as frame (`${String(unitLevel)}:${frame.datetime}`)}
-			<TimelineItem>
+			<TimelineItem classDiv="bg-gray-500">
 				<div class="flex flex-wrap items-center">
 					<time datetime={childUnit?.getDatetimeAttr(frame.datetime)} class="text-2xl font-bold">
 						{childUnit.getDatetimeLabel(frame.datetime)}
@@ -85,15 +88,17 @@
 				</div>
 				<div class={`mt-2 flex h-7 max-w-full gap-2 overflow-hidden`}>
 					{#if frame.count !== 0}
-						<span><Badge border large color="dark">歴史</Badge></span>
-						<span><Badge border large color="dark">日記</Badge></span>
+						<span><Badge border large color="dark">歴史, 日記, メモ</Badge></span>
 					{/if}
 				</div>
 				{#if grandChildUnit}
-					<A outline size="xs" class="ml-2 mt-2" href={childUnit.getUrl(frame.datetime)}
-						><ZoomInOutline
-							ariaLabel={`${childUnit.getDatetimeLabel(frame.datetime)}にズームイン`}
-						/></A
+					<A
+						outline
+						size="xs"
+						class="ml-2 mt-2"
+						href={childUnit.getUrl(frame.datetime)}
+						title={`${childUnit.getDatetimeLabel(frame.datetime)}${titleHelperOfChild}にズームイン`}
+						><ZoomInOutline ariaLabel={`ズームイン`} /></A
 					>
 				{/if}
 			</TimelineItem>
