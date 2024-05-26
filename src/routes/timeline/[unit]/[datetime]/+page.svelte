@@ -54,32 +54,31 @@
 	{#if unitLevel < Level.ByYear}<span class="text-lg font-normal">{titleHelper}</span>{/if}
 </Heading>
 
-<nav class="mb-10 mt-10 flex flex-col items-center gap-5">
-	<Link
-		disabled={previouseDateIsInvalid}
-		href={previouseDateIsInvalid ? '#' : unit.getUrl(previouseDate)}
-		title={`${unit.getDatetimeLabel(previouseDate)}へ移動`}
-		><CaretUpOutline ariaLabel="前へ" /></Link
-	>
-	<Link
-		disabled={!parentUnit}
-		href={!parentUnit ? '#' : parentUnit?.getUrl(start)}
-		title={`${parentUnit?.getDatetimeLabel(start)}${titleHelperOfParent}にズームアウト`}
-		><ZoomOutOutline ariaLabel={`ズームアウト`} /></Link
-	>
-	<Link
-		disabled={nextDateIsInvalid}
-		href={nextDateIsInvalid ? '#' : unit.getUrl(nextDate)}
-		title={`${unit.getDatetimeLabel(nextDate)}へ移動`}><CaretDownOutline ariaLabel="次へ" /></Link
-	>
-</nav>
+<div class="ml-14 mt-20 flex w-full lg:flex-row">
+	<nav class="fixed left-7 flex flex-col items-center gap-5">
+		<Link
+			disabled={previouseDateIsInvalid}
+			href={previouseDateIsInvalid ? '#' : unit.getUrl(previouseDate)}
+			title="{unit.getDatetimeLabel(previouseDate)}へ移動"><CaretUpOutline ariaLabel="前へ" /></Link
+		>
+		<Link
+			disabled={!parentUnit}
+			href={!parentUnit ? '#' : parentUnit?.getUrl(start)}
+			title="{parentUnit?.getDatetimeLabel(start)}{titleHelperOfParent}にズームアウト"
+			><ZoomOutOutline ariaLabel={`ズームアウト`} /></Link
+		>
+		<Link
+			disabled={nextDateIsInvalid}
+			href={nextDateIsInvalid ? '#' : unit.getUrl(nextDate)}
+			title="{unit.getDatetimeLabel(nextDate)}へ移動"><CaretDownOutline ariaLabel="次へ" /></Link
+		>
+	</nav>
 
-<div class="flex justify-center">
 	<Timeline class="w-full max-w-xl border-gray-400">
 		{#each timelineFrames as frame (`${String(unitLevel)}:${frame.datetime}`)}
 			<TimelineItem classDiv="bg-gray-500">
 				<div class="flex flex-wrap items-center">
-					<time datetime={childUnit?.getDatetimeAttr(frame.datetime)} class="text-2xl font-bold">
+					<time datetime={childUnit?.getDatetimeAttr(frame.datetime)} class="text-base font-bold">
 						{childUnit.getDatetimeLabel(frame.datetime)}
 					</time>
 					{#if frame.count !== 0}<Badge color="red" class="ml-2"
@@ -97,7 +96,7 @@
 						size="xs"
 						class="ml-2 mt-2"
 						href={childUnit.getUrl(frame.datetime)}
-						title={`${childUnit.getDatetimeLabel(frame.datetime)}${titleHelperOfChild}にズームイン`}
+						title="{childUnit.getDatetimeLabel(frame.datetime)}{titleHelperOfChild}にズームイン"
 						><ZoomInOutline ariaLabel={`ズームイン`} /></A
 					>
 				{/if}

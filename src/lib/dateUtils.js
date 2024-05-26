@@ -68,7 +68,8 @@ export const by10000Year = {
 			`/timeline/${pathName(Level.By10000Year)}/${formatDate(date, undefined, tz)}`
 		),
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
-	getDatetimeLabel: (date, tz, lc) => addComma(formatDate(date, 'Gy年代', tz, lc)),
+	getDatetimeLabel: (date, tz, lc) =>
+		addComma(formatDate(date, 'Gy年代', tz, lc).replace(/西暦\s*/, '')),
 	getDatetimeLabelShort: (date, tz, lc) => addComma(formatDate(date, 'y年代', tz, lc))
 };
 
@@ -89,7 +90,8 @@ export const by1000Year = {
 			`/timeline/${pathName(Level.By1000Year)}/${formatDate(date, undefined, tz)}`
 		),
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
-	getDatetimeLabel: (date, tz, lc) => addComma(formatDate(date, 'Gy年代', tz, lc)),
+	getDatetimeLabel: (date, tz, lc) =>
+		addComma(formatDate(date, 'Gy年代', tz, lc).replace(/西暦\s*/, '')),
 	getDatetimeLabelShort: (date, tz, lc) => addComma(formatDate(date, 'y年代', tz, lc))
 };
 
@@ -110,7 +112,8 @@ export const by100Year = {
 			`/timeline/${pathName(Level.By100Year)}/${formatDate(date, undefined, tz)}`
 		),
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
-	getDatetimeLabel: (date, tz, lc) => addComma(formatDate(date, 'Gy年代', tz, lc)),
+	getDatetimeLabel: (date, tz, lc) =>
+		addComma(formatDate(date, 'Gy年代', tz, lc).replace(/西暦\s*/, '')),
 	getDatetimeLabelShort: (date, tz, lc) => addComma(formatDate(date, 'y年代', tz, lc))
 };
 
@@ -131,7 +134,8 @@ export const by10Year = {
 			`/timeline/${pathName(Level.By10Year)}/${formatDate(date, undefined, tz)}`
 		),
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
-	getDatetimeLabel: (date, tz, lc) => addComma(formatDate(date, 'Gy年代', tz, lc)),
+	getDatetimeLabel: (date, tz, lc) =>
+		addComma(formatDate(date, 'Gy年代', tz, lc).replace(/西暦\s*/, '')),
 	getDatetimeLabelShort: (date, tz, lc) => addComma(formatDate(date, 'y年代', tz, lc))
 };
 
@@ -146,7 +150,8 @@ export const byYear = {
 	getUrl: (date, tz) =>
 		getIfValidDate(date, `/timeline/${pathName(Level.ByYear)}/${formatDate(date, undefined, tz)}`),
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y', tz),
-	getDatetimeLabel: (date, tz, lc) => addComma(formatDate(date, 'Gy年', tz, lc)),
+	getDatetimeLabel: (date, tz, lc) =>
+		addComma(formatDate(date, 'Gy年', tz, lc).replace(/西暦\s*/, '')),
 	getDatetimeLabelShort: (date, tz, lc) => addComma(formatDate(date, 'y年', tz, lc))
 };
 
@@ -161,7 +166,8 @@ export const byMonth = {
 	getUrl: (date, tz) =>
 		getIfValidDate(date, `/timeline/${pathName(Level.ByMonth)}/${formatDate(date, undefined, tz)}`),
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y-MM', tz),
-	getDatetimeLabel: (date, tz, lc) => addComma(formatDate(date, 'Gy年M月', tz, lc)),
+	getDatetimeLabel: (date, tz, lc) =>
+		addComma(formatDate(date, 'Gy年MM月', tz, lc).replace(/西暦\s*/, '')),
 	getDatetimeLabelShort: (date, tz, lc) => addComma(formatDate(date, 'M月', tz, lc))
 };
 
@@ -176,7 +182,8 @@ export const byDay = {
 	getUrl: (date, tz) =>
 		getIfValidDate(date, `/timeline/${pathName(Level.ByDay)}/${formatDate(date, undefined, tz)}`),
 	getDatetimeAttr: (date, tz) => formatDate(date, 'y-MM-dd', tz),
-	getDatetimeLabel: (date, tz, lc) => addComma(formatDate(date, 'Gy年M月d日', tz, lc)),
+	getDatetimeLabel: (date, tz, lc) =>
+		addComma(formatDate(date, 'Gy年MM月dd日（ccc）', tz, lc).replace(/西暦\s*/, '')),
 	getDatetimeLabelShort: (date, tz, lc) => addComma(formatDate(date, 'd日', tz, lc))
 };
 
@@ -191,7 +198,8 @@ export const byHour = {
 	getUrl: (date, tz) =>
 		getIfValidDate(date, `/timeline/${pathName(Level.ByHour)}/${formatDate(date, undefined, tz)}`),
 	getDatetimeAttr: (date, tz) => formatDate(date, "y-MM-dd'T'HH", tz),
-	getDatetimeLabel: (date, tz, lc) => addComma(formatDate(date, 'Gy年M月d日 H時', tz, lc)),
+	getDatetimeLabel: (date, tz, lc) =>
+		addComma(formatDate(date, 'Gy年MM月dd日（ccc） HH時', tz, lc).replace(/西暦\s*/, '')),
 	getDatetimeLabelShort: (date, tz, lc) => addComma(formatDate(date, 'H時', tz, lc))
 };
 
@@ -209,7 +217,8 @@ export const byMinute = {
 			`/timeline/${pathName(Level.ByMinute)}/${formatDate(date, undefined, tz)}`
 		),
 	getDatetimeAttr: (date, tz) => formatDate(date, "y-MM-dd'T'HH:mm", tz),
-	getDatetimeLabel: (date, tz, lc) => addComma(formatDate(date, 'Gy年M月d日 H時m分', tz, lc)),
+	getDatetimeLabel: (date, tz, lc) =>
+		addComma(formatDate(date, 'Gy年MM月dd日（ccc） HH時mm分', tz, lc).replace(/西暦\s*/, '')),
 	getDatetimeLabelShort: (date, tz, lc) => addComma(formatDate(date, 'm分', tz, lc))
 };
 
@@ -227,7 +236,8 @@ export const bySecond = {
 			`/timeline/${pathName(Level.BySecond)}/${formatDate(date, "y-MM-dd'T'HH:mm:ss", tz)}`
 		),
 	getDatetimeAttr: (date, tz) => formatDate(date, "y-MM-dd'T'HH:mm:ss", tz),
-	getDatetimeLabel: (date, tz, lc) => addComma(formatDate(date, 'Gy年M月d日 H時m分s秒', tz, lc)),
+	getDatetimeLabel: (date, tz, lc) =>
+		addComma(formatDate(date, 'Gy年MM月dd日（ccc） HH時mm分ss秒', tz, lc).replace(/西暦\s*/, '')),
 	getDatetimeLabelShort: (date, tz, lc) => addComma(formatDate(date, 's秒', tz, lc))
 };
 
