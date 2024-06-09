@@ -1,3 +1,4 @@
+import { Level } from '$lib/dateUtils';
 import { exec } from 'child_process';
 import { randomUUID } from 'crypto';
 import { readFileSync, writeFileSync } from 'fs';
@@ -16,7 +17,7 @@ function getDatas() {
 	if (!datas || datas.length === 0) {
 		try {
 			datas = JSON.parse(readFileSync(DUMMY_DATA_FILE, 'utf-8'));
-			datas = datas.map((data) => ({ ...data, datetime: new Date(data.datetime) }));
+			datas = datas.map((data) => ({ ...data, datetime: new Date(data.startDate) }));
 		} catch (error) {
 			datas = createDummyDatas();
 			// 書き込み
@@ -36,6 +37,23 @@ function getDatas() {
 function getRandomNumber(min, max) {
 	return Math.floor(Math.random() * (max + 1 - min)) + min;
 }
+
+const inputUnitLevels = [
+	Level.ByYear,
+	Level.ByMonth,
+	Level.ByDay,
+	Level.ByHour,
+	Level.ByMinute,
+	Level.BySecond
+];
+
+/**
+ * @returns number
+ */
+function getRandomUnitLevel() {
+	return inputUnitLevels[Math.floor(Math.random() * inputUnitLevels.length)];
+}
+
 /**
  * @returns {Date} date
  */
@@ -116,7 +134,8 @@ function createDummyDatas() {
 
 		const data = {
 			id: id,
-			datetime: getRandomDate(),
+			unitLevel: getRandomUnitLevel(),
+			startDate: getRandomDate(),
 			content: getRandomText(20, 100),
 			tags: getDummyTags()
 		};
@@ -152,11 +171,11 @@ function find(from, to, offset, count) {
 	}
 	const results = getDatas()
 		.filter((data) => {
-			const date = new Date(data.datetime);
+			const date = new Date(data.startDate);
 			return from <= date && date < to;
 		})
 		.sort((a, b) => {
-			return a.datetime > b.datetime ? 1 : -1;
+			return a.startDate > b.startDate ? 1 : -1;
 		});
 	if (!count) {
 		return results.slice(offset);

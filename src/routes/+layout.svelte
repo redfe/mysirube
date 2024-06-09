@@ -9,7 +9,7 @@
 		Navbar
 	} from 'flowbite-svelte';
 	import '../app.css';
-	import './style.css';
+	import '../markdown.css';
 </script>
 
 <div class="root">

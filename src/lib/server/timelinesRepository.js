@@ -1,7 +1,6 @@
 import database from './database.js';
 
 /**
- * @typedef {import('$lib/types.d.ts').SaveData} SaveData
  * @typedef {import('$lib/types.d.ts').Data} Data
  * @typedef {import('$lib/types.d.ts').TimelineUnit} DateOptions
  * @typedef {import('$lib/types.d.ts').Summary} Summary
@@ -27,7 +26,7 @@ export function find(from, to) {
 
 /**
  * @param {Date[]} datetimes
- * @returns {{datetime:Date, count:number}[]}
+ * @returns {{datetime:Date, count:number, tags:string[]}[]}
  */
 export function counts(datetimes) {
 	if (!datetimes || datetimes.length < 2) {
@@ -38,10 +37,13 @@ export function counts(datetimes) {
 	for (let i = 0; i < datetimes.length; i++) {
 		const from = datetimes[i];
 		const to = datetimes[i + 1];
-		const count = datas.filter((data) => from <= data.datetime && data.datetime < to).length;
+		const filtered = datas.filter((data) => from <= data.startDate && data.startDate < to);
+		const count = filtered.length;
+		const tags = [...new Set(filtered.flatMap((v) => v.tags))];
 		results.push({
 			datetime: from,
-			count
+			count,
+			tags
 		});
 	}
 	return results;
@@ -56,11 +58,11 @@ export function counts(datetimes) {
  */
 export function summaries(from, to, offset, count) {
 	const list = database.find(from, to, offset, count);
-	return list.map((data) => ({ id: data.id, datetime: data.datetime, text: data.content }));
+	return list.map((data) => ({ id: data.id, datetime: data.startDate, text: data.content }));
 }
 
 /**
- * @param {SaveData} data
+ * @param {Data} data
  */
 export function save(data) {
 	if (!data.id) {

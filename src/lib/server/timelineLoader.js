@@ -5,12 +5,12 @@ import { getChildUnit } from '../dateUtils';
 
 /**
  * @param {{baseDatetime:Date, unit:TimelineUnit}} args
- * @returns {{unitLevel:number, start:Date, timelineFrames:{datetime:Date, count:number}[]}}
+ * @returns {{unitLevel:number, start:Date, timelineFrames:{datetime:Date, count:number, tags:string[]}[]}}
  */
 export const loadTimeline = ({ baseDatetime, unit }) => {
 	const childUnit = getChildUnit(unit);
 	if (!childUnit) {
-		throw new Error('No child unit');
+		throw new Error(`No child unit of :${JSON.stringify(unit)}`);
 	}
 	const start = unit.startOf(baseDatetime);
 	const end = childUnit.increment(unit.increment(start, 1), -1);

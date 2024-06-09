@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+	.text-error {
+		@apply text-red-500;
+	}
+	.bg-error {
+		@apply bg-red-50;
+	}
+	.border-error {
+		@apply border-red-500;
+	}
+	body [disabled] {
+		@apply bg-gray-300;
+	}
+}

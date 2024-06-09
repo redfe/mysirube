@@ -1,0 +1,93 @@
+.markdown-preview {
+	& h1,
+	& h2,
+	& h3,
+	& h4,
+	& h5,
+	& h6 {
+		border-bottom: solid 1px silver;
+		margin: 1rem 0;
+	}
+
+	& h1 {
+		font-size: 3rem;
+	}
+
+	& h2 {
+		font-size: 2.5rem;
+	}
+
+	& h3 {
+		font-size: 2rem;
+	}
+
+	& p,
+	& ul,
+	& ol {
+		margin-bottom: 1.2em;
+	}
+
+	& a {
+		color: #0645ad;
+		text-decoration: none;
+	}
+
+	& a:hover {
+		text-decoration: underline;
+	}
+
+	& code {
+		font-family: Monaco, monospace;
+		background-color: #f9f9f9;
+		border: 1px solid #ccc;
+		padding: 0.1em 0.2em;
+		border-radius: 3px;
+	}
+
+	& pre {
+		background-color: #f9f9f9;
+		border: 1px solid #ccc;
+		padding: 1em;
+		border-radius: 3px;
+	}
+
+	& pre code {
+		background-color: transparent;
+		border: none;
+	}
+
+	& ul,
+	& ol {
+		padding-left: 1.5em;
+	}
+
+	& ul li {
+		list-style-type: disc;
+	}
+
+	& ol li {
+		list-style-type: decimal;
+	}
+
+	& ul li,
+	& ol li {
+		padding-left: 1em;
+		text-indent: -1em;
+	}
+
+	& table {
+		border-collapse: collapse;
+	}
+
+	& th,
+	& td {
+		border: 1px solid #ddd;
+		padding: 8px;
+		text-align: left;
+	}
+
+	& th {
+		background-color: #f2f2f2;
+		color: black;
+	}
+}

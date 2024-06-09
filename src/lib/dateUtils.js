@@ -2,7 +2,20 @@
 import { DateTime } from 'luxon';
 
 /**
- * @enum {number}
+ * @typedef {Object} Level
+ * @property {0} By10000Year
+ * @property {1} By1000Year
+ * @property {2} By100Year
+ * @property {3} By10Year
+ * @property {4} ByYear
+ * @property {5} ByMonth
+ * @property {6} ByDay
+ * @property {7} ByHour
+ * @property {8} ByMinute
+ * @property {9} BySecond
+ */
+/**
+ * @type {Level}
  */
 export const Level = {
 	By10000Year: 0,
@@ -445,8 +458,9 @@ const UNIT_MAP = {
 };
 
 /**
+ * @template T
  * @param {Date} date
- * @param {any} value
+ * @param {T} value
  * @returns 正常なdateならvalue。そうでなければ undefined。
  */
 const getIfValidDate = (date, value) => {
@@ -454,4 +468,82 @@ const getIfValidDate = (date, value) => {
 		return undefined;
 	}
 	return value;
+};
+
+/**
+ * @param {{ year?:number, month?:number, day?:number, hour?:number, minute?:number, second?:number, tz?:string}} args
+ * @returns
+ */
+export const toJSDate = ({ year, month, day, hour, minute, second, tz = TZ }) => {
+	return DateTime.fromObject(
+		{
+			year,
+			month,
+			day,
+			hour,
+			minute,
+			second
+		},
+		{ zone: tz }
+	).toJSDate();
+};
+
+/**
+ * @param {number|string=} value
+ */
+export const isEmpty = (value) => value == null || value === '';
+
+/**
+ * @param {number|string=} value
+ * @returns {number=}
+ */
+export const toNumber = (value) => {
+	const result = Number(value);
+	return isNaN(result) ? undefined : result;
+};
+
+/**
+ * @typedef {Level[keyof Level]} LevelValue
+ * @typedef {number|string=} InputValue
+ */
+
+/**
+ *
+ * @param {{unitLevel:LevelValue, year:InputValue, month:InputValue, day:InputValue, hour:InputValue, minute:InputValue, second:InputValue}} args
+ * @returns {{isValid: boolean, date: Date}}
+ */
+export const validate = ({ unitLevel, year, month, day, hour, minute, second }) => {
+	const date = getUnit(unitLevel).startOf(
+		toJSDate({
+			year: toNumber(year),
+			month: toNumber(month) ?? 1,
+			day: toNumber(day) ?? 1,
+			hour: toNumber(hour) ?? 0,
+			minute: toNumber(minute) ?? 0,
+			second: toNumber(second) ?? 0
+		})
+	);
+	if (isInvalidDate(date)) {
+		return { isValid: false, date };
+	}
+	if (Level.ByYear <= unitLevel && (isEmpty(year) || date.getFullYear() != year)) {
+		return { isValid: false, date };
+	}
+	if (Level.ByMonth <= unitLevel && (isEmpty(month) || date.getMonth() + 1 != month)) {
+		console.log('month', unitLevel, month, date.getMonth());
+		return { isValid: false, date };
+	}
+	if (Level.ByDay <= unitLevel && (isEmpty(day) || date.getDate() != day)) {
+		return { isValid: false, date };
+	}
+	if (Level.ByHour <= unitLevel && (isEmpty(hour) || date.getHours() != hour)) {
+		return { isValid: false, date };
+	}
+	if (Level.ByMinute <= unitLevel && (isEmpty(minute) || date.getMinutes() != minute)) {
+		return { isValid: false, date };
+	}
+	if (Level.BySecond <= unitLevel && (isEmpty(second) || date.getSeconds() != second)) {
+		return { isValid: false, date };
+	}
+	return { isValid: true, date };
 };
