@@ -75,6 +75,46 @@
 		itemElement!.style.left = left + 'px';
 	}
 
+	// ツールチップ表示アクション
+	// 参考：https://svelte.dev/tutorial/svelte/adding-parameters-to-actions
+	function tooltip(node: HTMLElement) {
+		$effect(() => {
+			const t = document.createElement('div');
+			t.classList.add('tooltip');
+			t.style.position = 'absolute';
+			t.style.visibility = 'hidden';
+			t.textContent = node.dataset.title ?? '';
+			document.body.append(t);
+
+			const mouseover = (e: Event) => {
+				e.preventDefault();
+				t.style.visibility = 'visible';
+			};
+
+			const mousemove = (e: Event) => {
+				e.preventDefault();
+				const { clientX, clientY } = e as MouseEvent;
+				t.style.top = `${clientY}px`;
+				t.style.left = `${clientX + 10}px`;
+			};
+
+			const mouseleave = (e: Event) => {
+				e.preventDefault();
+				t.style.visibility = 'hidden';
+			};
+
+			node.addEventListener('mouseover', mouseover);
+			node.addEventListener('mousemove', mousemove);
+			node.addEventListener('mouseleave', mouseleave);
+
+			return () => {
+				node.removeEventListener('mouseover', mouseover);
+				node.removeEventListener('mousemove', mousemove);
+				node.removeEventListener('mouseleave', mouseleave);
+			};
+		});
+	}
+
 	$effect(() => {
 		display(
 			unit,
@@ -83,23 +123,7 @@
 	});
 
 	let first: HTMLElement;
-	let scaleRatio = $state(100);
 </script>
-
-<div id="container" style="transform:scale({scaleRatio / 100});">
-	<ul bind:this={first}>
-		{#each periods as p, i (p)}
-			<li id="li-{p}" style="height:{unitHeight}px">
-				<span>{new Intl.NumberFormat().format(p)}年</span>
-			</li>
-		{/each}
-	</ul>
-	{#each items as item (item.id)}
-		<div title={item.title} id="item-{item.id}" data-title={item.title} class="bar">
-			<span class="label">{item.title}</span>
-		</div>
-	{/each}
-</div>
 
 <header>
 	<div id="unit">
@@ -120,53 +144,39 @@
 		>
 		<span>{new Intl.NumberFormat().format(unit)}年</span>
 	</div>
-	<div id="scale">
-		<span>ズーム:</span>
-		<button
-			title="縮小"
-			onclick={() => {
-				scaleRatio -= 5;
-			}}>-</button
-		>
-		<button
-			title="拡大"
-			onclick={() => {
-				scaleRatio += 5;
-			}}>+</button
-		>
-		<span>{scaleRatio}%</span>
-		<button
-			title="リセット"
-			onclick={() => {
-				scaleRatio = 100;
-			}}>リセット</button
-		>
-	</div>
 </header>
 
+<div id="container">
+	<ul bind:this={first}>
+		{#each periods as p, i (p)}
+			<li id="li-{p}" style="height:{unitHeight}px">
+				<span>{new Intl.NumberFormat().format(p)}年</span>
+			</li>
+		{/each}
+	</ul>
+	{#each items as item (item.id)}
+		<div class="bar" id="item-{item.id}" data-title={item.title} use:tooltip></div>
+	{/each}
+</div>
+
 <style>
-	header {
-		top: 0;
-		left: 0;
+	:global body {
+		padding: 0;
 		margin: 0;
+		overflow: hidden;
+	}
+	header {
 		width: 100%;
-		padding: 1rem;
-		position: fixed;
-		background-color: white;
-		box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
-		display: flex;
-		gap: 2rem;
+		padding: 0.75rem;
+		box-sizing: border-box;
+		background-color: #acf;
 	}
 	#container {
-		margin-top: 4rem;
 		position: relative;
-		transform-origin: top left;
-		transition: transform 0.5s;
-	}
-	#container:before {
-		content: '';
-		display: block;
-		padding-left: 100%; /* 1:1 */
+		overflow: scroll;
+		height: calc(100lvh - 3rem);
+		width: 100lvw;
+		box-sizing: border-box;
 	}
 	ul {
 		list-style: none;
@@ -195,9 +205,9 @@
 			top 0.5s,
 			height 0.5s;
 	}
-	.bar .label {
-		background-color: #ff0;
-		color: black;
-		font-size: 0.75rem;
+	:global(.tooltip) {
+		background-color: #000a;
+		color: #ddd;
+		padding: 0.25rem;
 	}
 </style>
