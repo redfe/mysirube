@@ -3,8 +3,12 @@ import type { EditData } from '../routes/edit/data.svelte';
 export const dbName = 'MySerube';
 export const storeName = 'datas';
 
+let database: Promise<IDBDatabase> | null = null;
+
 function initDB(): Promise<IDBDatabase> {
-	return new Promise((resolve, reject) => {
+	if (database) return database;
+
+	database = new Promise((resolve, reject) => {
 		const request = indexedDB.open(dbName, 1);
 
 		request.onupgradeneeded = () => {
@@ -17,10 +21,11 @@ function initDB(): Promise<IDBDatabase> {
 		request.onsuccess = () => resolve(request.result);
 		request.onerror = () => reject(request.error);
 	});
+	return database;
 }
 
 export async function save(datas: EditData[]) {
-	const db = await initDB();
+	const db = await (database ?? initDB());
 	return new Promise((resolve, reject) => {
 		try {
 			// トランザクションの作成
@@ -55,7 +60,7 @@ export async function save(datas: EditData[]) {
 }
 
 export async function getAllData(): Promise<{ id: string }[]> {
-	const db = await initDB();
+	const db = await (database ?? initDB());
 	return new Promise((resolve, reject) => {
 		const transaction = db.transaction(storeName, 'readonly');
 		const store = transaction.objectStore(storeName);
