@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { EditData } from './data.svelte';
-	import { getAllData, initDB, save as saveData } from '$lib/repository';
+	import { getAllData, save as saveData } from '$lib/repository';
 
 	let newData = $state(new EditData());
 	let datas: EditData[] = $state([]);
 	let startElm: HTMLElement;
-	let db: IDBDatabase;
 
 	function add() {
 		if (!newData.isValid()) {
@@ -50,7 +49,7 @@
 			alert('エラーを修正して下さい！');
 			return;
 		}
-		await saveData(db!, datas);
+		await saveData(datas);
 		alert('保存しました！');
 	}
 
@@ -59,21 +58,18 @@
 	});
 
 	$effect(() => {
-		initDB()
-			.then((r) => (db = r))
-			.then(() => getAllData(db))
-			.then(
-				(r) =>
-					(datas = r.map(
-						(d: any) =>
-							new EditData({
-								start: d.start,
-								end: d.end,
-								title: d.title,
-								color: d.color
-							})
-					))
-			);
+		getAllData().then(
+			(r) =>
+				(datas = r.map(
+					(d: any) =>
+						new EditData({
+							start: d.start,
+							end: d.end,
+							title: d.title,
+							color: d.color
+						})
+				))
+		);
 	});
 </script>
 
