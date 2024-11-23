@@ -49,7 +49,15 @@
 			alert('エラーを修正して下さい！');
 			return;
 		}
-		await saveData(datas);
+		await saveData(
+			datas.map((data) => ({
+				id: data.id,
+				start: parseInt(data.start!),
+				end: !!data.end ? parseInt(data.end) : undefined,
+				title: data.title!,
+				color: data.color
+			}))
+		);
 		alert('保存しました！');
 	}
 

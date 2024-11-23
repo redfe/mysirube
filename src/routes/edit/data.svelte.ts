@@ -1,16 +1,28 @@
 export class EditData {
+	#id: string;
 	#start?: string = $state();
 	#end?: string = $state();
 	#title?: string = $state();
 	#color?: string = $state();
 	#errors: { start?: string; end?: string; title?: string; color?: string } = $state({});
 
-	constructor(args?: { start?: string; end?: string; title?: string; color?: string }) {
+	constructor(args?: {
+		id?: string;
+		start?: string;
+		end?: string;
+		title?: string;
+		color?: string;
+	}) {
+		this.#id = args?.id ?? crypto.randomUUID();
 		this.#start = args?.start;
 		this.#end = args?.end;
 		this.#title = args?.title;
 		this.#color = args?.color;
 		this.validate();
+	}
+
+	get id() {
+		return this.#id;
 	}
 
 	set start(start: string | undefined) {
