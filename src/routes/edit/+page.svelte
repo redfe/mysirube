@@ -41,7 +41,15 @@
 		)[0];
 	}
 
+	function hasErrorDatas() {
+		return datas.filter((data) => hasError(data.errors)).length > 0;
+	}
+
 	async function save() {
+		if (hasErrorDatas()) {
+			alert('エラーを修正して下さい！');
+			return;
+		}
 		await saveData(db!, datas);
 		alert('保存しました！');
 	}
@@ -69,7 +77,7 @@
 	});
 </script>
 
-<button onclick={save}>保存</button>
+<button onclick={save} disabled={hasErrorDatas()}>保存</button>
 
 <table>
 	<thead>
