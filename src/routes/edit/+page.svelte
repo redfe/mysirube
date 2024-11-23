@@ -1,38 +1,75 @@
 <script lang="ts">
-	type Data = {
-		start: string;
-		end?: string;
-		title: string;
-		color?: string;
-	};
+	import { EditData } from './data.svelte';
+	import { getAllData, initDB, save as saveData } from '$lib/repository';
 
-	let start: string = $state('');
-	let end: string = $state('');
-	let title: string = $state('');
-	let color: string = $state('');
-	let datas: Data[] = $state([]);
+	let newData = $state(new EditData());
+	let datas: EditData[] = $state([]);
 	let startElm: HTMLElement;
+	let db: IDBDatabase;
 
 	function add() {
-		datas.push({ start, end, title, color });
-		start = '';
-		end = '';
-		title = '';
+		if (!newData.isValid()) {
+			return;
+		}
+		let temp = new EditData();
+		temp.start = newData.start;
+		temp.end = newData.end;
+		temp.title = newData.title;
+		temp.color = newData.color;
+		datas.push(temp);
+		newData.start = '';
+		newData.end = '';
+		newData.title = '';
 		startElm?.focus();
 	}
 
 	function sort() {
-		datas.sort((a, b) => parseInt(a.start) - parseInt(b.start));
+		datas.sort((a, b) => (a.start ? parseInt(a.start) : 0) - (b.start ? parseInt(b.start) : 0));
 	}
 
 	function remove(index: number) {
 		datas.splice(index, 1);
 	}
 
+	function hasError(errors: Record<string, string>) {
+		return Object.keys(errors).length > 0;
+	}
+
+	function oneError(data: EditData) {
+		return [data.errors.start, data.errors.end, data.errors.title, data.errors.color].filter(
+			(v) => !!v
+		)[0];
+	}
+
+	async function save() {
+		await saveData(db!, datas);
+		alert('保存しました！');
+	}
+
 	$effect(() => {
 		if (startElm) startElm.focus();
 	});
+
+	$effect(() => {
+		initDB()
+			.then((r) => (db = r))
+			.then(() => getAllData(db))
+			.then(
+				(r) =>
+					(datas = r.map(
+						(d: any) =>
+							new EditData({
+								start: d.start,
+								end: d.end,
+								title: d.title,
+								color: d.color
+							})
+					))
+			);
+	});
 </script>
+
+<button onclick={save}>保存</button>
 
 <table>
 	<thead>
@@ -41,27 +78,63 @@
 			<th>終了年</th>
 			<th>タイトル</th>
 			<th>色</th>
-			<th></th>
+			<th>エラー</th>
+			<th><button onclick={sort}>ソート</button></th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<td bind:textContent={start} contenteditable="true" bind:this={startElm}></td>
-			<td bind:textContent={end} contenteditable="true"></td>
-			<td bind:textContent={title} contenteditable="true"></td>
-			<td bind:textContent={color} contenteditable="true"></td>
-			<td style="background-color:{color}"
-				><button onclick={add}>追加</button><button onclick={sort}>ソート</button></td
-			>
+			<td
+				data-errormsg={newData.errors.start}
+				bind:textContent={newData.start}
+				contenteditable="true"
+				bind:this={startElm}
+			></td>
+			<td data-errormsg={newData.errors.end} bind:textContent={newData.end} contenteditable="true"
+			></td>
+			<td
+				data-errormsg={newData.errors.title}
+				bind:textContent={newData.title}
+				contenteditable="true"
+			></td>
+			<td
+				data-errormsg={newData.errors.color}
+				bind:textContent={newData.color}
+				contenteditable="true"
+				style="background-color:{newData.color}"
+			></td>
+			<td>
+				{#if hasError(newData.errors)}
+					<pre>{oneError(newData)}</pre>
+				{/if}
+			</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td colspan="6">
+				<button onclick={add} disabled={hasError(newData.errors)}>追加</button>
+			</td>
 		</tr>
 		{#each datas as data, i (i)}
 			<tr>
-				<td bind:textContent={data.start} contenteditable="true"></td>
-				<td bind:textContent={data.end} contenteditable="true"></td>
-				<td bind:textContent={data.title} contenteditable="true"></td>
-				<td bind:textContent={data.color} contenteditable="true"></td>
-				<td style="background-color:{data.color}"><button onclick={() => remove(i)}>×</button> </td>
-			</tr>
+				<td data-errormsg={data.errors.start} bind:textContent={data.start} contenteditable="true"
+				></td>
+				<td data-errormsg={data.errors.end} bind:textContent={data.end} contenteditable="true"></td>
+				<td data-errormsg={data.errors.title} bind:textContent={data.title} contenteditable="true"
+				></td>
+				<td
+					data-errormsg={data.errors.color}
+					bind:textContent={data.color}
+					contenteditable="true"
+					style="background-color:{data.color}"
+				></td>
+				<td>
+					{#if hasError(data.errors)}
+						<pre>{oneError(data)}</pre>
+					{/if}
+				</td>
+				<td><button onclick={() => remove(i)}>×</button> </td></tr
+			>
 		{/each}
 	</tbody>
 </table>
@@ -70,33 +143,70 @@
 	table,
 	th,
 	td {
-		border-collapse: collapse;
+		border-collapse: separate;
 		border: solid 1px;
+	}
+	th,
+	td {
 		padding: 0.5rem;
 	}
-	thead th:nth-child(1) {
-		width: 7rem;
-	}
-	thead th:nth-child(2) {
-		width: 7rem;
-	}
-	thead th:nth-child(3) {
-		width: 14rem;
-	}
-	thead th:nth-child(4) {
-		width: 4rem;
-	}
-	thead th:nth-child(4) {
-		width: 4rem;
-	}
-	thead th:nth-child(5) {
-		width: 7rem;
-	}
-	tbody tr:nth-child(1) {
-		td:nth-child(5) {
-			display: flex;
-			gap: 0.5rem;
-			border: none;
+	thead {
+		th:nth-child(1) {
+			width: 7rem;
 		}
+		th:nth-child(2) {
+			width: 7rem;
+		}
+		th:nth-child(3) {
+			width: 14rem;
+		}
+		th:nth-child(4) {
+			width: 4rem;
+		}
+		th:nth-child(4) {
+			width: 4rem;
+		}
+		th:nth-child(5) {
+			width: 18rem;
+		}
+		th:nth-child(6) {
+			width: 5rem;
+		}
+	}
+	tbody {
+		tr:nth-child(2) {
+			td {
+				text-align: center;
+				button {
+					font-size: 2rem;
+					text-align: justify;
+					text-align-last: justify;
+					padding-left: 2.5rem;
+					padding-right: 2.5rem;
+					width: 10rem;
+				}
+			}
+		}
+		tr:nth-child(n + 2) {
+			td:nth-child(5) {
+				font-weight: bold;
+				color: red;
+				border-color: black;
+				pre {
+					margin: 0;
+				}
+			}
+		}
+		td:nth-child(1),
+		td:nth-child(2) {
+			text-align: right;
+		}
+		pre {
+			color: red;
+			margin: 0;
+		}
+	}
+	td[data-errormsg] {
+		background-color: pink;
 	}
 </style>
