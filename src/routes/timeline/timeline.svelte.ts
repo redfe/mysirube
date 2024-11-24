@@ -69,10 +69,11 @@ export function createLanes(unit: number, items: Item[]) {
 
 // ツールチップ表示アクション
 // 参考：https://svelte.dev/tutorial/svelte/adding-parameters-to-actions
-export function tooltip(node: HTMLElement) {
+export function tooltip(node: HTMLElement, style: Partial<CSSStyleDeclaration> = {}) {
 	$effect(() => {
 		const t = document.createElement('div');
 		t.classList.add('tooltip');
+		Object.assign(t.style, style);
 		t.style.position = 'absolute';
 		t.style.visibility = 'hidden';
 		t.textContent = `${formatYear(parseInt(node.dataset.start!))}${node.dataset.start === node.dataset.end ? '' : '〜' + formatYear(parseInt(node.dataset.end!))} ${node.dataset.title}`;
@@ -100,6 +101,7 @@ export function tooltip(node: HTMLElement) {
 		node.addEventListener('mouseleave', mouseleave);
 
 		return () => {
+			t.remove();
 			node.removeEventListener('mouseover', mouseover);
 			node.removeEventListener('mousemove', mousemove);
 			node.removeEventListener('mouseleave', mouseleave);

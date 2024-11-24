@@ -9,7 +9,6 @@
 	} from './timeline.svelte';
 	import type { Item } from './timeline.svelte';
 	import { getAllData } from '$lib/repository';
-	import { generate } from './dummyDataGenerator';
 
 	const units = [10000, 5000, 2000, 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];
 
@@ -72,6 +71,7 @@
 			}))
 			.sort((a, b) => a.start - b.start);
 
+		// for test
 		//items = generate(-1600, 1900, 1000).sort((a, b) => a.start - b.start);
 
 		// 20行で収まりそうな初期表示単位の基準値
@@ -105,9 +105,8 @@
 		<span>{formatYear(unit)}</span>
 	</div>
 </header>
-
 <div
-	id="container"
+	class="timelineContainer"
 	style:height={`calc(100lvh - ${(header?.offsetTop ?? 0) + (header?.offsetHeight ?? 0)}px)`}
 >
 	<ul bind:this={first}>
@@ -125,24 +124,32 @@
 			data-end={item.end}
 			data-title={item.title}
 			style:background-color={item.color ? item.color : undefined}
-			use:tooltip
+			use:tooltip={{
+				backgroundColor: '#000a',
+				color: '#ddd',
+				padding: '0.25rem'
+			}}
 		></div>
 	{/each}
 </div>
 
 <style>
-	:global body {
+	:global(body:has(.timelineContainer)) {
 		overflow: hidden;
+		margin: 0;
+		padding: 0;
+		:global(main) {
+			padding: 0;
+		}
 	}
 	header {
 		width: 100%;
-		padding-bottom: 1rem;
+		padding: 1rem;
 		box-sizing: border-box;
 	}
-	#container {
+	.timelineContainer {
 		position: relative;
 		overflow: scroll;
-		width: 100lvw;
 		box-sizing: border-box;
 	}
 	ul {
@@ -172,10 +179,5 @@
 			left 0.5s,
 			top 0.5s,
 			height 0.5s;
-	}
-	:global(.tooltip) {
-		background-color: #000a;
-		color: #ddd;
-		padding: 0.25rem;
 	}
 </style>
