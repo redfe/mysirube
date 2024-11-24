@@ -1,3 +1,8 @@
+type OnchangeHandler = (
+	editData: EditData,
+	options?: { name: keyof EditData; before?: unknown; after?: unknown }
+) => void;
+
 export class EditData {
 	#id: string;
 	#start?: string = $state();
@@ -5,6 +10,7 @@ export class EditData {
 	#title?: string = $state();
 	#color?: string = $state();
 	#errors: { start?: string; end?: string; title?: string; color?: string } = $state({});
+	#onchangeHandler?: OnchangeHandler;
 
 	constructor(args?: {
 		id?: string;
@@ -12,12 +18,14 @@ export class EditData {
 		end?: string;
 		title?: string;
 		color?: string;
+		onchangeHandler?: OnchangeHandler;
 	}) {
 		this.#id = args?.id ?? crypto.randomUUID();
 		this.#start = args?.start;
 		this.#end = args?.end;
 		this.#title = args?.title;
 		this.#color = args?.color;
+		this.#onchangeHandler = args?.onchangeHandler;
 		this.validate();
 	}
 
@@ -26,8 +34,10 @@ export class EditData {
 	}
 
 	set start(start: string | undefined) {
+		const before = this.#start;
 		this.#start = start;
 		this.validate('start');
+		this.handleOnChange({ name: 'start', before, after: this.#start });
 	}
 
 	get start() {
@@ -35,8 +45,10 @@ export class EditData {
 	}
 
 	set end(end: string | undefined) {
+		const before = this.#end;
 		this.#end = end;
 		this.validate('end');
+		this.handleOnChange({ name: 'end', before, after: this.#end });
 	}
 
 	get end() {
@@ -44,8 +56,10 @@ export class EditData {
 	}
 
 	set title(title: string | undefined) {
+		const before = this.#title;
 		this.#title = title;
 		this.validate('title');
+		this.handleOnChange({ name: 'title', before, after: this.#title });
 	}
 
 	get title() {
@@ -53,11 +67,25 @@ export class EditData {
 	}
 
 	set color(color: string | undefined) {
+		const before = this.#color;
 		this.#color = color;
+		this.handleOnChange({ name: 'color', before, after: this.#color });
 	}
 
 	get color() {
 		return this.#color;
+	}
+
+	set onchangeHandler(onchangeHandler: OnchangeHandler | undefined) {
+		this.#onchangeHandler = onchangeHandler;
+	}
+
+	get onchangeHandler() {
+		return this.#onchangeHandler;
+	}
+
+	get errors() {
+		return this.#errors;
 	}
 
 	private validate(name?: keyof EditData) {
@@ -94,8 +122,10 @@ export class EditData {
 		return Object.keys(this.#errors).length === 0;
 	}
 
-	get errors() {
-		return this.#errors;
+	private handleOnChange(options?: { name: keyof EditData; before?: unknown; after: unknown }) {
+		if (this.#onchangeHandler && this.isValid()) {
+			this.#onchangeHandler(this, options);
+		}
 	}
 }
 

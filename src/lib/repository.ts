@@ -12,7 +12,8 @@ function initDB(): Promise<IDBDatabase> {
 		request.onupgradeneeded = () => {
 			const db = request.result;
 			if (!db.objectStoreNames.contains(storeName)) {
-				db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
+				const store = db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: false });
+				store.createIndex('indexOfStart', 'start', { unique: false });
 			}
 		};
 
@@ -22,33 +23,27 @@ function initDB(): Promise<IDBDatabase> {
 	return database;
 }
 
-export async function save(datas: Data[]) {
+export async function save(data: Data) {
 	const db = await (database ?? initDB());
 	return new Promise((resolve, reject) => {
-		try {
-			// トランザクションの作成
-			const transaction = db.transaction(storeName, 'readwrite');
-			const store = transaction.objectStore(storeName);
+		const transaction = db.transaction(storeName, 'readwrite');
+		const store = transaction.objectStore(storeName);
+		const request = store.put(data);
 
-			// 既存データをクリア
-			const clearRequest = store.clear();
-			clearRequest.onerror = () => reject(clearRequest.error);
+		request.onsuccess = () => resolve(request.result);
+		request.onerror = () => reject(request.error);
+	});
+}
 
-			clearRequest.onsuccess = () => {
-				// データを追加
-				for (const data of datas) {
-					const addRequest = store.add(data);
-					addRequest.onerror = () => reject(addRequest.error);
-				}
+export async function remove(id: string) {
+	const db = await (database ?? initDB());
+	return new Promise((resolve, reject) => {
+		const transaction = db.transaction(storeName, 'readwrite');
+		const store = transaction.objectStore(storeName);
+		const request = store.delete(id);
 
-				// トランザクション完了時の処理
-				transaction.oncomplete = () => resolve(true);
-				transaction.onerror = () => reject(transaction.error);
-			};
-		} catch (error) {
-			console.error('保存処理エラー:', error);
-			reject(error);
-		}
+		request.onsuccess = () => resolve(request.result);
+		request.onerror = () => reject(request.error);
 	});
 }
 
@@ -57,7 +52,9 @@ export async function getAllData(): Promise<Data[]> {
 	return new Promise((resolve, reject) => {
 		const transaction = db.transaction(storeName, 'readonly');
 		const store = transaction.objectStore(storeName);
-		const request = store.getAll();
+		// start でソートされた状態で取得する
+		const indexOfStart = store.index('indexOfStart');
+		const request = indexOfStart.getAll();
 
 		request.onsuccess = () => resolve(request.result);
 		request.onerror = () => reject(request.error);

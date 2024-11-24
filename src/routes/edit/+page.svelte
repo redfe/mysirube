@@ -1,32 +1,49 @@
 <script lang="ts">
 	import { EditData } from './data.svelte';
-	import { getAllData, save as saveData } from '$lib/repository';
+	import { getAllData, save, type Data, remove as removeData } from '$lib/repository';
+	import { onMount } from 'svelte';
 
 	let newData = $state(new EditData());
 	let datas: EditData[] = $state([]);
 	let startElm: HTMLElement;
 
+	function toData(editData: EditData): Data {
+		return {
+			id: editData.id,
+			start: parseInt(editData.start!),
+			end: editData.end ? parseInt(editData.end) : undefined,
+			title: editData.title!,
+			color: editData.color
+		};
+	}
+
+	const saveOnChange: EditData['onchangeHandler'] = (editData) => {
+		save(toData(editData));
+	};
+
 	function add() {
 		if (!newData.isValid()) {
 			return;
 		}
-		let temp = new EditData();
-		temp.start = newData.start;
-		temp.end = newData.end;
-		temp.title = newData.title;
-		temp.color = newData.color;
-		datas.push(temp);
-		newData.start = '';
-		newData.end = '';
-		newData.title = '';
-		startElm?.focus();
-	}
+		let editData = new EditData({
+			id: newData.id,
+			start: newData.start,
+			end: newData.end,
+			title: newData.title,
+			color: newData.color,
+			onchangeHandler: saveOnChange
+		});
 
-	function sort() {
-		datas.sort((a, b) => (a.start ? parseInt(a.start) : 0) - (b.start ? parseInt(b.start) : 0));
+		// DBに保存
+		save(toData(editData));
+
+		newData = new EditData({ start: '', end: '', title: '', color: editData.color });
+		startElm?.focus();
+		loadAllData();
 	}
 
 	function remove(index: number) {
+		removeData(datas[index].id);
 		datas.splice(index, 1);
 	}
 
@@ -40,50 +57,30 @@
 		)[0];
 	}
 
-	function hasErrorDatas() {
-		return datas.filter((data) => hasError(data.errors)).length > 0;
-	}
-
-	async function save() {
-		if (hasErrorDatas()) {
-			alert('エラーを修正して下さい！');
-			return;
-		}
-		await saveData(
-			datas.map((data) => ({
-				id: data.id,
-				start: parseInt(data.start!),
-				end: !!data.end ? parseInt(data.end) : undefined,
-				title: data.title!,
-				color: data.color
-			}))
-		);
-		alert('保存しました！');
+	function loadAllData() {
+		getAllData().then((r) => {
+			datas = r.map((d) => {
+				const editData = new EditData({
+					id: d.id,
+					start: `${d.start}`,
+					end: `${d.end ?? ''}`,
+					title: d.title,
+					color: d.color,
+					onchangeHandler: saveOnChange
+				});
+				return editData;
+			});
+		});
 	}
 
 	$effect(() => {
 		if (startElm) startElm.focus();
 	});
 
-	$effect(() => {
-		getAllData().then((r) => {
-			datas = r
-				.sort((a, b) => a.start - b.start)
-				.map(
-					(d) =>
-						new EditData({
-							id: d.id,
-							start: `${d.start}`,
-							end: `${d.end ?? ''}`,
-							title: d.title,
-							color: d.color
-						})
-				);
-		});
+	onMount(() => {
+		loadAllData();
 	});
 </script>
-
-<button onclick={save} disabled={hasErrorDatas()}>保存</button>
 
 <table>
 	<thead>
@@ -93,7 +90,7 @@
 			<th>タイトル</th>
 			<th>色</th>
 			<th>エラー</th>
-			<th><button onclick={sort}>ソート</button></th>
+			<th></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -165,7 +162,12 @@
 	}
 	th,
 	td {
-		padding: 0.5rem;
+		padding: 0.25rem;
+		box-sizing: border-box;
+		vertical-align: middle;
+		button {
+			margin: 0;
+		}
 	}
 	thead {
 		th:nth-child(1) {
