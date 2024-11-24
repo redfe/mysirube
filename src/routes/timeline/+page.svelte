@@ -9,6 +9,7 @@
 	} from './timeline.svelte';
 	import type { Item } from './timeline.svelte';
 	import { getAllData } from '$lib/repository';
+	import { generate } from './dummyDataGenerator';
 
 	const units = [10000, 5000, 2000, 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];
 
@@ -30,18 +31,26 @@
 	// 最上位の表示枠要素
 	let first: HTMLElement | undefined = $state();
 
+	// 色選択肢
+	let selectableColors: string[] = $state([]);
+
+	// 選択中の色
+	let selectedColors: string[] = $state([]);
+
+	let filteredItems = $derived(filter(items, selectedColors));
+
 	// 表示関数
-	async function display(unit: number, periods: number[]) {
-		const lanes = createLanes(unit, items);
+	function display(unit: number, periods: number[], filteredItems: Item[]) {
+		const lanes = createLanes(unit, filteredItems);
 		lanes.forEach((lane, laneIndex) => {
 			const items = lane;
 			items.forEach((item) => {
-				displayByItem(item, laneIndex, periods);
+				new Promise(() => displayByItem(item, laneIndex, periods));
 			});
 		});
 	}
 
-	async function displayByItem(item: Item, laneIndex: number, periods: number[]) {
+	function displayByItem(item: Item, laneIndex: number, periods: number[]) {
 		const unitPeriod = getUnitPeriod(item.start, item.end, unit);
 		const firstElement = first;
 		const firstTop = firstElement?.offsetTop!;
@@ -55,38 +64,45 @@
 		itemElement!.style.left = left + 'px';
 	}
 
+	function filter(items: Item[], selectedColors: string[]) {
+		return items.filter((item) => selectedColors.includes(item.color || 'yellow'));
+	}
+
 	$effect(() => {
 		display(
 			unit,
-			untrack(() => periods)
+			untrack(() => periods),
+			filteredItems
 		);
 	});
 
 	onMount(async () => {
 		// データ読み込み
-		items = (await getAllData())
-			.map((data) => ({
-				...data,
-				end: data.end == null ? data.start : data.end
-			}))
-			.sort((a, b) => a.start - b.start);
+		items = (await getAllData()).map((data) => ({
+			...data,
+			end: data.end == null ? data.start : data.end
+		}));
 
 		// for test
-		//items = generate(-1600, 1900, 1000).sort((a, b) => a.start - b.start);
+		//items = generate(-16000, 2024, 1000).sort((a, b) => a.start - b.start);
 
+		// 表示単位を初期化
 		// 20行で収まりそうな初期表示単位の基準値
 		const s = Math.abs(items[items.length - 1].end - items[0].start) / 20;
-
-		// 表示単位
 		unit = units.reduce(
 			(acc, cur) => (Math.abs(1 - cur / s) < Math.abs(1 - acc / s) ? cur : acc),
 			units[0]
 		);
+
+		selectableColors = items
+			.map((v) => (v.color ? v.color : 'yellow'))
+			.reduce((acc, cur) => (acc.includes(cur!) ? acc : [...acc, cur!]), [] as string[]);
+		selectedColors = selectableColors;
 	});
 </script>
 
 <header bind:this={header}>
-	<div id="unit">
+	<div class="unitSelector">
 		<span>単位:</span>
 		<button
 			title="表示単位を小さくする"
@@ -104,6 +120,14 @@
 		>
 		<span>{formatYear(unit)}</span>
 	</div>
+	<div class="colorSelector">
+		{#each selectableColors as color (color)}
+			<label class="color"
+				><input type="checkbox" bind:group={selectedColors} value={color} />
+				<div style:background-color={color}></div>
+			</label>
+		{/each}
+	</div>
 </header>
 <div
 	class="timelineContainer"
@@ -116,7 +140,7 @@
 			</li>
 		{/each}
 	</ul>
-	{#each items as item (item.id)}
+	{#each filteredItems as item (item.id)}
 		<div
 			class="bar"
 			id="item-{item.id}"
@@ -146,6 +170,32 @@
 		width: 100%;
 		padding: 1rem;
 		box-sizing: border-box;
+		display: flex;
+		gap: 2rem;
+
+		.colorSelector {
+			.color {
+				padding: 4px;
+				opacity: 0.7;
+				width: 1.5rem;
+				height: 1.5rem;
+				display: inline-block;
+				border: solid 1px rgba(0, 0, 0, 0.7);
+				box-sizing: border-box;
+				margin-right: 0.5rem;
+				input {
+					display: none;
+				}
+				div {
+					width: 100%;
+					height: 100%;
+				}
+			}
+			.color:has(input:checked) {
+				border: 3px solid blue;
+				padding: 2px;
+			}
+		}
 	}
 	.timelineContainer {
 		position: relative;
