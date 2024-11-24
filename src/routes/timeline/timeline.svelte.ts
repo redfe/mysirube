@@ -66,3 +66,43 @@ export function createLanes(unit: number, items: Item[]) {
 
 	return lanes;
 }
+
+// ツールチップ表示アクション
+// 参考：https://svelte.dev/tutorial/svelte/adding-parameters-to-actions
+export function tooltip(node: HTMLElement) {
+	$effect(() => {
+		const t = document.createElement('div');
+		t.classList.add('tooltip');
+		t.style.position = 'absolute';
+		t.style.visibility = 'hidden';
+		t.textContent = `${formatYear(parseInt(node.dataset.start!))}${node.dataset.start === node.dataset.end ? '' : '〜' + formatYear(parseInt(node.dataset.end!))} ${node.dataset.title}`;
+		document.body.append(t);
+
+		const mouseover = (e: Event) => {
+			e.preventDefault();
+			t.style.visibility = 'visible';
+		};
+
+		const mousemove = (e: Event) => {
+			e.preventDefault();
+			const { clientX, clientY } = e as MouseEvent;
+			t.style.top = `${clientY}px`;
+			t.style.left = `${clientX + 10}px`;
+		};
+
+		const mouseleave = (e: Event) => {
+			e.preventDefault();
+			t.style.visibility = 'hidden';
+		};
+
+		node.addEventListener('mouseover', mouseover);
+		node.addEventListener('mousemove', mousemove);
+		node.addEventListener('mouseleave', mouseleave);
+
+		return () => {
+			node.removeEventListener('mouseover', mouseover);
+			node.removeEventListener('mousemove', mousemove);
+			node.removeEventListener('mouseleave', mouseleave);
+		};
+	});
+}

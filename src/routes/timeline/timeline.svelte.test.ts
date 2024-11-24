@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createLanes, generatePeriods, getUnitPeriod } from './timeline';
+import { createLanes, generatePeriods, getUnitPeriod } from './timeline.svelte';
 
 describe('getUnitPeriod', () => {
 	it('紀元前開始、紀元前終了', () => {

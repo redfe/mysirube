@@ -1,8 +1,15 @@
 <script lang="ts">
 	import { onMount, untrack } from 'svelte';
-	import { generatePeriods, getUnitPeriod, formatYear, createLanes } from './timeline';
-	import type { Item } from './timeline';
+	import {
+		generatePeriods,
+		getUnitPeriod,
+		formatYear,
+		createLanes,
+		tooltip
+	} from './timeline.svelte';
+	import type { Item } from './timeline.svelte';
 	import { getAllData } from '$lib/repository';
+	import { generate } from './dummyDataGenerator';
 
 	const units = [10000, 5000, 2000, 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];
 
@@ -42,52 +49,11 @@
 		const itemElement: HTMLElement | null = document.querySelector('#item-' + item.id);
 		const unitCount = (unitPeriod.end - unitPeriod.start) / unit + 1;
 		const height = unitHeight * unitCount || unitHeight;
-		itemElement!.style.left = '50px';
 		let periodIndex = periods.indexOf(unitPeriod.start);
 		itemElement!.style.top = firstTop + periodIndex * unitHeight + 'px';
 		itemElement!.style.height = height + 'px';
 		const left = 40 * (laneIndex + 1) + 100;
 		itemElement!.style.left = left + 'px';
-	}
-
-	// ツールチップ表示アクション
-	// 参考：https://svelte.dev/tutorial/svelte/adding-parameters-to-actions
-	function tooltip(node: HTMLElement) {
-		$effect(() => {
-			const t = document.createElement('div');
-			t.classList.add('tooltip');
-			t.style.position = 'absolute';
-			t.style.visibility = 'hidden';
-			t.textContent = `${formatYear(parseInt(node.dataset.start!))}${node.dataset.start === node.dataset.end ? '' : '〜' + formatYear(parseInt(node.dataset.end!))} ${node.dataset.title}`;
-			document.body.append(t);
-
-			const mouseover = (e: Event) => {
-				e.preventDefault();
-				t.style.visibility = 'visible';
-			};
-
-			const mousemove = (e: Event) => {
-				e.preventDefault();
-				const { clientX, clientY } = e as MouseEvent;
-				t.style.top = `${clientY}px`;
-				t.style.left = `${clientX + 10}px`;
-			};
-
-			const mouseleave = (e: Event) => {
-				e.preventDefault();
-				t.style.visibility = 'hidden';
-			};
-
-			node.addEventListener('mouseover', mouseover);
-			node.addEventListener('mousemove', mousemove);
-			node.addEventListener('mouseleave', mouseleave);
-
-			return () => {
-				node.removeEventListener('mouseover', mouseover);
-				node.removeEventListener('mousemove', mousemove);
-				node.removeEventListener('mouseleave', mouseleave);
-			};
-		});
 	}
 
 	$effect(() => {
@@ -105,6 +71,8 @@
 				end: data.end == null ? data.start : data.end
 			}))
 			.sort((a, b) => a.start - b.start);
+
+		//items = generate(-1600, 1900, 1000).sort((a, b) => a.start - b.start);
 
 		// 20行で収まりそうな初期表示単位の基準値
 		const s = Math.abs(items[items.length - 1].end - items[0].start) / 20;
@@ -164,13 +132,11 @@
 
 <style>
 	:global body {
-		padding: 0;
-		margin: 0;
 		overflow: hidden;
 	}
 	header {
 		width: 100%;
-		padding: 0.75rem;
+		padding-bottom: 1rem;
 		box-sizing: border-box;
 	}
 	#container {

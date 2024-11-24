@@ -154,6 +154,9 @@
 </table>
 
 <style>
+	button {
+		margin-bottom: 1rem;
+	}
 	table,
 	th,
 	td {

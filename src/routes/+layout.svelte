@@ -4,20 +4,29 @@
 
 <header>
 	<nav>
-		<a href="/edit">edit</a>
-		<a href="/timeline">timeline</a>
+		<a href="/">Top</a>
+		<a href="/edit">Edit</a>
+		<a href="/timeline">Timeline</a>
 	</nav>
 </header>
 
-{@render children()}
+<main>
+	{@render children()}
+</main>
 
 <style>
+	:global body {
+		margin: 0;
+	}
+	main {
+		padding: 1rem;
+	}
 	header {
-		padding: 0.75rem;
+		padding: 1rem;
 		background-color: cornflowerblue;
 		nav {
 			display: flex;
-			gap: 0.75rem;
+			gap: 1rem;
 		}
 	}
 </style>

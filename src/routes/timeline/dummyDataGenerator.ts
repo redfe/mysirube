@@ -1,6 +1,17 @@
 export const generate = (start: number, end: number, size: number) => {
 	let seq = 1;
 	const maxRange = Math.random() * 100;
+	const colors = [
+		'red',
+		'green',
+		'blue',
+		'yellow',
+		'pink',
+		'silver',
+		'black',
+		'brown',
+		'yellowgreen'
+	];
 
 	const result = [];
 	for (let i = 0; i < size; i++) {
@@ -11,7 +22,8 @@ export const generate = (start: number, end: number, size: number) => {
 			id: `${seq++}`,
 			start: from,
 			end: to,
-			title: `${from},${to}`
+			title: `こんなことがありました`,
+			color: colors[Math.floor(Math.random() * colors.length)]
 		});
 	}
 	return result;
@@ -38,5 +50,5 @@ const _constantItems = [
 
 export const constantItems = _constantItems.map((item) => ({
 	...item,
-	title: `${item.start}:${item.end}`
+	title: `dummy`
 }));
