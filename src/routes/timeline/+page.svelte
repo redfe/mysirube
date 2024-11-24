@@ -1,57 +1,32 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
-	import { generate } from './dummyDataGenerator';
-	import { generatePeriods, getUnitPeriod } from './timeline';
-	import type { ItemType } from './timeline';
+	import { onMount, untrack } from 'svelte';
+	import { generatePeriods, getUnitPeriod, formatYear, createLanes } from './timeline';
+	import type { Item } from './timeline';
+	import { getAllData } from '$lib/repository';
 
-	const units = [10000, 7500, 5000, 2500, 1000, 750, 500, 250, 100, 75, 50, 25, 10, 5, 1];
-
-	// 単位ごとの高さ
-	const unitHeight = 30;
-
-	// 歴史アイテム
-	const items = generate(-16000, 2024, 150).sort((a, b) => a.start - b.start);
-
-	// 30行で収まりそうな初期表示単位の基準値
-	const s = Math.abs(items[items.length - 1].end - items[0].start) / 30;
+	const units = [10000, 5000, 2000, 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1];
 
 	// 表示単位
-	let unit = $state(
-		units.reduce(
-			(acc, cur) => (Math.abs(1 - cur / s) < Math.abs(1 - acc / s) ? cur : acc),
-			units[0]
-		)
-	);
+	let unit = $state(100);
+
+	// 表示単位ごとの高さ
+	const unitHeight = $derived(25 + (units.length - (units.indexOf(unit) + 1)) * 4);
+
+	// 表示アイテム
+	let items: Item[] = $state([]);
 
 	// 表示期間
 	let periods = $derived(generatePeriods(unit, items));
 
+	// headerの要素
+	let header: HTMLElement | undefined = $state();
+
+	// 最上位の表示枠要素
+	let first: HTMLElement | undefined = $state();
+
 	// 表示関数
 	async function display(unit: number, periods: number[]) {
-		const lanes: ItemType[][] = [];
-
-		items.forEach((item, i) => {
-			if (lanes.length === 0) {
-				lanes.push([]);
-			}
-			for (let lane of lanes) {
-				const last = lane[lane.length - 1];
-				if (!last) {
-					lane.push(item);
-					return;
-				} else {
-					const laneEnd = getUnitPeriod(last.start, last.end, unit).end;
-					const unitPeriod = getUnitPeriod(item.start, item.end, unit);
-					const itemStart = unitPeriod.start;
-					if (laneEnd < itemStart) {
-						lane.push(item);
-						return;
-					}
-				}
-			}
-			lanes.push([item]);
-		});
-
+		const lanes = createLanes(unit, items);
 		lanes.forEach((lane, laneIndex) => {
 			const items = lane;
 			items.forEach((item) => {
@@ -60,12 +35,12 @@
 		});
 	}
 
-	async function displayByItem(item: ItemType, laneIndex: number, periods: number[]) {
+	async function displayByItem(item: Item, laneIndex: number, periods: number[]) {
 		const unitPeriod = getUnitPeriod(item.start, item.end, unit);
 		const firstElement = first;
-		const firstTop = firstElement.offsetTop;
+		const firstTop = firstElement?.offsetTop!;
 		const itemElement: HTMLElement | null = document.querySelector('#item-' + item.id);
-		const unitCount = (unitPeriod.end - unitPeriod.start) / unit;
+		const unitCount = (unitPeriod.end - unitPeriod.start) / unit + 1;
 		const height = unitHeight * unitCount || unitHeight;
 		itemElement!.style.left = '50px';
 		let periodIndex = periods.indexOf(unitPeriod.start);
@@ -83,7 +58,7 @@
 			t.classList.add('tooltip');
 			t.style.position = 'absolute';
 			t.style.visibility = 'hidden';
-			t.textContent = node.dataset.title ?? '';
+			t.textContent = `${formatYear(parseInt(node.dataset.start!))}${node.dataset.start === node.dataset.end ? '' : '〜' + formatYear(parseInt(node.dataset.end!))} ${node.dataset.title}`;
 			document.body.append(t);
 
 			const mouseover = (e: Event) => {
@@ -122,10 +97,27 @@
 		);
 	});
 
-	let first: HTMLElement;
+	onMount(async () => {
+		// データ読み込み
+		items = (await getAllData())
+			.map((data) => ({
+				...data,
+				end: data.end == null ? data.start : data.end
+			}))
+			.sort((a, b) => a.start - b.start);
+
+		// 20行で収まりそうな初期表示単位の基準値
+		const s = Math.abs(items[items.length - 1].end - items[0].start) / 20;
+
+		// 表示単位
+		unit = units.reduce(
+			(acc, cur) => (Math.abs(1 - cur / s) < Math.abs(1 - acc / s) ? cur : acc),
+			units[0]
+		);
+	});
 </script>
 
-<header>
+<header bind:this={header}>
 	<div id="unit">
 		<span>単位:</span>
 		<button
@@ -133,29 +125,40 @@
 			onclick={() => {
 				const next = units[units.indexOf(unit) + 1];
 				unit = next ?? units[units.length - 1];
-			}}>↓</button
+			}}>-</button
 		>
 		<button
 			title="表示単位を大きくする"
 			onclick={() => {
 				const next = units[units.indexOf(unit) - 1];
 				unit = next ?? units[0];
-			}}>↑</button
+			}}>+</button
 		>
-		<span>{new Intl.NumberFormat().format(unit)}年</span>
+		<span>{formatYear(unit)}</span>
 	</div>
 </header>
 
-<div id="container">
+<div
+	id="container"
+	style:height={`calc(100lvh - ${(header?.offsetTop ?? 0) + (header?.offsetHeight ?? 0)}px)`}
+>
 	<ul bind:this={first}>
 		{#each periods as p, i (p)}
 			<li id="li-{p}" style="height:{unitHeight}px">
-				<span>{new Intl.NumberFormat().format(p)}年</span>
+				<span>{formatYear(p)}</span>
 			</li>
 		{/each}
 	</ul>
 	{#each items as item (item.id)}
-		<div class="bar" id="item-{item.id}" data-title={item.title} use:tooltip></div>
+		<div
+			class="bar"
+			id="item-{item.id}"
+			data-start={item.start}
+			data-end={item.end}
+			data-title={item.title}
+			style:background-color={item.color ? item.color : undefined}
+			use:tooltip
+		></div>
 	{/each}
 </div>
 
@@ -169,12 +172,10 @@
 		width: 100%;
 		padding: 0.75rem;
 		box-sizing: border-box;
-		background-color: #acf;
 	}
 	#container {
 		position: relative;
 		overflow: scroll;
-		height: calc(100lvh - 3rem);
 		width: 100lvw;
 		box-sizing: border-box;
 	}
@@ -195,7 +196,8 @@
 	}
 	.bar {
 		white-space: nowrap;
-		background-color: #ff05;
+		background-color: yellow;
+		opacity: 0.7;
 		width: 30px;
 		border: solid 1px rgba(0, 0, 0, 0.3);
 		box-sizing: border-box;

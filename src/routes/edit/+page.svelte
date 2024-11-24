@@ -66,18 +66,20 @@
 	});
 
 	$effect(() => {
-		getAllData().then(
-			(r) =>
-				(datas = r.map(
-					(d: any) =>
+		getAllData().then((r) => {
+			datas = r
+				.sort((a, b) => a.start - b.start)
+				.map(
+					(d) =>
 						new EditData({
-							start: d.start,
-							end: d.end,
+							id: d.id,
+							start: `${d.start}`,
+							end: `${d.end ?? ''}`,
 							title: d.title,
 							color: d.color
 						})
-				))
-		);
+				);
+		});
 	});
 </script>
 
