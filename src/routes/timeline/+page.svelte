@@ -150,8 +150,9 @@
 					aria-checked={selectedColors.includes(color)}
 					onkeypress={(e) => {
 						const target = e.target as HTMLElement;
-						const checkbox = target.parentElement?.querySelector('input');
-						checkbox?.click();
+						if (e.key === ' ' || e.key === 'Enter') {
+							target.parentElement?.querySelector('input')?.click();
+						}
 					}}
 				></div>
 			</label>
