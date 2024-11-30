@@ -8,8 +8,9 @@
 		tooltip
 	} from './timeline.svelte';
 	import type { Item } from './timeline.svelte';
-	import { getAllData } from '$lib/repository';
+	import { colors, search } from '$lib/repository';
 	import { generate } from './dummyDataGenerator';
+	import { fade, slide } from 'svelte/transition';
 
 	const units = [10000, 5000, 1000, 500, 100, 50, 10, 5, 1];
 
@@ -19,8 +20,20 @@
 	// 表示単位ごとの高さ
 	const unitHeight = $derived(25 + (units.length - (units.indexOf(unit) + 1)) * 4);
 
+	// 色選択肢
+	let selectableColors: string[] = $state([]);
+
+	// デフォルトの色
+	const defaultColor = 'white';
+
+	// 選択中の色
+	let selectedColors: string[] = $state([]);
+
 	// 表示アイテム
 	let items: Item[] = $state([]);
+
+	// 全件数
+	let allCount: number = $state(0);
 
 	// 表示期間
 	let periods = $derived(generatePeriods(unit, items));
@@ -30,14 +43,6 @@
 
 	// 最上位の表示枠要素
 	let first: HTMLElement | undefined = $state();
-
-	// 色選択肢
-	let selectableColors: string[] = $state([]);
-
-	// 選択中の色
-	let selectedColors: string[] = $state([]);
-
-	let filteredItems = $derived(filter(items, selectedColors));
 
 	// 表示関数
 	function display(unit: number, periods: number[], filteredItems: Item[]) {
@@ -64,27 +69,34 @@
 		itemElement!.style.left = left + 'px';
 	}
 
-	function filter(items: Item[], selectedColors: string[]) {
-		return items.filter((item) => selectedColors.includes(item.color || 'yellow'));
+	async function filter() {
+		const result = await search({ colors: selectedColors });
+		items = result.datas.map((data) => ({
+			...data,
+			end: data.end == null ? data.start : data.end
+		}));
+		allCount = result.count;
 	}
 
 	$effect(() => {
 		display(
 			unit,
 			untrack(() => periods),
-			filteredItems
+			items
 		);
 	});
 
 	onMount(async () => {
+		const result = await search();
+		allCount = result.count;
 		// データ読み込み
-		items = (await getAllData()).map((data) => ({
+		items = result.datas.map((data) => ({
 			...data,
 			end: data.end == null ? data.start : data.end
 		}));
 
 		// for test
-		//items = generate(-16000, 2024, 1000).sort((a, b) => a.start - b.start);
+		//items = generate(-500, 500, 1000).sort((a, b) => a.start - b.start);
 
 		// 表示単位を初期化
 		// 20行で収まりそうな初期表示単位の基準値
@@ -94,9 +106,7 @@
 			units[0]
 		);
 
-		selectableColors = items
-			.map((v) => (v.color ? v.color : 'yellow'))
-			.reduce((acc, cur) => (acc.includes(cur!) ? acc : [...acc, cur!]), [] as string[]);
+		selectableColors = await colors();
 		selectedColors = selectableColors;
 	});
 </script>
@@ -120,11 +130,30 @@
 		>
 		<span>{formatYear(unit)}</span>
 	</div>
+	<div class="count">
+		<span>件数:</span>
+		<span>{items.length}/{allCount}</span>
+	</div>
 	<div class="colorSelector">
 		{#each selectableColors as color (color)}
 			<label class="color"
-				><input type="checkbox" bind:group={selectedColors} value={color} />
-				<div style:background-color={color}></div>
+				><input
+					type="checkbox"
+					bind:group={selectedColors}
+					value={color}
+					onchange={() => filter()}
+				/>
+				<div
+					style:background-color={color ? color : defaultColor}
+					tabindex="0"
+					role="checkbox"
+					aria-checked={selectedColors.includes(color)}
+					onkeypress={(e) => {
+						const target = e.target as HTMLElement;
+						const checkbox = target.parentElement?.querySelector('input');
+						checkbox?.click();
+					}}
+				></div>
 			</label>
 		{/each}
 	</div>
@@ -140,19 +169,20 @@
 			</li>
 		{/each}
 	</ul>
-	{#each filteredItems as item (item.id)}
+	{#each items as item (item.id)}
 		<div
 			class="bar"
 			id="item-{item.id}"
 			data-start={item.start}
 			data-end={item.end}
 			data-title={item.title}
-			style:background-color={item.color ? item.color : undefined}
+			style:background-color={item.color ? item.color : defaultColor}
 			use:tooltip={{
 				backgroundColor: '#000a',
 				color: '#ddd',
 				padding: '0.25rem'
 			}}
+			transition:fade
 		></div>
 	{/each}
 </div>
@@ -192,7 +222,7 @@
 				}
 			}
 			.color:has(input:checked) {
-				border: 3px solid blue;
+				border-bottom: 3px solid blue;
 				padding: 2px;
 			}
 		}
@@ -219,7 +249,6 @@
 	}
 	.bar {
 		white-space: nowrap;
-		background-color: yellow;
 		opacity: 0.7;
 		width: 30px;
 		border: solid 1px rgba(0, 0, 0, 0.3);

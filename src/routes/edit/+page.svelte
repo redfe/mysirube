@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { EditData } from './data.svelte';
-	import { getAllData, save, type Data, remove as removeData } from '$lib/repository';
+	import { search, save, type Data, remove as removeData } from '$lib/repository';
 	import { onMount } from 'svelte';
 
 	let newData = $state(new EditData());
 	let datas: EditData[] = $state([]);
 	let startElm: HTMLElement;
+	let offsetStart: number | undefined = $state();
+	let allCount = $state(0);
 
 	function toData(editData: EditData): Data {
 		return {
@@ -44,7 +46,11 @@
 
 	function remove(index: number) {
 		removeData(datas[index].id);
-		datas.splice(index, 1);
+		loadAllData();
+	}
+
+	function move() {
+		loadAllData();
 	}
 
 	function hasError(errors: Record<string, string>) {
@@ -58,8 +64,9 @@
 	}
 
 	function loadAllData() {
-		getAllData().then((r) => {
-			datas = r.map((d) => {
+		search({ start: offsetStart }).then((r) => {
+			allCount = r.count;
+			datas = r.datas.map((d) => {
 				const editData = new EditData({
 					id: d.id,
 					start: `${d.start}`,
@@ -119,11 +126,21 @@
 					<pre>{oneError(newData)}</pre>
 				{/if}
 			</td>
-			<td></td>
-		</tr>
-		<tr>
-			<td colspan="6">
+			<td>
 				<button onclick={add} disabled={hasError(newData.errors)}>追加</button>
+			</td>
+		</tr>
+		<tr class="commands">
+			<td colspan="6">
+				<div>
+					<div>
+						<input type="number" bind:value={offsetStart} /><button onclick={move}>移動</button>
+					</div>
+					<div class="count">
+						<span>件数:</span>
+						<span>{datas.length}/{allCount}</span>
+					</div>
+				</div>
 			</td>
 		</tr>
 		{#each datas as data, i (i)}
@@ -169,6 +186,10 @@
 			margin: 0;
 		}
 	}
+	th:nth-child(4),
+	td:nth-child(4) {
+		opacity: 0.7;
+	}
 	thead {
 		th:nth-child(1) {
 			width: 7rem;
@@ -193,26 +214,23 @@
 		}
 	}
 	tbody {
-		tr:nth-child(2) {
-			td {
-				text-align: center;
-				button {
-					font-size: 2rem;
-					text-align: justify;
-					text-align-last: justify;
-					padding-left: 2.5rem;
-					padding-right: 2.5rem;
-					width: 10rem;
-				}
+		td:nth-child(5) {
+			font-weight: bold;
+			color: red;
+			border-color: black;
+			pre {
+				margin: 0;
 			}
 		}
-		tr:nth-child(n + 2) {
-			td:nth-child(5) {
-				font-weight: bold;
-				color: red;
-				border-color: black;
-				pre {
-					margin: 0;
+		tr.commands {
+			td > div {
+				text-align: left;
+				display: flex;
+				gap: 2rem;
+				input {
+					width: 6.25rem;
+					height: 1.25rem;
+					text-align: right;
 				}
 			}
 		}
