@@ -10,7 +10,7 @@
 	import type { Item } from './timeline.svelte';
 	import { colors, search } from '$lib/repository';
 	import { generate } from './dummyDataGenerator';
-	import { fade, slide } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 
 	const units = [10000, 5000, 1000, 500, 100, 50, 10, 5, 1];
 
@@ -44,6 +44,12 @@
 	// 最上位の表示枠要素
 	let first: HTMLElement | undefined = $state();
 
+	// 表示開始年のバインド値
+	let startValue: number | undefined = $state();
+
+	// 表示開始年
+	let offsetStart: number | undefined = $state();
+
 	// 表示関数
 	function display(unit: number, periods: number[], filteredItems: Item[]) {
 		const lanes = createLanes(unit, filteredItems);
@@ -70,12 +76,17 @@
 	}
 
 	async function filter() {
-		const result = await search({ colors: selectedColors });
+		const result = await search({ start: offsetStart, colors: selectedColors });
 		items = result.datas.map((data) => ({
 			...data,
 			end: data.end == null ? data.start : data.end
 		}));
 		allCount = result.count;
+	}
+
+	function move() {
+		offsetStart = startValue;
+		filter();
 	}
 
 	$effect(() => {
@@ -129,6 +140,9 @@
 			}}>+</button
 		>
 		<span>{formatYear(unit)}</span>
+	</div>
+	<div class="move">
+		<input type="number" bind:value={startValue} /><button onclick={() => move()}>移動</button>
 	</div>
 	<div class="count">
 		<span>件数:</span>
@@ -203,6 +217,13 @@
 		box-sizing: border-box;
 		display: flex;
 		gap: 2rem;
+		.move {
+			input {
+				width: 6.25rem;
+				height: 1.25rem;
+				text-align: right;
+			}
+		}
 
 		.colorSelector {
 			.color {
