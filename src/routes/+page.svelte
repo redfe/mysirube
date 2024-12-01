@@ -1,6 +1,6 @@
 <main>
 	<h1>Myしるべ</h1>
-	<p>自分専用の歴史年表を作成することができます。</p>
+	<p>自分専用の歴史年表を作成するアプリケーションです。</p>
 	<p>
 		作成したデータはブラウザの<a
 			href="https://developer.mozilla.org/ja/docs/Web/API/IndexedDB_API"
