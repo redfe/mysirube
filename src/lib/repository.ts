@@ -25,7 +25,7 @@ function initDB(): Promise<IDBDatabase> {
 }
 
 export async function save(data: Data) {
-	const db = await (database ?? initDB());
+	const db = await initDB();
 	return new Promise((resolve, reject) => {
 		const transaction = db.transaction(storeName, 'readwrite');
 		const store = transaction.objectStore(storeName);
@@ -37,7 +37,7 @@ export async function save(data: Data) {
 }
 
 export async function remove(id: string) {
-	const db = await (database ?? initDB());
+	const db = await initDB();
 	return new Promise((resolve, reject) => {
 		const transaction = db.transaction(storeName, 'readwrite');
 		const store = transaction.objectStore(storeName);
@@ -58,7 +58,7 @@ export async function search(options?: {
 	start?: number;
 	colors?: string[];
 }): Promise<SearchResult> {
-	const db = await (database ?? initDB());
+	const db = await initDB();
 	return new Promise((resolve, reject) => {
 		const transaction = db.transaction(storeName, 'readonly');
 		const store = transaction.objectStore(storeName);
@@ -99,7 +99,7 @@ export async function search(options?: {
 }
 
 export async function colors(): Promise<string[]> {
-	const db = await (database ?? initDB());
+	const db = await initDB();
 	return new Promise((resolve, reject) => {
 		const transaction = db.transaction(storeName, 'readonly');
 		const store = transaction.objectStore(storeName);
