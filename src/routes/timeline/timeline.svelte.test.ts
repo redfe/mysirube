@@ -47,8 +47,8 @@ describe('generatePeriods', () => {
 
 describe('createLanes', () => {
 	it('1レーン', () => {
-		const item1 = item(700, 799);
-		const item2 = item(794, 794);
+		const item1 = item(700, 724);
+		const item2 = item(725, 770);
 		const actual = createLanes(25, [item1, item2]);
 		expect(actual).toEqual([[item1, item2]]);
 	});
