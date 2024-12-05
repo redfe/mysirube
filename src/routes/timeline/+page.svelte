@@ -11,6 +11,7 @@
 	import { colors, search } from '$lib/repository';
 	import { generate } from './dummyDataGenerator';
 	import { fade } from 'svelte/transition';
+	import Button from '$lib/components/Button.svelte';
 
 	const units = [10000, 5000, 1000, 500, 100, 50, 10, 5, 1];
 
@@ -125,24 +126,24 @@
 <header bind:this={header}>
 	<div class="unitSelector">
 		<span>単位:</span>
-		<button
+		<Button
 			title="表示単位を小さくする"
 			onclick={() => {
 				const next = units[units.indexOf(unit) + 1];
 				unit = next ?? units[units.length - 1];
-			}}>-</button
+			}}>-</Button
 		>
-		<button
+		<Button
 			title="表示単位を大きくする"
 			onclick={() => {
 				const next = units[units.indexOf(unit) - 1];
 				unit = next ?? units[0];
-			}}>+</button
+			}}>+</Button
 		>
 		<span>{formatYear(unit)}</span>
 	</div>
 	<div class="move">
-		<input type="number" bind:value={startValue} /><button onclick={() => move()}>移動</button>
+		<input type="number" bind:value={startValue} /><Button onclick={() => move()}>移動</Button>
 	</div>
 	<div class="count">
 		<span>件数:</span>
@@ -222,6 +223,7 @@
 				width: 6.25rem;
 				height: 1.25rem;
 				text-align: right;
+				margin-right: 0.25rem;
 			}
 		}
 
@@ -235,6 +237,8 @@
 				border: solid 1px rgba(0, 0, 0, 0.7);
 				box-sizing: border-box;
 				margin-right: 0.5rem;
+				transition: padding 0.25s;
+
 				input {
 					display: none;
 				}

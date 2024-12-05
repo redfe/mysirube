@@ -2,6 +2,7 @@
 	import { EditData } from './data.svelte';
 	import { search, save, type Data, remove as removeData } from '$lib/repository';
 	import { onMount } from 'svelte';
+	import Button from '$lib/components/Button.svelte';
 
 	let newData = $state(new EditData());
 	let datas: EditData[] = $state([]);
@@ -80,6 +81,29 @@
 		});
 	}
 
+	function moveByArrowKey(e: KeyboardEvent, i: number, col: number) {
+		const t = e.target as HTMLElement;
+		const tagName = t.tagName.toLowerCase();
+		const tbody =
+			tagName == 'td'
+				? t.parentElement?.parentElement
+				: t.parentElement?.parentElement?.parentElement;
+		if (e.key === 'ArrowDown') {
+			const next = tbody?.querySelector(
+				`tr:nth-child(${i + 4}) td:nth-child(${col})${tagName === 'button' ? ' button' : ''}`
+			);
+			if (next) {
+				(next as HTMLElement).focus();
+			}
+		} else if (e.key === 'ArrowUp') {
+			const prev = tbody?.querySelector(
+				`tr:nth-child(${i + 2}) td:nth-child(${col})${tagName === 'button' ? ' button' : ''}`
+			);
+			if (prev) {
+				(prev as HTMLElement).focus();
+			}
+		}
+	}
 	$effect(() => {
 		if (startElm) startElm.focus();
 	});
@@ -127,14 +151,14 @@
 				{/if}
 			</td>
 			<td>
-				<button onclick={add} disabled={hasError(newData.errors)}>追加</button>
+				<Button disabled={hasError(newData.errors)} onclick={add}>追加</Button>
 			</td>
 		</tr>
 		<tr class="commands">
 			<td colspan="6">
 				<div>
 					<div>
-						<input type="number" bind:value={offsetStart} /><button onclick={move}>移動</button>
+						<input type="number" bind:value={offsetStart} /><Button onclick={move}>移動</Button>
 					</div>
 					<div class="count">
 						<span>件数:</span>
@@ -145,32 +169,48 @@
 		</tr>
 		{#each datas as data, i (i)}
 			<tr>
-				<td data-errormsg={data.errors.start} bind:textContent={data.start} contenteditable="true"
+				<td
+					data-errormsg={data.errors.start}
+					bind:textContent={data.start}
+					contenteditable="true"
+					onkeydown={(e) => moveByArrowKey(e, i, 1)}
 				></td>
-				<td data-errormsg={data.errors.end} bind:textContent={data.end} contenteditable="true"></td>
-				<td data-errormsg={data.errors.title} bind:textContent={data.title} contenteditable="true"
+				<td
+					data-errormsg={data.errors.end}
+					bind:textContent={data.end}
+					contenteditable="true"
+					onkeydown={(e) => moveByArrowKey(e, i, 2)}
+				></td>
+				<td
+					data-errormsg={data.errors.title}
+					bind:textContent={data.title}
+					contenteditable="true"
+					onkeydown={(e) => moveByArrowKey(e, i, 3)}
 				></td>
 				<td
 					data-errormsg={data.errors.color}
 					bind:textContent={data.color}
 					contenteditable="true"
 					style="background-color:{data.color}"
+					onkeydown={(e) => moveByArrowKey(e, i, 4)}
 				></td>
 				<td>
 					{#if hasError(data.errors)}
 						<pre>{oneError(data)}</pre>
 					{/if}
 				</td>
-				<td><button onclick={() => remove(i)}>×</button> </td></tr
+				<td
+					><Button
+						onclick={() => remove(i)}
+						onkeydown={(e: KeyboardEvent) => moveByArrowKey(e, i, 6)}>×</Button
+					>
+				</td></tr
 			>
 		{/each}
 	</tbody>
 </table>
 
 <style>
-	button {
-		margin-bottom: 1rem;
-	}
 	table,
 	th,
 	td {
@@ -182,9 +222,6 @@
 		padding: 0.25rem;
 		box-sizing: border-box;
 		vertical-align: middle;
-		button {
-			margin: 0;
-		}
 	}
 	th:nth-child(4),
 	td:nth-child(4) {
@@ -231,6 +268,7 @@
 					width: 6.25rem;
 					height: 1.25rem;
 					text-align: right;
+					margin-right: 0.25rem;
 				}
 			}
 		}
@@ -244,6 +282,6 @@
 		}
 	}
 	td[data-errormsg] {
-		background-color: pink;
+		background-color: rgb(255, 192, 203, 0.7);
 	}
 </style>
