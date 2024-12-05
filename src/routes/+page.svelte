@@ -18,6 +18,7 @@
 <style>
 	main {
 		padding: 1rem;
+		text-align: center;
 		h1 {
 			font-size: 5rem;
 		}

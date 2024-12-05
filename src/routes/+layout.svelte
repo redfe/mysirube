@@ -31,6 +31,8 @@
 	}
 	main {
 		padding: 1rem;
+		display: flex;
+		justify-content: center;
 	}
 	header {
 		padding: 1rem;

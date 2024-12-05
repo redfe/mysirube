@@ -123,84 +123,86 @@
 	});
 </script>
 
-<header bind:this={header}>
-	<div class="unitSelector">
-		<span>単位:</span>
-		<Button
-			title="表示単位を小さくする"
-			onclick={() => {
-				const next = units[units.indexOf(unit) + 1];
-				unit = next ?? units[units.length - 1];
-			}}>-</Button
-		>
-		<Button
-			title="表示単位を大きくする"
-			onclick={() => {
-				const next = units[units.indexOf(unit) - 1];
-				unit = next ?? units[0];
-			}}>+</Button
-		>
-		<span>{formatYear(unit)}</span>
-	</div>
-	<div class="move">
-		<input type="number" bind:value={startValue} /><Button onclick={() => move()}>移動</Button>
-	</div>
-	<div class="count">
-		<span>件数:</span>
-		<span>{items.length}/{allCount}</span>
-	</div>
-	<div class="colorSelector">
-		{#each selectableColors as color (color)}
-			<label class="color"
-				><input
-					type="checkbox"
-					bind:group={selectedColors}
-					value={color}
-					onchange={() => filter()}
-				/>
-				<div
-					style:background-color={color ? color : defaultColor}
-					tabindex="0"
-					role="checkbox"
-					aria-checked={selectedColors.includes(color)}
-					onkeypress={(e) => {
-						const target = e.target as HTMLElement;
-						if (e.key === ' ' || e.key === 'Enter') {
-							target.parentElement?.querySelector('input')?.click();
-						}
-					}}
-				></div>
-			</label>
+<div class="root">
+	<header bind:this={header}>
+		<div class="unitSelector">
+			<span>単位:</span>
+			<Button
+				title="表示単位を小さくする"
+				onclick={() => {
+					const next = units[units.indexOf(unit) + 1];
+					unit = next ?? units[units.length - 1];
+				}}>-</Button
+			>
+			<Button
+				title="表示単位を大きくする"
+				onclick={() => {
+					const next = units[units.indexOf(unit) - 1];
+					unit = next ?? units[0];
+				}}>+</Button
+			>
+			<span>{formatYear(unit)}</span>
+		</div>
+		<div class="move">
+			<input type="number" bind:value={startValue} /><Button onclick={() => move()}>移動</Button>
+		</div>
+		<div class="count">
+			<span>件数:</span>
+			<span>{items.length}/{allCount}</span>
+		</div>
+		<div class="colorSelector">
+			{#each selectableColors as color (color)}
+				<label class="color"
+					><input
+						type="checkbox"
+						bind:group={selectedColors}
+						value={color}
+						onchange={() => filter()}
+					/>
+					<div
+						style:background-color={color ? color : defaultColor}
+						tabindex="0"
+						role="checkbox"
+						aria-checked={selectedColors.includes(color)}
+						onkeypress={(e) => {
+							const target = e.target as HTMLElement;
+							if (e.key === ' ' || e.key === 'Enter') {
+								target.parentElement?.querySelector('input')?.click();
+							}
+						}}
+					></div>
+				</label>
+			{/each}
+		</div>
+	</header>
+	<div
+		class="timelineContainer"
+		style:height={`calc(100lvh - ${(header?.offsetTop ?? 0) + (header?.offsetHeight ?? 0)}px)`}
+	>
+		<ul bind:this={first}>
+			{#each periods as p, i (p)}
+				<li id="li-{p}" style="height:{unitHeight}px">
+					<span>{formatYear(p)}</span>
+				</li>
+			{/each}
+		</ul>
+		{#each items as item (item.id)}
+			<div
+				class="bar"
+				id="item-{item.id}"
+				data-start={item.start}
+				data-end={item.end}
+				data-title={item.title}
+				style:background-color={item.color ? item.color : defaultColor}
+				use:tooltip={{
+					backgroundColor: '#000a',
+					color: '#ddd',
+					padding: '0.25rem'
+				}}
+				transition:fade
+			></div>
 		{/each}
 	</div>
-</header>
-<div
-	class="timelineContainer"
-	style:height={`calc(100lvh - ${(header?.offsetTop ?? 0) + (header?.offsetHeight ?? 0)}px)`}
->
-	<ul bind:this={first}>
-		{#each periods as p, i (p)}
-			<li id="li-{p}" style="height:{unitHeight}px">
-				<span>{formatYear(p)}</span>
-			</li>
-		{/each}
-	</ul>
-	{#each items as item (item.id)}
-		<div
-			class="bar"
-			id="item-{item.id}"
-			data-start={item.start}
-			data-end={item.end}
-			data-title={item.title}
-			style:background-color={item.color ? item.color : defaultColor}
-			use:tooltip={{
-				backgroundColor: '#000a',
-				color: '#ddd',
-				padding: '0.25rem'
-			}}
-			transition:fade
-		></div>
-	{/each}
 </div>
 
 <style>
@@ -211,6 +213,9 @@
 		:global(main) {
 			padding: 0;
 		}
+	}
+	.root {
+		width: 100%;
 	}
 	header {
 		width: 100%;

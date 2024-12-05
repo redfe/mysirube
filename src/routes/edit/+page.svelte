@@ -146,12 +146,12 @@
 				style="background-color:{newData.color}"
 			></td>
 			<td>
-				{#if hasError(newData.errors)}
+				{#if !newData.isValid()}
 					<pre>{oneError(newData)}</pre>
 				{/if}
 			</td>
 			<td>
-				<Button disabled={hasError(newData.errors)} onclick={add}>追加</Button>
+				<Button disabled={!newData.isValid()} onclick={add}>追加</Button>
 			</td>
 		</tr>
 		<tr class="commands">
