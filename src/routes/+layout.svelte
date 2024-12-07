@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Link from '$lib/components/Link.svelte';
+	import { page } from '$app/stores';
 	import { onNavigate } from '$app/navigation';
 	const { children } = $props();
 	onNavigate((navigation) => {
@@ -15,9 +17,9 @@
 
 <header>
 	<nav>
-		<a href="/">Top</a>
-		<a href="/edit">Edit</a>
-		<a href="/timeline">Timeline</a>
+		<Link href="/" current={'/' == $page.url.pathname}>ホーム</Link>
+		<Link href="/edit" current={'/edit' == $page.url.pathname}>編集</Link>
+		<Link href="/timeline" current={'/timeline' == $page.url.pathname}>年表</Link>
 	</nav>
 </header>
 
@@ -36,10 +38,24 @@
 	}
 	header {
 		padding: 1rem;
-		background-color: cornflowerblue;
 		nav {
 			display: flex;
-			gap: 1rem;
+			gap: 2rem;
+			justify-content: center;
+		}
+	}
+	:global header {
+		a {
+			color: black !important;
+			text-decoration: none;
+		}
+		a:hover {
+			color: blue !important;
+			font-weight: 700;
+		}
+		.current {
+			border-bottom: 2px solid black;
+			font-weight: 700;
 		}
 	}
 </style>

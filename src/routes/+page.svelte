@@ -1,18 +1,19 @@
 <script>
 	import Button from '$lib/components/Button.svelte';
+	import Link from '$lib/components/Link.svelte';
 </script>
 
 <main>
 	<h1>Myしるべ</h1>
-	<p>自分専用の歴史年表を作成するアプリケーションです。</p>
+	<p>歴史年表を作成するアプリケーションです。</p>
 	<p>
-		作成したデータはブラウザの<a
+		作成したデータはブラウザの<Link
 			href="https://developer.mozilla.org/ja/docs/Web/API/IndexedDB_API"
 			target="_blank"
-			rel="noopener noreferrer">IndexedDB</a
+			rel="noopener noreferrer">IndexedDB</Link
 		>に保存されます。
 	</p>
-	<Button href="/edit" size="l" style={'margin-top:3rem;'}>使ってみる</Button>
+	<Button href="/edit" size="l" style={'margin-top:1rem;'}>使ってみる</Button>
 </main>
 
 <style>
