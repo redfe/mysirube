@@ -13,8 +13,7 @@ function initDB(): Promise<IDBDatabase> {
 			const db = request.result;
 			if (!db.objectStoreNames.contains(storeName)) {
 				const store = db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: false });
-				store.createIndex('indexOfStart', 'start', { unique: false });
-				store.createIndex('indexOfColor', 'color', { unique: false });
+				store.createIndex('indexOfStartAndTitle', ['start', 'title'], { unique: false });
 			}
 		};
 
@@ -63,16 +62,16 @@ export async function search(options?: {
 		const transaction = db.transaction(storeName, 'readonly');
 		const store = transaction.objectStore(storeName);
 		// start でソートされた状態で取得する
-		const indexOfStart = store.index('indexOfStart');
+		const indexOfStartAndTitle = store.index('indexOfStartAndTitle');
 		const query = options?.start != null ? IDBKeyRange.lowerBound(options?.start) : null;
-		const countRequest = indexOfStart.count();
+		const countRequest = indexOfStartAndTitle.count();
 
 		const searchResult: SearchResult = {
 			datas: [],
 			count: 0
 		};
 		countRequest.onsuccess = () => {
-			const request = indexOfStart.openCursor(query, 'next');
+			const request = indexOfStartAndTitle.openCursor(query, 'next');
 			searchResult.count = countRequest.result;
 			let hitCount = 0;
 			request.onsuccess = () => {
@@ -103,8 +102,8 @@ export async function colors(): Promise<string[]> {
 	return new Promise((resolve, reject) => {
 		const transaction = db.transaction(storeName, 'readonly');
 		const store = transaction.objectStore(storeName);
-		const indexOfStart = store.index('indexOfStart');
-		const request = indexOfStart.openCursor(null, 'next');
+		const indexOfStartAndTitle = store.index('indexOfStartAndTitle');
+		const request = indexOfStartAndTitle.openCursor(null, 'next');
 
 		const colors: string[] = [];
 		request.onsuccess = () => {
