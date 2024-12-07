@@ -9,6 +9,8 @@ export class EditData {
 	#end?: string = $state();
 	#title?: string = $state();
 	#color?: string = $state();
+	#createdAt?: Date = $state();
+	#updatedAt?: Date = $state();
 	#errors: { start?: string; end?: string; title?: string; color?: string } = $state({});
 	#onchangeHandler?: OnchangeHandler;
 
@@ -18,6 +20,8 @@ export class EditData {
 		end?: string;
 		title?: string;
 		color?: string;
+		createdAt?: Date;
+		updatedAt?: Date;
 		onchangeHandler?: OnchangeHandler;
 	}) {
 		this.#id = args?.id ?? crypto.randomUUID();
@@ -25,6 +29,8 @@ export class EditData {
 		this.#end = args?.end;
 		this.#title = args?.title;
 		this.#color = args?.color;
+		this.#createdAt = args?.createdAt;
+		this.#updatedAt = args?.updatedAt;
 		this.#onchangeHandler = args?.onchangeHandler;
 		this.validate();
 	}
@@ -86,6 +92,22 @@ export class EditData {
 
 	get errors() {
 		return this.#errors;
+	}
+
+	get createdAt() {
+		return this.#createdAt;
+	}
+
+	set createdAt(createdAt: Date | undefined) {
+		this.#createdAt = createdAt;
+	}
+
+	get updatedAt() {
+		return this.#updatedAt;
+	}
+
+	set updatedAt(updatedAt: Date | undefined) {
+		this.#updatedAt = updatedAt;
 	}
 
 	private validate(name?: keyof EditData) {

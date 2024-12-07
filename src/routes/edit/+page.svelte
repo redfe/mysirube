@@ -16,11 +16,14 @@
 			start: parseInt(editData.start!),
 			end: editData.end ? parseInt(editData.end) : undefined,
 			title: editData.title!,
-			color: editData.color
+			color: editData.color,
+			createdAt: editData.createdAt ?? new Date(),
+			updatedAt: editData.updatedAt ?? new Date()
 		};
 	}
 
 	const saveOnChange: EditData['onchangeHandler'] = (editData) => {
+		editData.updatedAt = new Date();
 		save(toData(editData));
 	};
 
@@ -37,7 +40,6 @@
 			onchangeHandler: saveOnChange
 		});
 
-		// DBに保存
 		save(toData(editData));
 
 		newData = new EditData({ start: '', end: '', title: '', color: editData.color });
@@ -74,6 +76,8 @@
 					end: `${d.end ?? ''}`,
 					title: d.title,
 					color: d.color,
+					createdAt: d.createdAt,
+					updatedAt: d.updatedAt,
 					onchangeHandler: saveOnChange
 				});
 				return editData;

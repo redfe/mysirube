@@ -129,6 +129,8 @@ export type Data = {
 	end?: number;
 	title: string;
 	color?: string;
+	createdAt: Date;
+	updatedAt: Date;
 };
 
 export type SearchResult = {
