@@ -63,7 +63,7 @@ export async function search(options?: {
 		const store = transaction.objectStore(storeName);
 		// start でソートされた状態で取得する
 		const indexOfStartAndTitle = store.index('indexOfStartAndTitle');
-		const query = options?.start != null ? IDBKeyRange.lowerBound(options?.start) : null;
+		const query = options?.start != null ? IDBKeyRange.lowerBound([options?.start]) : null;
 		const countRequest = indexOfStartAndTitle.count();
 
 		const searchResult: SearchResult = {
