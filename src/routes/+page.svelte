@@ -1,7 +1,6 @@
 <script>
 	import Button from '$lib/components/core/Button.svelte';
 	import Link from '$lib/components/core/Link.svelte';
-	import TextInput from '$lib/components/core/TextInput.svelte';
 </script>
 
 <svelte:head><title>Myしるべ：ホーム</title></svelte:head>

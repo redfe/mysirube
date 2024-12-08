@@ -16,7 +16,8 @@
 	}: Props = $props();
 </script>
 
-<div class="colorSelector">
+<fieldset class="colorSelector">
+	<legend>色フィルター</legend>
 	{#each selectableColors as color (color)}
 		<label class="color">
 			<input type="checkbox" bind:group={selectedColors} value={color} onchange={() => filter()} />
@@ -35,13 +36,19 @@
 			></div>
 		</label>
 	{/each}
-</div>
+</fieldset>
 
 <style>
 	.colorSelector {
 		line-height: 3.25rem;
 		display: flex;
 		align-items: center;
+		padding: 0;
+		border: none;
+		legend {
+			font-size: 0rem;
+			line-height: 0;
+		}
 		.color {
 			padding: 4px;
 			opacity: 0.7;
