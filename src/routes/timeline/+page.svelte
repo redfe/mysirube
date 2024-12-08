@@ -5,8 +5,7 @@
 		getUnitPeriod,
 		formatYear,
 		createLanes,
-		tooltip,
-		resize
+		tooltip
 	} from './timeline.svelte';
 	import type { Item } from './timeline.svelte';
 	import { colors, search } from '$lib/repository';
@@ -119,9 +118,17 @@
 		selectableColors = await colors();
 		selectedColors = selectableColors;
 	});
+
+	let timelineElm: HTMLElement | undefined = $state();
 </script>
 
 <svelte:head><title>Myしるべ：年表</title></svelte:head>
+
+<svelte:window
+	onresize={() => {
+		if (timelineElm) timelineElm.style.height = `calc(100lvh - ${timelineElm.offsetTop}px)`;
+	}}
+/>
 
 <div class="root">
 	<header>
@@ -175,10 +182,7 @@
 			{/each}
 		</div>
 	</header>
-	<div
-		use:resize={(node) => (node.style.height = `calc(100lvh - ${node.offsetTop}px)`)}
-		class="timelineContainer"
-	>
+	<div class="timelineContainer" bind:this={timelineElm}>
 		<ul bind:this={first}>
 			{#each periods as p, i (p)}
 				<li id="li-{p}" style="height:{unitHeight}px">
