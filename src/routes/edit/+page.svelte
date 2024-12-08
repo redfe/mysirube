@@ -146,10 +146,11 @@
 				contenteditable="true"
 			></td>
 			<td
+				class="color"
 				data-errormsg={newData.errors.color}
 				bind:textContent={newData.color}
 				contenteditable="true"
-				style="background-color:{newData.color}"
+				style="border-right-color:{newData.color}"
 			></td>
 			<td>
 				{#if !newData.isValid()}
@@ -194,10 +195,11 @@
 					onkeydown={(e) => moveByArrowKey(e, i, 3)}
 				></td>
 				<td
+					class="color"
 					data-errormsg={data.errors.color}
 					bind:textContent={data.color}
 					contenteditable="true"
-					style="background-color:{data.color}"
+					style="border-right-color:{data.color ? data.color : 'white'}"
 					onkeydown={(e) => moveByArrowKey(e, i, 4)}
 				></td>
 				<td>
@@ -289,5 +291,8 @@
 	}
 	td[data-errormsg] {
 		background-color: rgb(255, 192, 203, 0.7);
+	}
+	.color {
+		border-right: 2rem solid white;
 	}
 </style>
