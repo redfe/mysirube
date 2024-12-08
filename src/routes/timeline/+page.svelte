@@ -5,7 +5,8 @@
 		getUnitPeriod,
 		formatYear,
 		createLanes,
-		tooltip
+		tooltip,
+		resize
 	} from './timeline.svelte';
 	import type { Item } from './timeline.svelte';
 	import { colors, search } from '$lib/repository';
@@ -39,9 +40,6 @@
 	// 表示期間
 	let periods = $derived(generatePeriods(unit, items));
 
-	// headerの要素
-	let header: HTMLElement | undefined = $state();
-
 	// 最上位の表示枠要素
 	let first: HTMLElement | undefined = $state();
 
@@ -49,7 +47,7 @@
 	let startValue: number | undefined = $state();
 
 	// 表示開始年
-	let offsetStart: number | undefined = $state();
+	let offsetStartYear: number | undefined = $state();
 
 	// 表示関数
 	function display(unit: number, periods: number[], filteredItems: Item[]) {
@@ -77,7 +75,7 @@
 	}
 
 	async function filter() {
-		const result = await search({ start: offsetStart, colors: selectedColors });
+		const result = await search({ start: offsetStartYear, colors: selectedColors });
 		items = result.datas.map((data) => ({
 			...data,
 			end: data.end == null ? data.start : data.end
@@ -86,7 +84,7 @@
 	}
 
 	function move() {
-		offsetStart = startValue;
+		offsetStartYear = startValue;
 		filter();
 	}
 
@@ -123,8 +121,10 @@
 	});
 </script>
 
+<svelte:head><title>Myしるべ：年表</title></svelte:head>
+
 <div class="root">
-	<header bind:this={header}>
+	<header>
 		<div class="unitSelector">
 			<span>単位:</span>
 			<Button
@@ -176,8 +176,8 @@
 		</div>
 	</header>
 	<div
+		use:resize={(node) => (node.style.height = `calc(100lvh - ${node.offsetTop}px)`)}
 		class="timelineContainer"
-		style:height={`calc(100lvh - ${(header?.offsetTop ?? 0) + (header?.offsetHeight ?? 0)}px)`}
 	>
 		<ul bind:this={first}>
 			{#each periods as p, i (p)}
@@ -222,7 +222,9 @@
 		padding: 1rem;
 		box-sizing: border-box;
 		display: flex;
-		gap: 2rem;
+		gap: 1rem;
+		flex-wrap: wrap;
+		justify-content: center;
 		.move {
 			input {
 				width: 6.25rem;

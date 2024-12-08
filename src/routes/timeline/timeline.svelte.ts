@@ -108,3 +108,20 @@ export function tooltip(node: HTMLElement, style: Partial<CSSStyleDeclaration> =
 		};
 	});
 }
+
+export function resize(node: HTMLElement, fun: (node: HTMLElement) => void) {
+	fun(node);
+
+	// リサイズイベントを監視
+	const resizeObserver = new ResizeObserver(() => {
+		fun(node);
+	});
+	resizeObserver.observe(node);
+
+	return {
+		destroy() {
+			// アクションが不要になったらリスナーをクリーンアップ
+			resizeObserver.disconnect();
+		}
+	};
+}

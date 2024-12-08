@@ -3,6 +3,8 @@
 	import Link from '$lib/components/Link.svelte';
 </script>
 
+<svelte:head><title>Myしるべ：ホーム</title></svelte:head>
+
 <main>
 	<h1>Myしるべ</h1>
 	<p>歴史年表を作成するアプリケーションです。</p>
@@ -21,7 +23,7 @@
 		padding: 1rem;
 		text-align: center;
 		h1 {
-			font-size: 5rem;
+			font-size: 3rem;
 		}
 	}
 </style>
