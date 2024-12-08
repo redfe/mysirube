@@ -48,6 +48,9 @@
 	// 表示開始年
 	let offsetStartYear: number | undefined = $state();
 
+	// 年表要素
+	let timelineElm: HTMLElement | undefined = $state();
+
 	// 表示関数
 	function display(unit: number, periods: number[], filteredItems: Item[]) {
 		const lanes = createLanes(unit, filteredItems);
@@ -87,6 +90,10 @@
 		filter();
 	}
 
+	function resizeTimelineElm() {
+		if (timelineElm) timelineElm.style.height = `calc(100lvh - ${timelineElm.offsetTop}px)`;
+	}
+
 	$effect(() => {
 		display(
 			unit,
@@ -115,20 +122,18 @@
 			units[0]
 		);
 
+		// 色選択肢を初期化
 		selectableColors = await colors();
 		selectedColors = selectableColors;
-	});
 
-	let timelineElm: HTMLElement | undefined = $state();
+		// 年表のサイズを初期化
+		resizeTimelineElm();
+	});
 </script>
 
 <svelte:head><title>Myしるべ：年表</title></svelte:head>
 
-<svelte:window
-	onresize={() => {
-		if (timelineElm) timelineElm.style.height = `calc(100lvh - ${timelineElm.offsetTop}px)`;
-	}}
-/>
+<svelte:window onresize={resizeTimelineElm} />
 
 <div class="root">
 	<header>
