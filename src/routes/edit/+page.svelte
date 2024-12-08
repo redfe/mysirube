@@ -2,7 +2,9 @@
 	import { EditData } from './data.svelte';
 	import { search, save, type Data, remove as removeData } from '$lib/repository';
 	import { onMount } from 'svelte';
-	import Button from '$lib/components/Button.svelte';
+	import Button from '$lib/components/core/Button.svelte';
+	import Typograph from '$lib/components/core/Typograph.svelte';
+	import StartYearChange from '$lib/components/custom/StartYearChange.svelte';
 
 	let newData = $state(new EditData());
 	let datas: EditData[] = $state([]);
@@ -164,12 +166,10 @@
 		<tr class="commands">
 			<td colspan="6">
 				<div>
-					<div>
-						<input type="number" bind:value={offsetStart} /><Button onclick={move}>移動</Button>
-					</div>
+					<StartYearChange label="表示開始年" {move} bind:startYear={offsetStart} />
 					<div class="count">
-						<span>件数:</span>
-						<span>{datas.length}/{allCount}</span>
+						<Typograph>件数:</Typograph>
+						<Typograph>{datas.length}/{allCount}</Typograph>
 					</div>
 				</div>
 			</td>
@@ -272,12 +272,6 @@
 				text-align: left;
 				display: flex;
 				gap: 2rem;
-				input {
-					width: 6.25rem;
-					height: 1.25rem;
-					text-align: right;
-					margin-right: 0.25rem;
-				}
 			}
 		}
 		td:nth-child(1),
@@ -285,7 +279,7 @@
 			text-align: right;
 		}
 		pre {
-			color: red;
+			color: crimson;
 			margin: 0;
 		}
 	}

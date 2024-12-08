@@ -11,7 +11,10 @@
 	import { colors, search } from '$lib/repository';
 	import { generate } from './dummyDataGenerator';
 	import { fade } from 'svelte/transition';
-	import Button from '$lib/components/Button.svelte';
+	import Button from '$lib/components/core/Button.svelte';
+	import Typograph from '$lib/components/core/Typograph.svelte';
+	import StartYearChange from '$lib/components/custom/StartYearChange.svelte';
+	import ColorFilter from '$lib/components/custom/ColorFilter.svelte';
 
 	const units = [10000, 5000, 1000, 500, 100, 50, 10, 5, 1];
 
@@ -138,7 +141,7 @@
 <div class="root">
 	<header>
 		<div class="unitSelector">
-			<span>単位:</span>
+			<Typograph>単位:</Typograph>
 			<Button
 				title="表示単位を小さくする"
 				onclick={() => {
@@ -153,39 +156,14 @@
 					unit = next ?? units[0];
 				}}>+</Button
 			>
-			<span>{formatYear(unit)}</span>
+			<Typograph>{formatYear(unit)}</Typograph>
 		</div>
-		<div class="move">
-			<input type="number" bind:value={startValue} /><Button onclick={() => move()}>移動</Button>
-		</div>
+		<StartYearChange label="表示開始年" {move} bind:startYear={startValue} />
 		<div class="count">
-			<span>件数:</span>
-			<span>{items.length}/{allCount}</span>
+			<Typograph>件数:</Typograph>
+			<Typograph>{items.length}/{allCount}</Typograph>
 		</div>
-		<div class="colorSelector">
-			{#each selectableColors as color (color)}
-				<label class="color"
-					><input
-						type="checkbox"
-						bind:group={selectedColors}
-						value={color}
-						onchange={() => filter()}
-					/>
-					<div
-						style:background-color={color ? color : defaultColor}
-						tabindex="0"
-						role="checkbox"
-						aria-checked={selectedColors.includes(color)}
-						onkeypress={(e) => {
-							const target = e.target as HTMLElement;
-							if (e.key === ' ' || e.key === 'Enter') {
-								target.parentElement?.querySelector('input')?.click();
-							}
-						}}
-					></div>
-				</label>
-			{/each}
-		</div>
+		<ColorFilter bind:selectableColors bind:selectedColors {defaultColor} {filter} />
 	</header>
 	<div class="timelineContainer" bind:this={timelineElm}>
 		<ul bind:this={first}>
@@ -234,40 +212,6 @@
 		gap: 1rem;
 		flex-wrap: wrap;
 		justify-content: center;
-		.move {
-			input {
-				width: 6.25rem;
-				height: 1.25rem;
-				text-align: right;
-				margin-right: 0.25rem;
-			}
-		}
-
-		.colorSelector {
-			.color {
-				padding: 4px;
-				opacity: 0.7;
-				width: 1.5rem;
-				height: 1.5rem;
-				display: inline-block;
-				border: solid 1px rgba(0, 0, 0, 0.7);
-				box-sizing: border-box;
-				margin-right: 0.5rem;
-				transition: padding 0.25s;
-
-				input {
-					display: none;
-				}
-				div {
-					width: 100%;
-					height: 100%;
-				}
-			}
-			.color:has(input:checked) {
-				border-bottom: 3px solid blue;
-				padding: 2px;
-			}
-		}
 	}
 	.timelineContainer {
 		position: relative;

@@ -35,7 +35,7 @@
 		background-color: bisque;
 	}
 	button:active:not(:disabled) {
-		background-color: bisque;
+		opacity: 0.7;
 	}
 	button.s {
 		font-size: 0.6rem;

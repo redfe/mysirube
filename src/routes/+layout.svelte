@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Link from '$lib/components/Link.svelte';
+	import Link from '$lib/components/core/Link.svelte';
 	import { page } from '$app/stores';
 	import { onNavigate } from '$app/navigation';
 	const { children } = $props();
