@@ -65,6 +65,8 @@ function item(start: number, end: number) {
 		id: '',
 		start,
 		end,
-		title: ''
+		title: '',
+		createdAt: new Date(),
+		updatedAt: new Date()
 	};
 }
