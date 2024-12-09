@@ -71,29 +71,46 @@ export function createLanes(unit: number, items: Item[]) {
 // 参考：https://svelte.dev/tutorial/svelte/adding-parameters-to-actions
 export function tooltip(node: HTMLElement, style: Partial<CSSStyleDeclaration> = {}) {
 	$effect(() => {
-		const t = document.createElement('div');
-		t.classList.add('tooltip');
-		Object.assign(t.style, style);
-		t.style.position = 'absolute';
-		t.style.visibility = 'hidden';
-		t.textContent = `${formatYear(parseInt(node.dataset.start!))}${node.dataset.start === node.dataset.end ? '' : '〜' + formatYear(parseInt(node.dataset.end!))} ${node.dataset.title}`;
-		document.body.append(t);
+		let elm: HTMLElement | undefined;
 
-		const mouseover = (e: Event) => {
-			e.preventDefault();
-			t.style.visibility = 'visible';
+		const getTooltipElm = (): HTMLElement => {
+			if (elm) return elm;
+			elm = document.createElement('div');
+			elm.classList.add('tooltip');
+			Object.assign(elm.style, style);
+			elm.style.position = 'absolute';
+			elm.textContent = `${formatYear(parseInt(node.dataset.start!))}${node.dataset.start === node.dataset.end ? '' : '〜' + formatYear(parseInt(node.dataset.end!))} ${node.dataset.title}`;
+			document.body.append(elm);
+			return elm;
 		};
 
-		const mousemove = (e: Event) => {
+		const removeTooltipElm = () => {
+			if (elm) elm.remove();
+			elm = undefined;
+		};
+
+		const movePosition = (e: MouseEvent) => {
+			const t = getTooltipElm();
+			const scrollY = window.scrollY;
+			const scrollX = window.scrollX;
+			const { clientX, clientY } = e;
+			t.style.top = `${scrollY + clientY}px`;
+			t.style.left = `${clientX + scrollX + 10}px`;
+		};
+
+		const mouseover = (e: MouseEvent) => {
 			e.preventDefault();
-			const { clientX, clientY } = e as MouseEvent;
-			t.style.top = `${clientY}px`;
-			t.style.left = `${clientX + 10}px`;
+			movePosition(e);
+		};
+
+		const mousemove = (e: MouseEvent) => {
+			e.preventDefault();
+			movePosition(e);
 		};
 
 		const mouseleave = (e: Event) => {
 			e.preventDefault();
-			t.style.visibility = 'hidden';
+			removeTooltipElm();
 		};
 
 		node.addEventListener('mouseover', mouseover);
@@ -101,7 +118,7 @@ export function tooltip(node: HTMLElement, style: Partial<CSSStyleDeclaration> =
 		node.addEventListener('mouseleave', mouseleave);
 
 		return () => {
-			t.remove();
+			removeTooltipElm();
 			node.removeEventListener('mouseover', mouseover);
 			node.removeEventListener('mousemove', mousemove);
 			node.removeEventListener('mouseleave', mouseleave);
