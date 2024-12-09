@@ -99,6 +99,10 @@
 		filter();
 	}
 
+	function resizeTimelineElm() {
+		if (timelineElm) timelineElm.style.height = `calc(100lvh - ${timelineElm.offsetTop}px)`;
+	}
+
 	$effect(() => {
 		display(
 			unit,
@@ -130,50 +134,43 @@
 		// 色選択肢を初期化
 		selectableColors = await colors();
 		selectedColors = selectableColors;
+
+		// 年表のサイズを初期化
+		resizeTimelineElm();
 	});
 </script>
 
 <svelte:head><title>Myしるべ：年表</title></svelte:head>
 
-<svelte:window 
-onresize={() => {
-	timelineTop = timelineElm?.offsetTop ?? 0;
-}}
-onscroll={() =>{
-	scrollY = window.scrollY;
-}} />
-
-{#snippet commands(fixed:boolean)}
-<div class="commands" class:fixed in:fly={{y:fixed ? -100 : 0}}>
-	<div class="unitSelector">
-		<Typograph>単位:</Typograph>
-		<Button
-			title="表示単位を小さくする"
-			onclick={() => {
-				const next = units[units.indexOf(unit) + 1];
-				unit = next ?? units[units.length - 1];
-			}}>-</Button
-		>
-		<Button
-			title="表示単位を大きくする"
-			onclick={() => {
-				const next = units[units.indexOf(unit) - 1];
-				unit = next ?? units[0];
-			}}>+</Button
-		>
-		<Typograph>{formatYear(unit)}</Typograph>
-	</div>
-	<StartYearChange label="表示開始年" {move} bind:startYear={startValue} />
-	<div class="count">
-		<Typograph>件数:</Typograph>
-		<Typograph>{items.length}/{allCount}</Typograph>
-	</div>
-	<ColorFilter bind:selectableColors bind:selectedColors {defaultColor} {filter} />
-</div>
-{/snippet}
+<svelte:window onresize={resizeTimelineElm} />
 
 <div class="root">
-	{@render commands(false)}
+	<div class="commands">
+		<div class="unitSelector">
+			<Typograph>単位:</Typograph>
+			<Button
+				title="表示単位を小さくする"
+				onclick={() => {
+					const next = units[units.indexOf(unit) + 1];
+					unit = next ?? units[units.length - 1];
+				}}>-</Button
+			>
+			<Button
+				title="表示単位を大きくする"
+				onclick={() => {
+					const next = units[units.indexOf(unit) - 1];
+					unit = next ?? units[0];
+				}}>+</Button
+			>
+			<Typograph>{formatYear(unit)}</Typograph>
+		</div>
+		<StartYearChange label="表示開始年" {move} bind:startYear={startValue} />
+		<div class="count">
+			<Typograph>件数:</Typograph>
+			<Typograph>{items.length}/{allCount}</Typograph>
+		</div>
+		<ColorFilter bind:selectableColors bind:selectedColors {defaultColor} {filter} />
+	</div>
 	<div class="timelineContainer" bind:this={timelineElm}>
 		<ul bind:this={first}>
 			{#each periods as p, i (p)}
@@ -201,21 +198,17 @@ onscroll={() =>{
 	</div>
 </div>
 
-{#if scrollY > timelineTop + 150}
-{@render commands(true)}
-{/if}
-
 <style>
 	:global(body:has(.timelineContainer)) {
 		margin: 0;
 		padding: 0;
+		overflow: hidden;
 		:global(main) {
 			padding: 0;
 		}
 	}
 	.root {
 		width: 100%;
-		position: relative;
 	}
 	.commands {
 		width: 100%;
@@ -226,13 +219,7 @@ onscroll={() =>{
 		padding: 0.25rem 1rem;
 		justify-content: center;
 	}
-	.commands.fixed {
-		position: fixed;
-		top: 0px;
-		background-color: white;
-		box-shadow: 0 0 10px 1px #0005;
-	}
-	@media(max-width: 768px) {
+	@media (max-width: 768px) {
 		.commands {
 			gap: 0;
 			padding: 0.5rem;
@@ -240,6 +227,7 @@ onscroll={() =>{
 	}
 	.timelineContainer {
 		position: relative;
+		overflow: scroll;
 		box-sizing: border-box;
 	}
 	ul {
