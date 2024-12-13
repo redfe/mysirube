@@ -229,6 +229,7 @@
 		position: relative;
 		overflow: scroll;
 		box-sizing: border-box;
+		padding-bottom: 2rem;
 	}
 	ul {
 		list-style: none;
