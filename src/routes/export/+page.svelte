@@ -83,6 +83,8 @@
 	};
 </script>
 
+<svelte:head><title>Myしるべ：エクスポート</title></svelte:head>
+
 {#if isExportable}
 	{#if writing}
 		<Typograph>{`書き込み中...${progress}%`}</Typograph>

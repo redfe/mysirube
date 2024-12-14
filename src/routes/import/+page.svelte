@@ -115,6 +115,8 @@
 	const id = crypto.randomUUID();
 </script>
 
+<svelte:head><title>Myしるべ：インポート</title></svelte:head>
+
 {#if importing}
 	<Typograph>インポート中... {progress}%</Typograph>
 {:else}
