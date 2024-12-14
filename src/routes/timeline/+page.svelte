@@ -18,6 +18,10 @@
 
 	const units = [10000, 5000, 1000, 500, 100, 50, 10, 5, 1];
 
+	let initialized = $state(false);
+
+	let loading = $state(true);
+
 	// 表示単位
 	let unit = $state(100);
 
@@ -54,12 +58,6 @@
 	// 年表要素
 	let timelineElm: HTMLElement | undefined = $state();
 
-	// 年表要素のトップ値
-	let timelineTop = $state(0);
-
-	// スクロール量
-	let scrollY = $state(0);
-
 	// 表示関数
 	function display(unit: number, periods: number[], filteredItems: Item[]) {
 		const lanes = createLanes(unit, filteredItems);
@@ -86,6 +84,7 @@
 	}
 
 	async function filter() {
+		loading = true;
 		const result = await search({ start: offsetStartYear, colors: selectedColors });
 		items = result.datas.map((data) => ({
 			...data,
@@ -104,6 +103,9 @@
 	}
 
 	$effect(() => {
+		if (initialized) {
+			loading = false;
+		}
 		display(
 			unit,
 			untrack(() => periods),
@@ -115,13 +117,11 @@
 		const result = await search();
 		allCount = result.count;
 		// データ読み込み
+		loading = true;
 		items = result.datas.map((data) => ({
 			...data,
 			end: data.end == null ? data.start : data.end
 		}));
-
-		// for test
-		//items = generate(-500, 500, 1000).sort((a, b) => a.start - b.start);
 
 		// 表示単位を初期化
 		// 20行で収まりそうな初期表示単位の基準値
@@ -137,6 +137,8 @@
 
 		// 年表のサイズを初期化
 		resizeTimelineElm();
+
+		initialized = true;
 	});
 </script>
 
@@ -165,9 +167,13 @@
 			<Typograph>{formatYear(unit)}</Typograph>
 		</div>
 		<StartYearChange label="表示開始年" {move} bind:startYear={startValue} />
-		<div class="count">
-			<Typograph>件数:</Typograph>
-			<Typograph>{items.length}/{allCount}</Typograph>
+		<div class="count" style="width: 10rem;">
+			{#if loading}
+				<Typograph>Loading...</Typograph>
+			{:else}
+				<Typograph>件数:</Typograph>
+				<Typograph>{items.length}/{allCount}</Typograph>
+			{/if}
 		</div>
 		<ColorFilter bind:selectableColors bind:selectedColors {defaultColor} {filter} />
 	</div>

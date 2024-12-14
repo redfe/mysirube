@@ -21,6 +21,7 @@
 		<Link href="/edit" current={'/edit' == $page.url.pathname}>編集</Link>
 		<Link href="/timeline" current={'/timeline' == $page.url.pathname}>年表</Link>
 		<Link href="/export" current={'/export' == $page.url.pathname}>エクスポート</Link>
+		<Link href="/import" current={'/import' == $page.url.pathname}>インポート</Link>
 	</nav>
 </header>
 

@@ -1,6 +1,8 @@
 export const dbName = 'MySerube';
 export const storeName = 'datas';
 
+const MAX_PER_DISPLAY = 1000;
+
 let database: Promise<IDBDatabase> | null = null;
 
 export function initDB(): Promise<IDBDatabase> {
@@ -46,8 +48,6 @@ export async function remove(id: string) {
 		request.onerror = () => reject(request.error);
 	});
 }
-
-const MAX_PER_DISPLAY = 1000;
 
 /**
  * options.start 〜 1000件を取得する

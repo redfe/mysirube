@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import Button from '$lib/components/core/Button.svelte';
+	import Typograph from '$lib/components/core/Typograph.svelte';
 	import { initDB, search, storeName, type Data } from '$lib/repository';
 
 	// 書き込み中かどうかを管理するストア
@@ -63,10 +64,11 @@
 				]
 			});
 			writing = true;
+			await write(fileHandle);
 			// 完了したことを認識してもらいやすくするため、少し停止する
 			await new Promise((r) => setTimeout(r, 1000));
-			await write(fileHandle);
-			await new Promise((r) => setTimeout(r, 1000));
+
+			alert('エクスポートが完了しました');
 		} catch (error: any) {
 			if (error['name'] === 'AbortError') {
 				// キャンセル
@@ -82,9 +84,11 @@
 </script>
 
 {#if isExportable}
-	<Button onclick={exportFile} disabled={writing}
-		>{writing ? `書き込み中...${progress}%` : 'エクスポート'}</Button
-	>
+	{#if writing}
+		<Typograph>{`書き込み中...${progress}%`}</Typograph>
+	{:else}
+		<Button onclick={exportFile}>{'エクスポート'}</Button>
+	{/if}
 {:else}
-	<p>window.showSaveFilePicker がないためエクスポートできません</p>
+	<Typograph>window.showSaveFilePicker がないためエクスポートできません</Typograph>
 {/if}
