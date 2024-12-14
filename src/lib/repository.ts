@@ -3,7 +3,7 @@ export const storeName = 'datas';
 
 let database: Promise<IDBDatabase> | null = null;
 
-function initDB(): Promise<IDBDatabase> {
+export function initDB(): Promise<IDBDatabase> {
 	if (database) return database;
 
 	database = new Promise((resolve, reject) => {
