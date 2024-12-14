@@ -122,6 +122,7 @@
 			...data,
 			end: data.end == null ? data.start : data.end
 		}));
+		loading = false;
 
 		// 表示単位を初期化
 		// 20行で収まりそうな初期表示単位の基準値
