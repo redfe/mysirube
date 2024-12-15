@@ -76,8 +76,8 @@
 		const unitCount = (unitPeriod.end - unitPeriod.start) / unit + 1;
 		const height = unitHeight * unitCount || unitHeight;
 		let periodIndex = periods.indexOf(unitPeriod.start);
-		itemElement!.style.top = firstTop + periodIndex * unitHeight + 'px';
-		itemElement!.style.height = height + 'px';
+		itemElement!.style.top = firstTop + periodIndex * unitHeight + 2 + 'px';
+		itemElement!.style.height = height - 3 + 'px';
 		const left = 40 * (laneIndex + 1) + 100;
 		itemElement!.style.left = left + 'px';
 	}
