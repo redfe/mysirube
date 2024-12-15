@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, untrack } from 'svelte';
+	import { onMount, tick, untrack } from 'svelte';
 	import {
 		generatePeriods,
 		getUnitPeriod,
@@ -7,7 +7,7 @@
 		createLanes,
 		tooltip
 	} from './timeline.svelte';
-	import type { Item } from './timeline.svelte';
+	import type { Item, UnitChangeSubscriber } from './timeline.svelte';
 	import { colors, search } from '$lib/repository';
 	import { fade } from 'svelte/transition';
 	import Button from '$lib/components/core/Button.svelte';
@@ -56,6 +56,20 @@
 
 	// 年表要素
 	let timelineElm: HTMLElement | undefined = $state();
+
+	const unitChangeListners: (() => Promise<void>)[] = [];
+	const unitChangeSubscriber: UnitChangeSubscriber = {
+		subscribe: async (func) => {
+			unitChangeListners.push(func);
+		},
+		unsubscribe: async (func) => {
+			unitChangeListners.splice(
+				0,
+				unitChangeListners.length,
+				...unitChangeListners.filter((f) => f != func)
+			);
+		}
+	};
 
 	// 表示関数
 	function display(unit: number, periods: number[], filteredItems: Item[]) {
@@ -155,6 +169,7 @@
 				onclick={() => {
 					const next = units[units.indexOf(unit) + 1];
 					unit = next ?? units[units.length - 1];
+					tick().then(() => unitChangeListners.forEach((f) => f()));
 				}}>-</Button
 			>
 			<Button
@@ -162,6 +177,7 @@
 				onclick={() => {
 					const next = units[units.indexOf(unit) - 1];
 					unit = next ?? units[0];
+					tick().then(() => unitChangeListners.forEach((f) => f()));
 				}}>+</Button
 			>
 			<Typograph>{formatYear(unit)}</Typograph>
@@ -194,9 +210,12 @@
 				data-title={item.title}
 				style:background-color={item.color ? item.color : defaultColor}
 				use:tooltip={{
-					backgroundColor: '#000a',
-					color: '#ddd',
-					padding: '0.25rem'
+					css: {
+						backgroundColor: '#000',
+						color: '#ddd',
+						padding: '0.25rem'
+					},
+					unitChangeSubscriber
 				}}
 				transition:fade
 			></div>

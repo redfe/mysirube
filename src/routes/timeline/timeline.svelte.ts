@@ -67,61 +67,120 @@ export function createLanes(unit: number, items: Item[]) {
 	return lanes;
 }
 
+export type UnitChangeSubscriber = {
+	subscribe: (func: () => Promise<void>) => Promise<void>;
+	unsubscribe: (func: () => Promise<void>) => Promise<void>;
+};
+
 // ツールチップ表示アクション
 // 参考：https://svelte.dev/tutorial/svelte/adding-parameters-to-actions
-export function tooltip(node: HTMLElement, style: Partial<CSSStyleDeclaration> = {}) {
+export function tooltip(
+	node: HTMLElement,
+	{
+		css = {},
+		unitChangeSubscriber
+	}: { css?: Partial<CSSStyleDeclaration>; unitChangeSubscriber?: UnitChangeSubscriber }
+) {
 	$effect(() => {
-		let elm: HTMLElement | undefined;
+		const originalZIndex = node.style.zIndex;
+		const offset = { y: 0, x: 0 };
 
-		const getTooltipElm = (): HTMLElement => {
-			if (elm) return elm;
-			elm = document.createElement('div');
-			elm.classList.add('tooltip');
-			Object.assign(elm.style, style);
-			elm.style.position = 'absolute';
-			elm.textContent = `${formatYear(parseInt(node.dataset.start!))}${node.dataset.start === node.dataset.end ? '' : '〜' + formatYear(parseInt(node.dataset.end!))} ${node.dataset.title}`;
-			document.body.append(elm);
-			return elm;
+		let tooltip: HTMLElement | undefined;
+		let pined = false;
+
+		const removeToolTipOnChange = async () => {
+			removeTooltipElm();
+		};
+		unitChangeSubscriber?.subscribe(removeToolTipOnChange);
+
+		const createTooltipElm = (): HTMLElement => {
+			if (tooltip) return tooltip;
+			tooltip = document.createElement('div');
+			tooltip.classList.add('tooltip');
+			Object.assign(tooltip.style, css);
+			tooltip.style.position = 'absolute';
+			tooltip.style.whiteSpace = 'nowrap';
+			tooltip.textContent = `${formatYear(parseInt(node.dataset.start!))}${node.dataset.start === node.dataset.end ? '' : '〜' + formatYear(parseInt(node.dataset.end!))} ${node.dataset.title}`;
+			const del = document.createElement('button');
+			del.textContent = '×';
+			del.style.marginLeft = '0.5rem';
+			del.style.borderRadius = '0.5rem';
+			del.style.border = 'none';
+			del.addEventListener('click', removeTooltipElm);
+			tooltip.append(del);
+			node.append(tooltip);
+			offset.y = node.parentElement?.offsetTop ?? 0;
+			offset.x = node.parentElement?.offsetLeft ?? 0;
+
+			// 最前面に表示されるようにする
+			const nodes: HTMLElement[] = Array.from(node.parentElement?.querySelectorAll('*') ?? []);
+			const max = nodes.reduce((acc, cur) => Math.max(acc, parseInt(cur.style.zIndex || '0')), 0);
+			node.style.zIndex = `${max + 1}`;
+
+			return tooltip;
 		};
 
 		const removeTooltipElm = () => {
-			if (elm) elm.remove();
-			elm = undefined;
+			if (tooltip) tooltip.remove();
+			tooltip = undefined;
+			pined = false;
+
+			// 最前面表示を解除
+			node.style.zIndex = originalZIndex;
 		};
 
 		const movePosition = (e: MouseEvent) => {
-			const t = getTooltipElm();
-			const scrollY = window.scrollY;
-			const scrollX = window.scrollX;
+			const t = createTooltipElm();
 			const { clientX, clientY } = e;
-			t.style.top = `${scrollY + clientY}px`;
-			t.style.left = `${clientX + scrollX + 10}px`;
+
+			t.style.top = `${clientY - offset.y - node.offsetTop + (node.parentElement?.scrollTop ?? 0)}px`;
+			t.style.left = `${10 + (clientX - offset.x - node.offsetLeft + (node.parentElement?.scrollLeft ?? 0))}px`;
 		};
 
 		const mouseover = (e: MouseEvent) => {
-			e.preventDefault();
+			if (tooltip && pined) {
+				return;
+			}
 			movePosition(e);
 		};
 
 		const mousemove = (e: MouseEvent) => {
-			e.preventDefault();
+			if (tooltip && pined) {
+				return;
+			}
 			movePosition(e);
 		};
 
-		const mouseleave = (e: Event) => {
-			e.preventDefault();
+		const mouseleave = () => {
+			if (tooltip && pined) {
+				return;
+			}
 			removeTooltipElm();
+		};
+
+		const click = (e: Event) => {
+			// クローズボタンクリックで true になってしまうのを防ぐ
+			if (e.target != node) {
+				return;
+			}
+			if (pined) {
+				return;
+			}
+			pined = true;
 		};
 
 		node.addEventListener('mouseover', mouseover);
 		node.addEventListener('mousemove', mousemove);
 		node.addEventListener('mouseleave', mouseleave);
+		node.addEventListener('click', click);
 
 		return () => {
 			removeTooltipElm();
 			node.removeEventListener('mouseover', mouseover);
 			node.removeEventListener('mousemove', mousemove);
 			node.removeEventListener('mouseleave', mouseleave);
+			node.removeEventListener('click', click);
+			unitChangeSubscriber?.unsubscribe(removeToolTipOnChange);
 		};
 	});
 }
