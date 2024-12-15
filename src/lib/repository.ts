@@ -1,6 +1,6 @@
 export const dbName = 'MySerube';
 export const storeName = 'datas';
-
+export const version = 1;
 const MAX_PER_DISPLAY = 1000;
 
 let database: Promise<IDBDatabase> | null = null;
@@ -9,7 +9,7 @@ export function initDB(): Promise<IDBDatabase> {
 	if (database) return database;
 
 	database = new Promise((resolve, reject) => {
-		const request = indexedDB.open(dbName, 1);
+		const request = indexedDB.open(dbName, version);
 
 		request.onupgradeneeded = () => {
 			const db = request.result;
