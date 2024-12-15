@@ -30,8 +30,9 @@
 				}
 				store.add({
 					...item,
-					createdAt: new Date(item.createdAt),
-					updatedAt: new Date(item.updatedAt)
+					id: item.id ?? crypto.randomUUID,
+					createdAt: new Date(item.createdAt ?? new Date()),
+					updatedAt: new Date(item.updatedAt ?? new Date())
 				});
 			}
 
@@ -107,17 +108,12 @@
 <svelte:head><title>Myしるべ：インポート</title></svelte:head>
 
 <div>
-	<div>
-		{#if importing}
-			<Typograph>インポート中... {progress}%</Typograph>
-		{:else}
-			<Button><label for={id}>ファイル選択</label></Button>
-			<input {id} type="file" accept=".myshirube" onchange={handleFileSelect} />
-		{/if}
-	</div>
-	<div>
-		<Button>TODO サンプルデータインポート</Button>
-	</div>
+	{#if importing}
+		<Typograph>インポート中... {progress}%</Typograph>
+	{:else}
+		<Button><label for={id}>ファイル選択</label></Button>
+		<input {id} type="file" accept=".myshirube" onchange={handleFileSelect} />
+	{/if}
 </div>
 
 <style>

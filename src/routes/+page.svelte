@@ -1,6 +1,7 @@
 <script>
 	import Button from '$lib/components/core/Button.svelte';
 	import Link from '$lib/components/core/Link.svelte';
+	import Typograph from '$lib/components/core/Typograph.svelte';
 </script>
 
 <svelte:head><title>Myしるべ：ホーム</title></svelte:head>
@@ -16,6 +17,9 @@
 		>に保存されます。
 	</p>
 	<Button href="/edit" size="l" style={'margin-top:1rem;'}>使ってみる</Button>
+	<Typograph style={'font-size:0.7rem;display:block;color:gray;'}
+		>※最初は AI に生成してもらったデータが登録されています。</Typograph
+	>
 </main>
 
 <style>

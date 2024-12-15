@@ -1,3 +1,5 @@
+import { sampleData } from './sampleData';
+
 export const dbName = 'MySerube';
 export const storeName = 'datas';
 export const version = 1;
@@ -16,6 +18,10 @@ export function initDB(): Promise<IDBDatabase> {
 			if (!db.objectStoreNames.contains(storeName)) {
 				const store = db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: false });
 				store.createIndex('indexOfStartAndTitle', ['start', 'title'], { unique: false });
+				sampleData.forEach((item) => {
+					const request = store.add(item);
+					request.onerror = () => reject(request.error);
+				});
 			}
 		};
 
