@@ -119,7 +119,7 @@
 	});
 </script>
 
-<svelte:head><title>Myしるべ：編集</title></svelte:head>
+<svelte:head><title>Myしるべ：年表</title></svelte:head>
 
 <table>
 	<thead>

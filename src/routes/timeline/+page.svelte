@@ -9,8 +9,7 @@
 	} from './timeline.svelte';
 	import type { Item } from './timeline.svelte';
 	import { colors, search } from '$lib/repository';
-	import { generate } from './dummyDataGenerator';
-	import { fade, fly } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 	import Button from '$lib/components/core/Button.svelte';
 	import Typograph from '$lib/components/core/Typograph.svelte';
 	import StartYearChange from '$lib/components/custom/StartYearChange.svelte';
@@ -143,7 +142,7 @@
 	});
 </script>
 
-<svelte:head><title>Myしるべ：年表</title></svelte:head>
+<svelte:head><title>Myしるべ：タイムライン</title></svelte:head>
 
 <svelte:window onresize={resizeTimelineElm} />
 
