@@ -89,13 +89,11 @@ export function tooltip(
 		let pined = false;
 
 		const toPined = () => {
-			if (!tooltip) {
-				createTooltipElm();
-			}
+			const t = createTooltipElm();
 			pined = true;
-			tooltip!.style.boxShadow = 'none';
-			tooltip!.style.translate = '0 0.1rem';
-			tooltip!.style.opacity = '1';
+			t.style.boxShadow = 'none';
+			t.style.translate = '0 0.1rem';
+			t.style.opacity = '1';
 		};
 
 		const toUnPined = () => {
@@ -111,7 +109,7 @@ export function tooltip(
 			removeTooltipElm();
 		};
 
-		// ResizeObserver で検知すると、動作が重くなるので、単位変更時に削除する
+		// Chrome系ブラウザで node が10秒程度見えなくなるので、単位変更時にツールチップを削除する
 		unitChangeSubscriber?.subscribe(removeToolTipOnChange);
 
 		const toFront = () => {
