@@ -10,8 +10,15 @@
 </script>
 
 <div class="root">
-	<TextInput {label} type="number" bind:value={startYear} />
-	<Button onclick={move}>移動</Button>
+	<form
+		onsubmit={(e) => {
+			e.preventDefault();
+			move();
+		}}
+	>
+		<TextInput {label} type="number" bind:value={startYear} />
+		<Button onclick={move}>移動</Button>
+	</form>
 </div>
 
 <style>
