@@ -25,19 +25,28 @@
 	let unit = $state(100);
 
 	// 表示単位ごとの高さ
-	const unitHeight = $derived(25 + (units.length - (units.indexOf(unit) + 1)) * 4);
-
-	// 色選択肢
-	let selectableColors: string[] = $state([]);
+	const unitHeight = $derived(25 + (units.length - (units.indexOf(unit) + 1)) * 7);
 
 	// デフォルトの色
 	const defaultColor = 'white';
 
+	// 色選択肢
+	let selectableColors: string[] = $state([]);
+
 	// 選択中の色
 	let selectedColors: string[] = $state([]);
 
+	// 補色選択肢
+	let selectableSubColors: string[] = $state([]);
+
+	// 選択中の補色
+	let selectedSubColors: string[] = $state([]);
+
 	// 表示アイテム
 	let items: Item[] = $state([]);
+
+	// アイテムの横幅
+	const itemWidth: number = 30;
 
 	// 全件数
 	let allCount: number = $state(0);
@@ -92,13 +101,17 @@
 		let periodIndex = periods.indexOf(unitPeriod.start);
 		itemElement!.style.top = firstTop + periodIndex * unitHeight + 2 + 'px';
 		itemElement!.style.height = height - 3 + 'px';
-		const left = 40 * (laneIndex + 1) + 100;
+		const left = (10 + itemWidth) * laneIndex + 130;
 		itemElement!.style.left = left + 'px';
 	}
 
 	async function filter() {
 		loading = true;
-		const result = await search({ start: offsetStartYear, colors: selectedColors });
+		const result = await search({
+			start: offsetStartYear,
+			colors: selectedColors,
+			subColors: selectedSubColors
+		});
 		items = result.datas.map((data) => ({
 			...data,
 			end: data.end == null ? data.start : data.end
@@ -146,8 +159,11 @@
 		);
 
 		// 色選択肢を初期化
-		selectableColors = await colors();
+		const { colors: mainColors, subColors } = await colors();
+		selectableColors = mainColors;
 		selectedColors = selectableColors;
+		selectableSubColors = subColors;
+		selectedSubColors = selectableSubColors;
 
 		// 年表のサイズを初期化
 		resizeTimelineElm();
@@ -192,6 +208,13 @@
 			{/if}
 		</div>
 		<ColorFilter bind:selectableColors bind:selectedColors {defaultColor} {filter} />
+		<div class="color-separator"><span></span></div>
+		<ColorFilter
+			bind:selectableColors={selectableSubColors}
+			bind:selectedColors={selectedSubColors}
+			{defaultColor}
+			{filter}
+		/>
 	</div>
 	<div class="timelineContainer" bind:this={timelineElm}>
 		<ul bind:this={first}>
@@ -208,12 +231,14 @@
 				data-start={item.start}
 				data-end={item.end}
 				data-title={item.title}
-				style:background-color={item.color ? item.color : defaultColor}
+				style:background={`linear-gradient(90deg, ${item.color ? item.color : defaultColor} 0% 90%, ${item.subColor ? item.subColor : defaultColor} 90%)`}
+				style:width={`${itemWidth}px`}
 				use:tooltip={{
 					css: {
 						backgroundColor: '#000',
 						color: '#ddd',
-						padding: '0.25rem'
+						padding: '0.25rem',
+						borderRadius: '0.25rem'
 					},
 					unitChangeSubscriber
 				}}
@@ -275,12 +300,22 @@
 		white-space: nowrap;
 		opacity: 0.7;
 		width: 30px;
-		border: solid 1px rgba(0, 0, 0, 0.3);
+		border: solid 1px gray;
 		box-sizing: border-box;
 		position: absolute;
 		transition:
 			left 0.5s,
 			top 0.5s,
 			height 0.5s;
+	}
+	.color-separator {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		span {
+			border-left: 3px double gray;
+			width: 1px;
+			height: 1rem;
+		}
 	}
 </style>

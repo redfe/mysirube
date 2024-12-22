@@ -19,6 +19,7 @@
 			end: editData.end ? parseInt(editData.end) : undefined,
 			title: editData.title!,
 			color: editData.color,
+			subColor: editData.subColor,
 			createdAt: editData.createdAt ?? new Date(),
 			updatedAt: editData.updatedAt ?? new Date()
 		};
@@ -39,6 +40,7 @@
 			end: newData.end,
 			title: newData.title,
 			color: newData.color,
+			subColor: newData.subColor,
 			onchangeHandler: saveOnChange
 		});
 
@@ -78,6 +80,7 @@
 					end: `${d.end ?? ''}`,
 					title: d.title,
 					color: d.color,
+					subColor: d.subColor,
 					createdAt: d.createdAt,
 					updatedAt: d.updatedAt,
 					onchangeHandler: saveOnChange
@@ -128,6 +131,7 @@
 			<th>終了年</th>
 			<th>タイトル</th>
 			<th>色</th>
+			<th>補色</th>
 			<th>エラー</th>
 			<th></th>
 		</tr>
@@ -153,6 +157,13 @@
 				bind:textContent={newData.color}
 				contenteditable="true"
 				style="border-right-color:{newData.color}"
+			></td>
+			<td
+				class="color sub"
+				data-errormsg={newData.errors.subColor}
+				bind:textContent={newData.subColor}
+				contenteditable="true"
+				style="border-right-color:{newData.subColor}"
 			></td>
 			<td>
 				{#if !newData.isValid()}
@@ -202,6 +213,14 @@
 					style="border-right-color:{data.color ? data.color : 'white'}"
 					onkeydown={(e) => moveByArrowKey(e, i, 4)}
 				></td>
+				<td
+					class="color sub"
+					data-errormsg={data.errors.subColor}
+					bind:textContent={data.subColor}
+					contenteditable="true"
+					style="border-right-color:{data.subColor ? data.subColor : 'white'}"
+					onkeydown={(e) => moveByArrowKey(e, i, 4)}
+				></td>
 				<td>
 					{#if hasError(data.errors)}
 						<pre>{oneError(data)}</pre>
@@ -232,7 +251,9 @@
 		vertical-align: middle;
 	}
 	th:nth-child(4),
-	td:nth-child(4) {
+	td:nth-child(4),
+	th:nth-child(5),
+	td:nth-child(5) {
 		opacity: 0.7;
 	}
 	thead {
@@ -243,7 +264,7 @@
 			width: 7rem;
 		}
 		th:nth-child(3) {
-			width: 14rem;
+			width: 20rem;
 		}
 		th:nth-child(4) {
 			width: 4rem;
@@ -252,14 +273,17 @@
 			width: 4rem;
 		}
 		th:nth-child(5) {
-			width: 18rem;
+			width: 4rem;
 		}
 		th:nth-child(6) {
+			width: 18rem;
+		}
+		th:nth-child(7) {
 			width: 5rem;
 		}
 	}
 	tbody {
-		td:nth-child(5) {
+		td:nth-child(6) {
 			font-weight: bold;
 			color: red;
 			border-color: black;
@@ -288,5 +312,8 @@
 	}
 	.color {
 		border-right: 2rem solid white;
+	}
+	.color.sub {
+		border-right: 1rem solid white;
 	}
 </style>

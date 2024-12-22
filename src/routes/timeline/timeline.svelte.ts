@@ -88,10 +88,37 @@ export function tooltip(
 		let tooltip: HTMLElement | undefined;
 		let pined = false;
 
+		const toPined = () => {
+			if (!tooltip) {
+				createTooltipElm();
+			}
+			pined = true;
+			tooltip!.style.boxShadow = 'none';
+			tooltip!.style.translate = '0 0.1rem';
+			tooltip!.style.opacity = '1';
+		};
+
+		const toUnPined = () => {
+			pined = false;
+			if (tooltip) {
+				tooltip.style.boxShadow = '0 0.1rem 0.5rem 0 rgba(0, 0, 0, 0.75)';
+				tooltip.style.translate = '0 0';
+				tooltip.style.opacity = '0.8';
+			}
+		};
+
 		const removeToolTipOnChange = async () => {
 			removeTooltipElm();
 		};
+
+		// ResizeObserver で検知すると、動作が重くなるので、単位変更時に削除する
 		unitChangeSubscriber?.subscribe(removeToolTipOnChange);
+
+		const toFront = () => {
+			const nodes: HTMLElement[] = Array.from(node.parentElement?.querySelectorAll('*') ?? []);
+			const max = nodes.reduce((acc, cur) => Math.max(acc, parseInt(cur.style.zIndex || '0')), 0);
+			node.style.zIndex = `${max + 1}`;
+		};
 
 		const createTooltipElm = (): HTMLElement => {
 			if (tooltip) return tooltip;
@@ -100,22 +127,17 @@ export function tooltip(
 			Object.assign(tooltip.style, css);
 			tooltip.style.position = 'absolute';
 			tooltip.style.whiteSpace = 'nowrap';
-			tooltip.textContent = `${formatYear(parseInt(node.dataset.start!))}${node.dataset.start === node.dataset.end ? '' : '〜' + formatYear(parseInt(node.dataset.end!))} ${node.dataset.title}`;
-			const del = document.createElement('button');
-			del.textContent = '×';
-			del.style.marginLeft = '0.5rem';
-			del.style.borderRadius = '0.5rem';
-			del.style.border = 'none';
-			del.addEventListener('click', removeTooltipElm);
-			tooltip.append(del);
+			tooltip.style.transition = 'translate 0.25s, box-shadow 0.25s, opacity 0.25s';
+			toUnPined();
+			const desc = document.createElement('span');
+			desc.textContent = `${formatYear(parseInt(node.dataset.start!))}${node.dataset.start === node.dataset.end ? '' : '〜' + formatYear(parseInt(node.dataset.end!))} ${node.dataset.title}`;
+			tooltip.append(desc);
 			node.append(tooltip);
 			offset.y = node.parentElement?.offsetTop ?? 0;
 			offset.x = node.parentElement?.offsetLeft ?? 0;
 
 			// 最前面に表示されるようにする
-			const nodes: HTMLElement[] = Array.from(node.parentElement?.querySelectorAll('*') ?? []);
-			const max = nodes.reduce((acc, cur) => Math.max(acc, parseInt(cur.style.zIndex || '0')), 0);
-			node.style.zIndex = `${max + 1}`;
+			toFront();
 
 			return tooltip;
 		};
@@ -123,7 +145,7 @@ export function tooltip(
 		const removeTooltipElm = () => {
 			if (tooltip) tooltip.remove();
 			tooltip = undefined;
-			pined = false;
+			toUnPined();
 
 			// 最前面表示を解除
 			node.style.zIndex = originalZIndex;
@@ -133,7 +155,7 @@ export function tooltip(
 			const t = createTooltipElm();
 			const { clientX, clientY } = e;
 
-			t.style.top = `${clientY - offset.y - node.offsetTop + (node.parentElement?.scrollTop ?? 0)}px`;
+			t.style.top = `${clientY - offset.y - node.offsetTop + (node.parentElement?.scrollTop ?? 0) - 10}px`;
 			t.style.left = `${10 + (clientX - offset.x - node.offsetLeft + (node.parentElement?.scrollLeft ?? 0))}px`;
 		};
 
@@ -159,14 +181,18 @@ export function tooltip(
 		};
 
 		const click = (e: Event) => {
-			// クローズボタンクリックで true になってしまうのを防ぐ
+			e.stopPropagation();
+			toFront();
+			// ツールチップクリックで true になってしまうのを防ぐ
 			if (e.target != node) {
 				return;
 			}
+			movePosition(e as MouseEvent);
 			if (pined) {
+				removeTooltipElm();
 				return;
 			}
-			pined = true;
+			toPined();
 		};
 
 		node.addEventListener('mouseover', mouseover);

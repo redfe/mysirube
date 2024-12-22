@@ -62,6 +62,7 @@ export async function remove(id: string) {
 export async function search(options?: {
 	start?: number;
 	colors?: string[];
+	subColors?: string[];
 }): Promise<SearchResult> {
 	const db = await initDB();
 	return new Promise((resolve, reject) => {
@@ -88,7 +89,11 @@ export async function search(options?: {
 				}
 				if (cursor) {
 					const data: Data = cursor.value;
-					if (options?.colors == null || options.colors.includes(data.color ?? '')) {
+					if (
+						options?.colors == null ||
+						(options.colors.includes(data.color ?? '') &&
+							(options.subColors == null || options.subColors.includes(data.subColor ?? '')))
+					) {
 						hitCount++;
 						searchResult.datas.push(data);
 					}
@@ -103,7 +108,7 @@ export async function search(options?: {
 	});
 }
 
-export async function colors(): Promise<string[]> {
+export async function colors(): Promise<{ colors: string[]; subColors: string[] }> {
 	const db = await initDB();
 	return new Promise((resolve, reject) => {
 		const transaction = db.transaction(storeName, 'readonly');
@@ -112,6 +117,7 @@ export async function colors(): Promise<string[]> {
 		const request = indexOfStartAndTitle.openCursor(null, 'next');
 
 		const colors: string[] = [];
+		const subColors: string[] = [];
 		request.onsuccess = () => {
 			const cursor = request.result;
 			if (cursor) {
@@ -120,9 +126,13 @@ export async function colors(): Promise<string[]> {
 				if (!colors.includes(targetColor)) {
 					colors.push(targetColor);
 				}
+				const targetSubColor = data.subColor ?? '';
+				if (!subColors.includes(targetSubColor)) {
+					subColors.push(targetSubColor);
+				}
 				cursor.continue();
 			} else {
-				resolve(colors);
+				resolve({ colors, subColors });
 			}
 		};
 		request.onerror = () => reject(request.error);
@@ -135,6 +145,7 @@ export type Data = {
 	end?: number;
 	title: string;
 	color?: string;
+	subColor?: string;
 	createdAt: Date;
 	updatedAt: Date;
 };

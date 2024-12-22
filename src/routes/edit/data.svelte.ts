@@ -9,9 +9,11 @@ export class EditData {
 	#end?: string = $state();
 	#title?: string = $state();
 	#color?: string = $state();
+	#subColor?: string = $state();
 	#createdAt?: Date = $state();
 	#updatedAt?: Date = $state();
-	#errors: { start?: string; end?: string; title?: string; color?: string } = $state({});
+	#errors: { start?: string; end?: string; title?: string; color?: string; subColor?: string } =
+		$state({});
 	#onchangeHandler?: OnchangeHandler;
 
 	constructor(args?: {
@@ -20,6 +22,7 @@ export class EditData {
 		end?: string;
 		title?: string;
 		color?: string;
+		subColor?: string;
 		createdAt?: Date;
 		updatedAt?: Date;
 		onchangeHandler?: OnchangeHandler;
@@ -29,6 +32,7 @@ export class EditData {
 		this.#end = args?.end;
 		this.#title = args?.title;
 		this.#color = args?.color;
+		this.#subColor = args?.subColor;
 		this.#createdAt = args?.createdAt;
 		this.#updatedAt = args?.updatedAt;
 		this.#onchangeHandler = args?.onchangeHandler;
@@ -80,6 +84,16 @@ export class EditData {
 
 	get color() {
 		return this.#color;
+	}
+
+	set subColor(subColor: string | undefined) {
+		const before = this.#subColor;
+		this.#subColor = subColor;
+		this.handleOnChange({ name: 'subColor', before, after: this.#subColor });
+	}
+
+	get subColor() {
+		return this.#subColor;
 	}
 
 	set onchangeHandler(onchangeHandler: OnchangeHandler | undefined) {
