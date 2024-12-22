@@ -328,7 +328,7 @@ export const sampleData: Data[] = [
 		id: 'r1s2t3u4',
 		start: 2019,
 		title: '世界：新型コロナウイルス感染症（COVID-19）パンデミック開始',
-		color: 'black'
+		subColor: 'black'
 	},
 	{
 		id: 'v5w6x7y8',
