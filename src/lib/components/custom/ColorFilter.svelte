@@ -51,7 +51,7 @@
 		}
 		.color {
 			padding: 4px;
-			opacity: 0.7;
+			opacity: 0.8;
 			width: 1.5rem;
 			height: 1.5rem;
 			display: inline-block;
