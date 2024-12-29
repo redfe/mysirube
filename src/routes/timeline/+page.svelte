@@ -5,11 +5,11 @@
 		getUnitPeriod,
 		formatYear,
 		createLanes,
-		tooltip
+		tooltip,
+		fadeWithTooltip
 	} from './timeline.svelte';
 	import type { Item } from './timeline.svelte';
 	import { colors, search } from '$lib/repository';
-	import { fade } from 'svelte/transition';
 	import Button from '$lib/components/core/Button.svelte';
 	import Typograph from '$lib/components/core/Typograph.svelte';
 	import StartYearChange from '$lib/components/custom/StartYearChange.svelte';
@@ -247,16 +247,8 @@
 				data-title={item.title}
 				style:background={`linear-gradient(90deg, ${item.color ? item.color : defaultColor} 0% 90%, ${item.subColor ? item.subColor : defaultColor} 90%)`}
 				style:width={`${itemWidth}px`}
-				use:tooltip={{
-					css: {
-						backgroundColor: '#000',
-						color: '#ddd',
-						padding: '0.25rem',
-						borderRadius: '0.25rem',
-						opacity: '0.8'
-					}
-				}}
-				transition:fade
+				use:tooltip
+				transition:fadeWithTooltip
 			></div>
 		{/each}
 	</div>
@@ -330,6 +322,25 @@
 			border-left: 3px double gray;
 			width: 1px;
 			height: 1rem;
+		}
+	}
+	.root :global(.tooltip) {
+		background-color: #000;
+		color: #ddd;
+		padding: 0.25rem;
+		border-radius: 0.25rem;
+		opacity: 0.8;
+	}
+	.root :global(.tooltip.pinned) {
+		--tooltip-arrow-size: 5px;
+		&::before {
+			content: '';
+			position: absolute;
+			top: calc(50% - var(--tooltip-arrow-size));
+			left: calc(-1 * 2 * var(--tooltip-arrow-size));
+			border-style: solid;
+			border-width: var(--tooltip-arrow-size);
+			border-color: transparent #000 transparent transparent; /* 矢印の色 */
 		}
 	}
 </style>

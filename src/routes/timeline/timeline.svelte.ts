@@ -1,4 +1,6 @@
 import type { Data } from '$lib/repository';
+import { linear } from 'svelte/easing';
+import type { FadeParams } from 'svelte/transition';
 
 export type Item = Data & {
 	end: number;
@@ -69,7 +71,7 @@ export function createLanes(unit: number, items: Item[]) {
 
 // ツールチップ表示アクション
 // 参考：https://svelte.dev/tutorial/svelte/adding-parameters-to-actions
-export function tooltip(node: HTMLElement, { css = {} }: { css?: Partial<CSSStyleDeclaration> }) {
+export function tooltip(node: HTMLElement) {
 	const positionRatio = { x: 0, y: 0 };
 
 	$effect(() => {
@@ -77,21 +79,23 @@ export function tooltip(node: HTMLElement, { css = {} }: { css?: Partial<CSSStyl
 		const offset = { y: 0, x: 0 };
 
 		let tooltip: HTMLElement | undefined;
-		let pined = false;
+		let pinned = false;
 
-		const toPined = () => {
+		const toPinned = () => {
 			const t = createTooltipElm();
-			pined = true;
+			pinned = true;
 			t.style.boxShadow = 'none';
 			t.style.translate = '0 0.1rem';
+			t.classList.add('pinned');
 		};
 
-		const toUnPined = () => {
-			pined = false;
+		const toUnPinned = () => {
+			pinned = false;
 			if (tooltip) {
 				tooltip.style.boxShadow = '0 0.1rem 0.5rem 0 rgba(0, 0, 0, 0.75)';
 				tooltip.style.translate = '0 0';
 				tooltip.style.opacity = '0.8';
+				tooltip.classList.remove('pinned');
 			}
 		};
 
@@ -105,12 +109,12 @@ export function tooltip(node: HTMLElement, { css = {} }: { css?: Partial<CSSStyl
 		const createTooltipElm = (): HTMLElement => {
 			if (tooltip) return tooltip;
 			tooltip = document.createElement('div');
+			tooltip.id = 'tooltip-' + node.id;
 			tooltip.classList.add('tooltip');
-			Object.assign(tooltip.style, css);
 			tooltip.style.position = 'absolute';
 			tooltip.style.whiteSpace = 'nowrap';
 			tooltip.style.transition = 'translate 0.25s, box-shadow 0.25s, opacity 0.25s';
-			toUnPined();
+			toUnPinned();
 			const desc = document.createElement('span');
 			desc.textContent = `${formatYear(parseInt(node.dataset.start!))}${node.dataset.start === node.dataset.end ? '' : '〜' + formatYear(parseInt(node.dataset.end!))} ${node.dataset.title}`;
 			tooltip.append(desc);
@@ -129,7 +133,7 @@ export function tooltip(node: HTMLElement, { css = {} }: { css?: Partial<CSSStyl
 		};
 
 		const removeTooltipElm = () => {
-			toUnPined();
+			toUnPinned();
 			if (tooltip) tooltip.remove();
 			tooltip = undefined;
 
@@ -149,21 +153,21 @@ export function tooltip(node: HTMLElement, { css = {} }: { css?: Partial<CSSStyl
 		};
 
 		const mouseover = (e: MouseEvent) => {
-			if (tooltip && pined) {
+			if (tooltip && pinned) {
 				return;
 			}
 			movePosition(e);
 		};
 
 		const mousemove = (e: MouseEvent) => {
-			if (tooltip && pined) {
+			if (tooltip && pinned) {
 				return;
 			}
 			movePosition(e);
 		};
 
 		const mouseleave = () => {
-			if (tooltip && pined) {
+			if (tooltip && pinned) {
 				return;
 			}
 			removeTooltipElm();
@@ -176,11 +180,11 @@ export function tooltip(node: HTMLElement, { css = {} }: { css?: Partial<CSSStyl
 				return;
 			}
 			movePosition(e as MouseEvent);
-			if (pined) {
+			if (pinned) {
 				removeTooltipElm();
 				return;
 			}
-			toPined();
+			toPinned();
 		};
 
 		const timelineLayoutUpdate = (e: CustomEvent<TimelineLayoutUpdateEventDetail>) => {
@@ -236,4 +240,31 @@ declare global {
 	interface HTMLElementEventMap {
 		timelineLayoutUpdate: CustomEvent<TimelineLayoutUpdateEventDetail>;
 	}
+}
+
+/**
+ * ツールチップも一緒にフェードアウトするためのトランジション
+ *
+ * @param node
+ * @param param1
+ * @returns
+ */
+export function fadeWithTooltip(
+	node: Element,
+	{ delay = 0, duration = 400, easing = linear }: FadeParams = {}
+) {
+	const o = +getComputedStyle(node).opacity;
+	return {
+		delay,
+		duration,
+		easing,
+		css: (t: number) => {
+			const opacity = t * o;
+			const tooltip: HTMLElement | null = document.querySelector('#tooltip-' + node.id);
+			if (tooltip) {
+				tooltip.style.opacity = `${opacity}`;
+			}
+			return `opacity: ${opacity}`;
+		}
+	};
 }
