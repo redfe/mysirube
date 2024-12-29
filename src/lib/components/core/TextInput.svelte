@@ -27,9 +27,10 @@
 		border: 1px solid silver;
 		border-radius: 4px;
 		box-sizing: border-box;
+		line-height: 1.25rem;
 	}
 	.text-field label {
-		top: 0.4rem;
+		top: 0.45rem;
 		left: 0.5rem;
 		position: absolute;
 		font-size: 1rem;
