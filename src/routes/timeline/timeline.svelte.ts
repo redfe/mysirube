@@ -67,20 +67,11 @@ export function createLanes(unit: number, items: Item[]) {
 	return lanes;
 }
 
-export type UnitChangeSubscriber = {
-	subscribe: (func: () => Promise<void>) => Promise<void>;
-	unsubscribe: (func: () => Promise<void>) => Promise<void>;
-};
-
 // ツールチップ表示アクション
 // 参考：https://svelte.dev/tutorial/svelte/adding-parameters-to-actions
-export function tooltip(
-	node: HTMLElement,
-	{
-		css = {},
-		unitChangeSubscriber
-	}: { css?: Partial<CSSStyleDeclaration>; unitChangeSubscriber?: UnitChangeSubscriber }
-) {
+export function tooltip(node: HTMLElement, { css = {} }: { css?: Partial<CSSStyleDeclaration> }) {
+	const positionRatio = { x: 0, y: 0 };
+
 	$effect(() => {
 		const originalZIndex = node.style.zIndex;
 		const offset = { y: 0, x: 0 };
@@ -93,7 +84,6 @@ export function tooltip(
 			pined = true;
 			t.style.boxShadow = 'none';
 			t.style.translate = '0 0.1rem';
-			t.style.opacity = '1';
 		};
 
 		const toUnPined = () => {
@@ -105,17 +95,11 @@ export function tooltip(
 			}
 		};
 
-		const removeToolTipOnChange = async () => {
-			removeTooltipElm();
-		};
-
-		// Chrome系ブラウザで node が10秒程度見えなくなるので、単位変更時にツールチップを削除する
-		unitChangeSubscriber?.subscribe(removeToolTipOnChange);
-
 		const toFront = () => {
-			const nodes: HTMLElement[] = Array.from(node.parentElement?.querySelectorAll('*') ?? []);
+			const nodes: HTMLElement[] = Array.from(node.parentElement?.querySelectorAll('.bar') ?? []);
 			const max = nodes.reduce((acc, cur) => Math.max(acc, parseInt(cur.style.zIndex || '0')), 0);
 			node.style.zIndex = `${max + 1}`;
+			if (tooltip) tooltip.style.zIndex = `${max + 1}`;
 		};
 
 		const createTooltipElm = (): HTMLElement => {
@@ -130,20 +114,24 @@ export function tooltip(
 			const desc = document.createElement('span');
 			desc.textContent = `${formatYear(parseInt(node.dataset.start!))}${node.dataset.start === node.dataset.end ? '' : '〜' + formatYear(parseInt(node.dataset.end!))} ${node.dataset.title}`;
 			tooltip.append(desc);
-			node.append(tooltip);
+			node.parentElement!.append(tooltip);
 			offset.y = node.parentElement?.offsetTop ?? 0;
 			offset.x = node.parentElement?.offsetLeft ?? 0;
 
 			// 最前面に表示されるようにする
 			toFront();
 
+			tooltip.addEventListener('click', () => {
+				toFront();
+			});
+
 			return tooltip;
 		};
 
 		const removeTooltipElm = () => {
+			toUnPined();
 			if (tooltip) tooltip.remove();
 			tooltip = undefined;
-			toUnPined();
 
 			// 最前面表示を解除
 			node.style.zIndex = originalZIndex;
@@ -153,8 +141,11 @@ export function tooltip(
 			const t = createTooltipElm();
 			const { clientX, clientY } = e;
 
-			t.style.top = `${clientY - offset.y - node.offsetTop + (node.parentElement?.scrollTop ?? 0) - 10}px`;
-			t.style.left = `${10 + (clientX - offset.x - node.offsetLeft + (node.parentElement?.scrollLeft ?? 0))}px`;
+			t.style.top = `${clientY - offset.y + (node.parentElement?.scrollTop ?? 0) - 10}px`;
+			t.style.left = `${10 + (clientX - offset.x + (node.parentElement?.scrollLeft ?? 0))}px`;
+
+			positionRatio.y = (parseInt(t.style.top) - node.offsetTop) / node.offsetHeight;
+			positionRatio.x = (parseInt(t.style.left) - node.offsetLeft) / node.offsetWidth;
 		};
 
 		const mouseover = (e: MouseEvent) => {
@@ -179,7 +170,6 @@ export function tooltip(
 		};
 
 		const click = (e: Event) => {
-			e.stopPropagation();
 			toFront();
 			// ツールチップクリックで true になってしまうのを防ぐ
 			if (e.target != node) {
@@ -193,10 +183,37 @@ export function tooltip(
 			toPined();
 		};
 
+		const timelineLayoutUpdate = (e: CustomEvent<TimelineLayoutUpdateEventDetail>) => {
+			// ツールチップが表示されている場合は再配置する
+			if (tooltip) {
+				const originalTransition = tooltip.style.transition;
+
+				// スムーズに移動させるために transition を一時的に変更する
+				tooltip.style.transition = 'top 0.5s, left 0.5s';
+
+				let top = e.detail.top + positionRatio.y * e.detail.height;
+				const left = e.detail.left + positionRatio.x * e.detail.width;
+				if (top + tooltip.offsetHeight > e.detail.top + e.detail.height) {
+					top = top - tooltip.offsetHeight;
+				}
+				if (top < e.detail.top) {
+					top = e.detail.top;
+				}
+				tooltip.style.top = `${top}px`;
+				tooltip.style.left = `${left}px`;
+
+				// 0.5s 後に transition を元に戻す
+				setTimeout(() => {
+					tooltip!.style.transition = originalTransition;
+				}, 500);
+			}
+		};
+
 		node.addEventListener('mouseover', mouseover);
 		node.addEventListener('mousemove', mousemove);
 		node.addEventListener('mouseleave', mouseleave);
 		node.addEventListener('click', click);
+		node.addEventListener('timelineLayoutUpdate', timelineLayoutUpdate);
 
 		return () => {
 			removeTooltipElm();
@@ -204,7 +221,19 @@ export function tooltip(
 			node.removeEventListener('mousemove', mousemove);
 			node.removeEventListener('mouseleave', mouseleave);
 			node.removeEventListener('click', click);
-			unitChangeSubscriber?.unsubscribe(removeToolTipOnChange);
 		};
 	});
+}
+
+export interface TimelineLayoutUpdateEventDetail {
+	top: number;
+	left: number;
+	height: number;
+	width: number;
+}
+
+declare global {
+	interface HTMLElementEventMap {
+		timelineLayoutUpdate: CustomEvent<TimelineLayoutUpdateEventDetail>;
+	}
 }

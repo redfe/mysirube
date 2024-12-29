@@ -254,7 +254,7 @@
 	td:nth-child(4),
 	th:nth-child(5),
 	td:nth-child(5) {
-		opacity: 0.7;
+		opacity: 0.8;
 	}
 	thead {
 		th:nth-child(1) {
@@ -308,7 +308,7 @@
 		}
 	}
 	td[data-errormsg] {
-		background-color: rgb(255, 192, 203, 0.7);
+		background-color: rgb(255, 192, 203, 0.8);
 	}
 	.color {
 		border-right: 2rem solid white;

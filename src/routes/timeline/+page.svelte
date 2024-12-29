@@ -7,7 +7,7 @@
 		createLanes,
 		tooltip
 	} from './timeline.svelte';
-	import type { Item, UnitChangeSubscriber } from './timeline.svelte';
+	import type { Item } from './timeline.svelte';
 	import { colors, search } from '$lib/repository';
 	import { fade } from 'svelte/transition';
 	import Button from '$lib/components/core/Button.svelte';
@@ -66,20 +66,6 @@
 	// 年表要素
 	let timelineElm: HTMLElement | undefined = $state();
 
-	const unitChangeListners: (() => Promise<void>)[] = [];
-	const unitChangeSubscriber: UnitChangeSubscriber = {
-		subscribe: async (func) => {
-			unitChangeListners.push(func);
-		},
-		unsubscribe: async (func) => {
-			unitChangeListners.splice(
-				0,
-				unitChangeListners.length,
-				...unitChangeListners.filter((f) => f != func)
-			);
-		}
-	};
-
 	// 表示関数
 	function display(unit: number, periods: number[], filteredItems: Item[]) {
 		const lanes = createLanes(unit, filteredItems);
@@ -96,6 +82,12 @@
 		const firstElement = first;
 		const firstTop = firstElement?.offsetTop!;
 		const itemElement: HTMLElement | null = document.querySelector('#item-' + item.id);
+		const beforeLayout = {
+			left: itemElement!.offsetLeft,
+			top: itemElement!.offsetTop,
+			height: itemElement!.offsetHeight,
+			width: itemElement!.offsetWidth
+		};
 		const unitCount = (unitPeriod.end - unitPeriod.start) / unit + 1;
 		const height = unitHeight * unitCount || unitHeight;
 		let periodIndex = periods.indexOf(unitPeriod.start);
@@ -103,6 +95,30 @@
 		itemElement!.style.height = height - 3 + 'px';
 		const left = (10 + itemWidth) * laneIndex + 130;
 		itemElement!.style.left = left + 'px';
+
+		// レイアウト更新イベントを発火（ツールチップの位置調整用）
+		const afterLayout = {
+			left: parseInt(itemElement!.style.left),
+			top: parseInt(itemElement!.style.top),
+			height: parseInt(itemElement!.style.height),
+			width: itemWidth
+		};
+		if (
+			beforeLayout.left !== afterLayout.left ||
+			beforeLayout.top !== afterLayout.top ||
+			beforeLayout.height !== afterLayout.height
+		) {
+			itemElement!.dispatchEvent(
+				new CustomEvent('timelineLayoutUpdate', {
+					detail: {
+						left: parseInt(itemElement!.style.left),
+						top: parseInt(itemElement!.style.top),
+						height: parseInt(itemElement!.style.height),
+						width: itemWidth
+					}
+				})
+			);
+		}
 	}
 
 	async function filter() {
@@ -185,7 +201,6 @@
 				onclick={() => {
 					const next = units[units.indexOf(unit) + 1];
 					unit = next ?? units[units.length - 1];
-					tick().then(() => unitChangeListners.forEach((f) => f()));
 				}}>-</Button
 			>
 			<Button
@@ -193,7 +208,6 @@
 				onclick={() => {
 					const next = units[units.indexOf(unit) - 1];
 					unit = next ?? units[0];
-					tick().then(() => unitChangeListners.forEach((f) => f()));
 				}}>+</Button
 			>
 			<Typograph>{formatYear(unit)}</Typograph>
@@ -238,9 +252,9 @@
 						backgroundColor: '#000',
 						color: '#ddd',
 						padding: '0.25rem',
-						borderRadius: '0.25rem'
-					},
-					unitChangeSubscriber
+						borderRadius: '0.25rem',
+						opacity: '0.8'
+					}
 				}}
 				transition:fade
 			></div>
