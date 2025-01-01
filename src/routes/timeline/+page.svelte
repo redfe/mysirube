@@ -308,6 +308,7 @@
 			onclickClose={() => {
 				editTheme = new EditTheme();
 				isViewThemeSelector = false;
+				filter();
 			}}
 			onclickSelect={(theme: Theme) => {
 				isViewThemeSelector = false;

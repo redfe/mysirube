@@ -78,14 +78,19 @@
 
 		save(toData(editData));
 
+		// テーマを編集中であればテーマにも追加
+		if (editTheme.isValid()) {
+			editTheme.dataIds = [...(editTheme.dataIds ?? []), editData.id];
+		}
+
 		newData = new EditData({ start: '', end: '', title: '', color: editData.color });
 		startElm?.focus();
 		loadAllData();
 	}
 
-	function remove(index: number) {
+	function remove(id: string) {
 		if (confirm('削除しますか？')) {
-			removeData(datas[index].id);
+			removeData(id);
 			loadAllData();
 		}
 	}
@@ -105,7 +110,10 @@
 	}
 
 	function loadAllData() {
-		search({ start: offsetStart }).then((r) => {
+		search({
+			start: offsetStart,
+			ids: isFilterTheme && editTheme.isValid() ? [...(editTheme.dataIds ?? [])] : undefined
+		}).then((r) => {
 			allCount = r.count;
 			datas = r.datas.map((d) => {
 				const editData = new EditData({
@@ -242,13 +250,13 @@
 									isViewThemeEditor = true;
 								}}>編集</Button
 							>
-							<Switch bind:on={isFilterTheme} />
+							<Switch bind:on={isFilterTheme} onchange={() => loadAllData()} />
 						{/if}
 					</div>
 				</div>
 			</td>
 		</tr>
-		{#each datas.filter((d) => !isFilterTheme || editTheme.dataIds?.includes(d.id)) as data, i (i)}
+		{#each datas as data, i (i)}
 			<tr class:selected={editTheme.dataIds?.includes(data.id)}>
 				<td
 					><input
@@ -307,7 +315,7 @@
 				</td>
 				<td
 					><Button
-						onclick={() => remove(i)}
+						onclick={() => remove(data.id)}
 						onkeydown={(e: KeyboardEvent) => moveByArrowKey(e, i, 8)}>×</Button
 					>
 				</td></tr
@@ -330,6 +338,7 @@
 		onclickClose={() => {
 			isViewThemeSelector = false;
 			editTheme = new EditTheme();
+			loadAllData();
 		}}
 		onclickSelect={(theme: Theme) => {
 			editTheme = new EditTheme({
@@ -338,6 +347,7 @@
 			});
 			isViewThemeSelector = false;
 			isViewThemeEditor = false;
+			loadAllData();
 		}}
 		{getThemes}
 	/>
