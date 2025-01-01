@@ -165,40 +165,20 @@ export class EditData {
 	}
 }
 
-function validateRequired(s: string | undefined): boolean {
-	return !isEmpty(s);
-}
-
-function validateNumber(s: string | undefined): boolean {
-	if (isEmpty(s)) return true;
-	const num = Number(s);
-	return Number.isSafeInteger(num) && num.toString() == s;
-}
-
-function validateStartAndEndDate(start: string | undefined, end: string | undefined): boolean {
-	if (isEmpty(start)) return true;
-	if (isEmpty(end)) return true;
-	const startNum = Number(start);
-	const endNum = Number(end);
-	return startNum <= endNum;
-}
-
-function isEmpty(s: string | undefined): boolean {
-	return s == null || s.length === 0;
-}
-
 export class EditTheme {
 	#id: string;
 	#title?: string = $state();
+	#memo?: string = $state();
 	#dataIds?: string[] = $state([]);
 	#createdAt?: Date = $state();
 	#updatedAt?: Date = $state();
-	#errors: { title?: string } = $state({});
+	#errors: { title?: string; memo?: string } = $state({});
 	#onchangeHandler?: OnchangeHandler<EditTheme>;
 
 	constructor(args?: {
 		id?: string;
 		title?: string;
+		memo?: string;
 		dataIds?: string[];
 		createdAt?: Date;
 		updatedAt?: Date;
@@ -206,6 +186,7 @@ export class EditTheme {
 	}) {
 		this.#id = args?.id ?? crypto.randomUUID();
 		this.#title = args?.title;
+		this.#memo = args?.memo;
 		this.#dataIds = args?.dataIds;
 		this.#createdAt = args?.createdAt;
 		this.#updatedAt = args?.updatedAt;
@@ -229,7 +210,6 @@ export class EditTheme {
 	}
 
 	set dataIds(dataIds: string[] | undefined) {
-		console.log('XXX', dataIds);
 		const before = this.#dataIds;
 		this.#dataIds = dataIds;
 		this.validate('dataIds');
@@ -238,6 +218,17 @@ export class EditTheme {
 
 	get dataIds() {
 		return this.#dataIds;
+	}
+
+	set memo(memo: string | undefined) {
+		const before = this.#memo;
+		this.#memo = memo;
+		this.validate('memo');
+		this.handleOnChange({ name: 'memo', before, after: this.#memo });
+	}
+
+	get memo() {
+		return this.#memo;
 	}
 
 	set onchangeHandler(onchangeHandler: OnchangeHandler<EditTheme> | undefined) {
@@ -276,6 +267,13 @@ export class EditTheme {
 				delete this.#errors.title;
 			}
 		}
+		if (name === 'memo' || !name) {
+			if (!validateMaxLength(this.#memo, 2000)) {
+				this.#errors.memo = 'メモは2000文字以内で入力して下さい。';
+			} else {
+				delete this.#errors.memo;
+			}
+		}
 	}
 
 	isValid(): boolean {
@@ -287,4 +285,31 @@ export class EditTheme {
 			this.#onchangeHandler(this, options);
 		}
 	}
+}
+
+function validateRequired(s: string | undefined): boolean {
+	return !isEmpty(s);
+}
+
+function validateNumber(s: string | undefined): boolean {
+	if (isEmpty(s)) return true;
+	const num = Number(s);
+	return Number.isSafeInteger(num) && num.toString() == s;
+}
+
+function validateStartAndEndDate(start: string | undefined, end: string | undefined): boolean {
+	if (isEmpty(start)) return true;
+	if (isEmpty(end)) return true;
+	const startNum = Number(start);
+	const endNum = Number(end);
+	return startNum <= endNum;
+}
+
+function validateMaxLength(s: string | undefined, maxLength: number): boolean {
+	if (isEmpty(s)) return true;
+	return s!.length <= maxLength;
+}
+
+function isEmpty(s: string | undefined): boolean {
+	return s == null || s.length === 0;
 }

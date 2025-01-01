@@ -79,6 +79,7 @@ export async function search(options?: {
 	start?: number;
 	colors?: string[];
 	subColors?: string[];
+	ids?: string[];
 }): Promise<SearchResult> {
 	const db = await initDB();
 	return new Promise((resolve, reject) => {
@@ -108,7 +109,8 @@ export async function search(options?: {
 					if (
 						options?.colors == null ||
 						(options.colors.includes(data.color ?? '') &&
-							(options.subColors == null || options.subColors.includes(data.subColor ?? '')))
+							(options.subColors == null || options.subColors.includes(data.subColor ?? '')) &&
+							(options.ids == null || options.ids.includes(data.id)))
 					) {
 						hitCount++;
 						searchResult.datas.push(data);

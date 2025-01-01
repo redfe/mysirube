@@ -9,11 +9,15 @@
 		fadeWithTooltip
 	} from './timeline.svelte';
 	import type { Item } from './timeline.svelte';
-	import { colors, search } from '$lib/repository';
+	import { colors, getThemes, removeTheme, saveTheme, search, type Theme } from '$lib/repository';
 	import Button from '$lib/components/core/Button.svelte';
 	import Typograph from '$lib/components/core/Typograph.svelte';
 	import StartYearChange from '$lib/components/custom/StartYearChange.svelte';
 	import ColorFilter from '$lib/components/custom/ColorFilter.svelte';
+	import ThemeSelector from '$lib/components/custom/ThemeSelector.svelte';
+	import { EditTheme } from '../edit/data.svelte';
+	import ThemeEditor from '$lib/components/custom/ThemeEditor.svelte';
+	import Switch from '$lib/components/core/Switch.svelte';
 
 	const units = [10000, 5000, 1000, 500, 100, 50, 10, 5, 1];
 
@@ -65,6 +69,26 @@
 
 	// 年表要素
 	let timelineElm: HTMLElement | undefined = $state();
+
+	// テーマフラグ
+	let isViewThemeSelector = $state(false);
+	let isViewThemeEditor = $state(false);
+
+	// テーマ
+	let editTheme: EditTheme = $state(new EditTheme());
+
+	let isFilterTheme = $state(false);
+
+	const themeChangeHandler = (edited: EditTheme) => {
+		saveTheme({
+			id: edited.id,
+			title: edited.title!,
+			dataIds: [...(edited.dataIds ?? [])],
+			memo: edited.memo,
+			createdAt: new Date(),
+			updatedAt: new Date()
+		});
+	};
 
 	// 表示関数
 	function display(unit: number, periods: number[], filteredItems: Item[]) {
@@ -126,7 +150,8 @@
 		const result = await search({
 			start: offsetStartYear,
 			colors: selectedColors,
-			subColors: selectedSubColors
+			subColors: selectedSubColors,
+			ids: isFilterTheme ? editTheme.dataIds : undefined
 		});
 		items = result.datas.map((data) => ({
 			...data,
@@ -135,7 +160,7 @@
 		allCount = result.count;
 	}
 
-	function move() {
+	function moveStartYear() {
 		offsetStartYear = startValue;
 		filter();
 	}
@@ -212,7 +237,7 @@
 			>
 			<Typograph>{formatYear(unit)}</Typograph>
 		</div>
-		<StartYearChange label="表示開始年" {move} bind:startYear={startValue} />
+		<StartYearChange label="表示開始年" move={moveStartYear} bind:startYear={startValue} />
 		<div class="count" style="width: 10rem;">
 			{#if loading}
 				<Typograph>Loading...</Typograph>
@@ -229,6 +254,31 @@
 			{defaultColor}
 			{filter}
 		/>
+		<div>
+			<Typograph></Typograph>
+			<Button
+				onclick={() => {
+					if (isViewThemeSelector) {
+						isViewThemeSelector = false;
+					} else {
+						if (isViewThemeEditor) {
+							isViewThemeEditor = false;
+						} else {
+							isViewThemeSelector = true;
+						}
+					}
+				}}>テーマ</Button
+			>
+			<Typograph>{editTheme.title}</Typograph>
+			{#if editTheme.isValid()}
+				<Button
+					onclick={() => {
+						isViewThemeEditor = true;
+					}}>編集</Button
+				>
+				<Switch bind:on={isFilterTheme} onchange={() => filter()}></Switch>
+			{/if}
+		</div>
 	</div>
 	<div class="timelineContainer" bind:this={timelineElm}>
 		<ul bind:this={first}>
@@ -241,6 +291,7 @@
 		{#each items as item (item.id)}
 			<div
 				class="bar"
+				class:not-theme={editTheme.isValid() && !editTheme.dataIds?.includes(item.id)}
 				id="item-{item.id}"
 				data-start={item.start}
 				data-end={item.end}
@@ -252,6 +303,39 @@
 			></div>
 		{/each}
 	</div>
+	{#if isViewThemeSelector}
+		<ThemeSelector
+			onclickClose={() => {
+				editTheme = new EditTheme();
+				isViewThemeSelector = false;
+			}}
+			onclickSelect={(theme: Theme) => {
+				isViewThemeSelector = false;
+				editTheme = new EditTheme({
+					...theme,
+					onchangeHandler: themeChangeHandler
+				});
+				filter();
+			}}
+			{getThemes}
+		/>
+	{/if}
+	{#if isViewThemeEditor}
+		<ThemeEditor
+			onclickClose={() => {
+				isViewThemeEditor = false;
+			}}
+			onclickRemove={() => {
+				if (confirm('削除しますか？')) {
+					removeTheme(editTheme.id);
+					isViewThemeEditor = false;
+					isViewThemeSelector = true;
+					editTheme = new EditTheme();
+				}
+			}}
+			theme={editTheme}
+		/>
+	{/if}
 </div>
 
 <style>
@@ -313,6 +397,9 @@
 			left 0.5s,
 			top 0.5s,
 			height 0.5s;
+		&.not-theme {
+			opacity: 0.1;
+		}
 	}
 	.color-separator {
 		display: flex;

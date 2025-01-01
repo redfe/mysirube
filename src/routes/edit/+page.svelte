@@ -16,22 +16,22 @@
 	import StartYearChange from '$lib/components/custom/StartYearChange.svelte';
 	import ThemeSelector from '$lib/components/custom/ThemeSelector.svelte';
 	import ThemeEditor from '$lib/components/custom/ThemeEditor.svelte';
+	import Switch from '$lib/components/core/Switch.svelte';
 
 	let newData = $state(new EditData());
 	let datas: EditData[] = $state([]);
 	let startElm: HTMLElement;
 	let offsetStart: number | undefined = $state();
 	let allCount = $state(0);
-	let isFilterSelected = $state(false);
+	let isFilterTheme = $state(false);
 	let isViewThemeSelector = $state(false);
-	let isViewTheme = $state(false);
-	let themes: Theme[] = $state([]);
+	let isViewThemeEditor = $state(false);
 	const themeChangeHandler = (edited: EditTheme) => {
 		saveTheme({
 			id: edited.id,
 			title: edited.title!,
 			dataIds: [...(edited.dataIds ?? [])],
-			memo: '',
+			memo: edited.memo,
 			createdAt: new Date(),
 			updatedAt: new Date()
 		});
@@ -90,7 +90,7 @@
 		}
 	}
 
-	function move() {
+	function moveStartYear() {
 		loadAllData();
 	}
 
@@ -148,20 +148,12 @@
 		}
 	}
 
-	function reloadThemes(node: Node) {
-		$effect(() => {
-			node;
-			getThemes().then((r) => (themes = r));
-		});
-	}
-
 	$effect(() => {
 		if (startElm) startElm.focus();
 	});
 
 	onMount(async () => {
 		loadAllData();
-		themes = await getThemes();
 	});
 </script>
 
@@ -220,18 +212,10 @@
 			</td>
 		</tr>
 		<tr class="commands">
-			<td>
-				<input
-					type="checkbox"
-					onclick={(e) => {
-						const elm = e.target as HTMLInputElement;
-						isFilterSelected = elm.checked;
-					}}
-				/>
-			</td>
+			<td> </td>
 			<td colspan="7">
 				<div>
-					<StartYearChange label="表示開始年" {move} bind:startYear={offsetStart} />
+					<StartYearChange label="表示開始年" move={moveStartYear} bind:startYear={offsetStart} />
 					<div class="count">
 						<Typograph>件数:</Typograph>
 						<Typograph>{datas.length}/{allCount}</Typograph>
@@ -243,19 +227,28 @@
 								if (isViewThemeSelector) {
 									isViewThemeSelector = false;
 								} else {
-									if (isViewTheme) {
-										isViewTheme = false;
+									if (isViewThemeEditor) {
+										isViewThemeEditor = false;
 									} else {
 										isViewThemeSelector = true;
 									}
 								}
 							}}>テーマ</Button
 						>
+						{#if editTheme.isValid()}
+							<Typograph>{editTheme.title}</Typograph>
+							<Button
+								onclick={() => {
+									isViewThemeEditor = true;
+								}}>編集</Button
+							>
+							<Switch bind:on={isFilterTheme} />
+						{/if}
 					</div>
 				</div>
 			</td>
 		</tr>
-		{#each datas.filter((d) => !isFilterSelected || editTheme.dataIds?.includes(d.id)) as data, i (i)}
+		{#each datas.filter((d) => !isFilterTheme || editTheme.dataIds?.includes(d.id)) as data, i (i)}
 			<tr class:selected={editTheme.dataIds?.includes(data.id)}>
 				<td
 					><input
@@ -332,7 +325,7 @@
 				onchangeHandler: themeChangeHandler
 			});
 			isViewThemeSelector = false;
-			isViewTheme = true;
+			isViewThemeEditor = true;
 		}}
 		onclickClose={() => {
 			isViewThemeSelector = false;
@@ -340,36 +333,24 @@
 		}}
 		onclickSelect={(theme: Theme) => {
 			editTheme = new EditTheme({
-				id: theme.id,
-				title: theme.title,
-				dataIds: theme.dataIds,
+				...theme,
 				onchangeHandler: themeChangeHandler
 			});
 			isViewThemeSelector = false;
-			isViewTheme = true;
+			isViewThemeEditor = false;
 		}}
-		reloadThemes={() => {
-			getThemes().then((r) => (themes = r));
-		}}
-		{themes}
+		{getThemes}
 	/>
 {/if}
-{#if isViewTheme}
+{#if isViewThemeEditor}
 	<ThemeEditor
-		onclickReturn={() => {
-			isViewTheme = false;
-			isViewThemeSelector = true;
-			editTheme = new EditTheme();
-		}}
 		onclickClose={() => {
-			isViewTheme = false;
-			editTheme = new EditTheme();
+			isViewThemeEditor = false;
 		}}
 		onclickRemove={() => {
 			if (confirm('削除しますか？')) {
 				removeTheme(editTheme.id);
-				isViewTheme = false;
-				isViewThemeSelector = true;
+				isViewThemeEditor = false;
 				editTheme = new EditTheme();
 			}
 		}}

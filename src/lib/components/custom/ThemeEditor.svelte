@@ -5,16 +5,15 @@
 	import type { Theme } from '$lib/repository';
 
 	export type Props = {
-		onclickReturn: () => void;
-		onclickClose: () => void;
-		onclickRemove: () => void;
+		onclickClose?: () => void;
+		onclickRemove?: () => void;
 		theme: Theme;
 	};
 </script>
 
 <script lang="ts">
 	import ThemeDiarogBase from './DiarogBase.svelte';
-	let { onclickReturn, onclickClose, onclickRemove, theme } = $props();
+	let { onclickClose, onclickRemove, theme } = $props();
 </script>
 
 <ThemeDiarogBase>
@@ -22,12 +21,12 @@
 		<TextInput label="テーマ名" bind:value={theme.title} style={`width: 20rem;`} />
 		<div>
 			<Typograph></Typograph>
-			<Button onclick={onclickReturn}>戻る</Button>
 			<Button onclick={onclickClose}>閉じる</Button>
 		</div>
 	</div>
 	<textarea
 		style={`line-height:1.25rem;padding: 0.5rem; width:100%; height:calc(100% - 5.75rem);box-sizing:border-box;`}
+		bind:value={theme.memo}
 	></textarea>
 	<div>
 		<Button onclick={onclickRemove}>削除</Button>
