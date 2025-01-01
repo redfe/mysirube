@@ -2,6 +2,7 @@ import { sampleData } from './sampleData';
 
 export const dbName = 'MySerube';
 export const storeName = 'datas';
+export const themeStoreName = 'themes';
 export const version = 1;
 const MAX_PER_DISPLAY = 1000;
 
@@ -16,12 +17,14 @@ export function initDB(): Promise<IDBDatabase> {
 		request.onupgradeneeded = () => {
 			const db = request.result;
 			if (!db.objectStoreNames.contains(storeName)) {
-				const store = db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: false });
-				store.createIndex('indexOfStartAndTitle', ['start', 'title'], { unique: false });
+				const store = createDataStore(db);
 				sampleData.forEach((item) => {
 					const request = store.add(item);
 					request.onerror = () => reject(request.error);
 				});
+			}
+			if (!db.objectStoreNames.contains(themeStoreName)) {
+				createThemeStore(db);
 			}
 		};
 
@@ -29,6 +32,19 @@ export function initDB(): Promise<IDBDatabase> {
 		request.onerror = () => reject(request.error);
 	});
 	return database;
+}
+
+function createDataStore(db: IDBDatabase): IDBObjectStore {
+	const store = db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: false });
+	store.createIndex('indexOfStartAndTitle', ['start', 'title'], { unique: false });
+	return store;
+}
+
+function createThemeStore(db: IDBDatabase): IDBObjectStore {
+	const store = db.createObjectStore(themeStoreName, { keyPath: 'id', autoIncrement: false });
+	// タイトルでソートして取得できるようにしておく
+	store.createIndex('indexOfTitle', ['title'], { unique: false });
+	return store;
 }
 
 export async function save(data: Data) {
@@ -139,6 +155,43 @@ export async function colors(): Promise<{ colors: string[]; subColors: string[] 
 	});
 }
 
+export async function getThemes(): Promise<Theme[]> {
+	const db = await initDB();
+	return new Promise((resolve, reject) => {
+		const transaction = db.transaction(themeStoreName, 'readonly');
+		const store = transaction.objectStore(themeStoreName);
+		// title でソートされた状態で取得する
+		const indexOfTitle = store.index('indexOfTitle');
+		const request = indexOfTitle.getAll();
+		request.onsuccess = () => resolve(request.result);
+		request.onerror = () => reject(request.error);
+	});
+}
+
+export async function saveTheme(theme: Theme) {
+	const db = await initDB();
+	return new Promise((resolve, reject) => {
+		const transaction = db.transaction(themeStoreName, 'readwrite');
+		const store = transaction.objectStore(themeStoreName);
+		const request = store.put(theme);
+
+		request.onsuccess = () => resolve(request.result);
+		request.onerror = () => reject(request.error);
+	});
+}
+
+export async function removeTheme(id: string) {
+	const db = await initDB();
+	return new Promise((resolve, reject) => {
+		const transaction = db.transaction(themeStoreName, 'readwrite');
+		const store = transaction.objectStore(themeStoreName);
+		const request = store.delete(id);
+
+		request.onsuccess = () => resolve(request.result);
+		request.onerror = () => reject(request.error);
+	});
+}
+
 export type Data = {
 	id: string;
 	start: number;
@@ -146,6 +199,15 @@ export type Data = {
 	title: string;
 	color?: string;
 	subColor?: string;
+	createdAt: Date;
+	updatedAt: Date;
+};
+
+export type Theme = {
+	id: string;
+	title: string;
+	dataIds: string[];
+	memo?: string;
 	createdAt: Date;
 	updatedAt: Date;
 };

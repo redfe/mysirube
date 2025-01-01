@@ -1,6 +1,6 @@
-type OnchangeHandler = (
-	editData: EditData,
-	options?: { name: keyof EditData; before?: unknown; after?: unknown }
+type OnchangeHandler<T> = (
+	editTarget: T,
+	options?: { name: keyof T; before?: unknown; after?: unknown }
 ) => void;
 
 export class EditData {
@@ -14,7 +14,7 @@ export class EditData {
 	#updatedAt?: Date = $state();
 	#errors: { start?: string; end?: string; title?: string; color?: string; subColor?: string } =
 		$state({});
-	#onchangeHandler?: OnchangeHandler;
+	#onchangeHandler?: OnchangeHandler<EditData>;
 
 	constructor(args?: {
 		id?: string;
@@ -25,7 +25,7 @@ export class EditData {
 		subColor?: string;
 		createdAt?: Date;
 		updatedAt?: Date;
-		onchangeHandler?: OnchangeHandler;
+		onchangeHandler?: OnchangeHandler<EditData>;
 	}) {
 		this.#id = args?.id ?? crypto.randomUUID();
 		this.#start = args?.start;
@@ -96,7 +96,7 @@ export class EditData {
 		return this.#subColor;
 	}
 
-	set onchangeHandler(onchangeHandler: OnchangeHandler | undefined) {
+	set onchangeHandler(onchangeHandler: OnchangeHandler<EditData> | undefined) {
 		this.#onchangeHandler = onchangeHandler;
 	}
 
@@ -185,4 +185,106 @@ function validateStartAndEndDate(start: string | undefined, end: string | undefi
 
 function isEmpty(s: string | undefined): boolean {
 	return s == null || s.length === 0;
+}
+
+export class EditTheme {
+	#id: string;
+	#title?: string = $state();
+	#dataIds?: string[] = $state([]);
+	#createdAt?: Date = $state();
+	#updatedAt?: Date = $state();
+	#errors: { title?: string } = $state({});
+	#onchangeHandler?: OnchangeHandler<EditTheme>;
+
+	constructor(args?: {
+		id?: string;
+		title?: string;
+		dataIds?: string[];
+		createdAt?: Date;
+		updatedAt?: Date;
+		onchangeHandler?: OnchangeHandler<EditTheme>;
+	}) {
+		this.#id = args?.id ?? crypto.randomUUID();
+		this.#title = args?.title;
+		this.#dataIds = args?.dataIds;
+		this.#createdAt = args?.createdAt;
+		this.#updatedAt = args?.updatedAt;
+		this.#onchangeHandler = args?.onchangeHandler;
+		this.validate();
+	}
+
+	get id() {
+		return this.#id;
+	}
+
+	set title(title: string | undefined) {
+		const before = this.#title;
+		this.#title = title;
+		this.validate('title');
+		this.handleOnChange({ name: 'title', before, after: this.#title });
+	}
+
+	get title() {
+		return this.#title;
+	}
+
+	set dataIds(dataIds: string[] | undefined) {
+		console.log('XXX', dataIds);
+		const before = this.#dataIds;
+		this.#dataIds = dataIds;
+		this.validate('dataIds');
+		this.handleOnChange({ name: 'dataIds', before, after: this.#dataIds });
+	}
+
+	get dataIds() {
+		return this.#dataIds;
+	}
+
+	set onchangeHandler(onchangeHandler: OnchangeHandler<EditTheme> | undefined) {
+		this.#onchangeHandler = onchangeHandler;
+	}
+
+	get onchangeHandler() {
+		return this.#onchangeHandler;
+	}
+
+	get errors() {
+		return this.#errors;
+	}
+
+	get createdAt() {
+		return this.#createdAt;
+	}
+
+	set createdAt(createdAt: Date | undefined) {
+		this.#createdAt = createdAt;
+	}
+
+	get updatedAt() {
+		return this.#updatedAt;
+	}
+
+	set updatedAt(updatedAt: Date | undefined) {
+		this.#updatedAt = updatedAt;
+	}
+
+	private validate(name?: keyof EditTheme) {
+		if (name === 'title' || !name) {
+			if (!validateRequired(this.#title)) {
+				this.#errors.title = 'テーマ名を入力して下さい。';
+			} else {
+				delete this.#errors.title;
+			}
+		}
+	}
+
+	isValid(): boolean {
+		return Object.keys(this.#errors).length === 0;
+	}
+
+	private handleOnChange(options?: { name: keyof EditTheme; before?: unknown; after: unknown }) {
+		if (this.#onchangeHandler && this.isValid()) {
+			this.#onchangeHandler(this, options);
+		}
+	}
 }
