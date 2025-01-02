@@ -3,6 +3,7 @@
 		onclickNew?: () => void;
 		onclickClose?: () => void;
 		onclickSelect?: (theme: Theme) => void;
+		onclickRemove?: (id: string) => void;
 		getThemes: () => Promise<Theme[]>;
 	};
 </script>
@@ -14,7 +15,7 @@
 
 	import ThemeDialogBase from './DialogBase.svelte';
 
-	let { onclickNew, onclickClose, onclickSelect, getThemes }: Props = $props();
+	let { onclickNew, onclickClose, onclickSelect, onclickRemove, getThemes }: Props = $props();
 
 	let themes: Theme[] = $state([]);
 
@@ -38,9 +39,9 @@
 		<ul use:reloadThemes>
 			{#each themes as theme (theme.id)}
 				<li>
-					<Button onclick={() => onclickSelect?.(theme)}>選択</Button><Typograph
-						style={`margin-left: 0.5rem;`}>{theme.title}</Typograph
-					>
+					<Button onclick={() => onclickSelect?.(theme)}>選択</Button>
+					<Typograph style={`margin-left: 0.5rem;`}>{theme.title}</Typograph>
+					<Button onclick={() => onclickRemove?.(theme.id)}>削除</Button>
 				</li>
 			{/each}
 		</ul>

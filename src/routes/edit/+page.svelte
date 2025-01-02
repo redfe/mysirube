@@ -349,6 +349,16 @@
 			isViewThemeEditor = false;
 			loadAllData();
 		}}
+		onclickRemove={(id: string) => {
+			if (confirm('削除しますか？')) {
+				removeTheme(id);
+				if (editTheme.id === id) {
+					editTheme = new EditTheme();
+					loadAllData();
+				}
+				isViewThemeSelector = false;
+			}
+		}}
 		{getThemes}
 	/>
 {/if}
@@ -356,13 +366,6 @@
 	<ThemeEditor
 		onclickClose={() => {
 			isViewThemeEditor = false;
-		}}
-		onclickRemove={() => {
-			if (confirm('削除しますか？')) {
-				removeTheme(editTheme.id);
-				isViewThemeEditor = false;
-				editTheme = new EditTheme();
-			}
 		}}
 		theme={editTheme}
 	/>

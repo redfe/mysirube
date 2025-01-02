@@ -28,8 +28,8 @@
 		border-radius: 0.25rem;
 		padding: 1rem;
 		padding-top: 0;
-		box-shadow: 0 0 50rem -5rem rgba(0, 0, 0, 0.5);
-		overflow-y: scroll;
+		box-shadow: 0 0 50rem -2rem rgba(0, 0, 0, 0.5);
+		overflow-y: auto;
 		z-index: 1000;
 	}
 	.handle {

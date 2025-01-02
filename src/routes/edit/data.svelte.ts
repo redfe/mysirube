@@ -267,13 +267,6 @@ export class EditTheme {
 				delete this.#errors.title;
 			}
 		}
-		if (name === 'memo' || !name) {
-			if (!validateMaxLength(this.#memo, 2000)) {
-				this.#errors.memo = 'メモは2000文字以内で入力して下さい。';
-			} else {
-				delete this.#errors.memo;
-			}
-		}
 	}
 
 	isValid(): boolean {
@@ -303,11 +296,6 @@ function validateStartAndEndDate(start: string | undefined, end: string | undefi
 	const startNum = Number(start);
 	const endNum = Number(end);
 	return startNum <= endNum;
-}
-
-function validateMaxLength(s: string | undefined, maxLength: number): boolean {
-	if (isEmpty(s)) return true;
-	return s!.length <= maxLength;
 }
 
 function isEmpty(s: string | undefined): boolean {
