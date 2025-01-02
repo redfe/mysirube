@@ -106,12 +106,11 @@ export async function search(options?: {
 				}
 				if (cursor) {
 					const data: Data = cursor.value;
-					if (
-						options?.colors == null ||
-						(options.colors.includes(data.color ?? '') &&
-							(options.subColors == null || options.subColors.includes(data.subColor ?? '')) &&
-							(options.ids == null || options.ids.includes(data.id)))
-					) {
+					const isMatchColor = options?.colors == null || options.colors.includes(data.color ?? '');
+					const isMatchSubColor =
+						options?.subColors == null || options.subColors.includes(data.subColor ?? '');
+					const isMatchIds = options?.ids == null || options.ids.includes(data.id);
+					if (isMatchColor && isMatchSubColor && isMatchIds) {
 						hitCount++;
 						searchResult.datas.push(data);
 					}
