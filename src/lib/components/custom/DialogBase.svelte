@@ -1,9 +1,19 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
+	import { draggable } from '@neodrag/svelte';
 	let { children } = $props();
 </script>
 
-<div class="dialog-base" transition:slide>
+<div
+	class="dialog-base"
+	transition:slide
+	use:draggable={{
+		bounds: 'body',
+		axis: 'x',
+		handle: '.handle'
+	}}
+>
+	<div class="handle"></div>
 	{@render children()}
 </div>
 
@@ -17,7 +27,14 @@
 		background-color: white;
 		border-radius: 0.25rem;
 		padding: 1rem;
-		box-shadow: 0 0 10rem -3rem rgba(0, 0, 0, 0.5);
+		padding-top: 0;
+		box-shadow: 0 0 50rem -5rem rgba(0, 0, 0, 0.5);
 		overflow-y: scroll;
+		z-index: 1000;
+	}
+	.handle {
+		width: 100%;
+		height: 1.5rem;
+		cursor: ew-resize;
 	}
 </style>

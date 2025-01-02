@@ -1,20 +1,8 @@
 {
 	"name": "mysirube",
 	"version": "0.0.1",
-	"type": "module",
-	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"format": "prettier --write .",
-		"lint": "prettier --check . && eslint .",
-		"test:unit": "vitest",
-		"test": "npm run test:unit -- --run && npm run test:e2e",
-		"test:e2e": "playwright test"
-	},
 	"devDependencies": {
+		"@neodrag/svelte": "^2.2.0",
 		"@playwright/test": "^1.49.1",
 		"@sveltejs/adapter-auto": "^3.3.1",
 		"@sveltejs/kit": "^2.13.0",
@@ -32,5 +20,18 @@
 		"typescript-eslint": "^8.18.1",
 		"vite": "^5.4.11",
 		"vitest": "^2.1.8"
-	}
+	},
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"format": "prettier --write .",
+		"lint": "prettier --check . && eslint .",
+		"test:unit": "vitest",
+		"test": "npm run test:unit -- --run && npm run test:e2e",
+		"test:e2e": "playwright test"
+	},
+	"type": "module"
 }

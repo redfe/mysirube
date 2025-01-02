@@ -12,7 +12,7 @@
 	import Typograph from '$lib/components/core/Typograph.svelte';
 	import type { Theme } from '$lib/repository';
 
-	import ThemeDiarogBase from './DiarogBase.svelte';
+	import ThemeDialogBase from './DialogBase.svelte';
 
 	let { onclickNew, onclickClose, onclickSelect, getThemes }: Props = $props();
 
@@ -25,7 +25,7 @@
 	}
 </script>
 
-<ThemeDiarogBase>
+<ThemeDialogBase>
 	<div class="header">
 		{#if onclickNew}
 			<Button onclick={onclickNew}>新規</Button>
@@ -45,7 +45,7 @@
 			{/each}
 		</ul>
 	</div>
-</ThemeDiarogBase>
+</ThemeDialogBase>
 
 <style>
 	.header {
