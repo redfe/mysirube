@@ -8,6 +8,7 @@
 		"@sveltejs/kit": "^2.13.0",
 		"@sveltejs/vite-plugin-svelte": "^4.0.4",
 		"@tiptap/core": "^2.11.0",
+		"@tiptap/extension-link": "^2.11.0",
 		"@tiptap/pm": "^2.11.0",
 		"@tiptap/starter-kit": "^2.11.0",
 		"@types/eslint": "^9.6.1",

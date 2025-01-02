@@ -6,8 +6,9 @@
 </script>
 
 <script lang="ts">
-	import { Editor, type JSONContent } from '@tiptap/core';
+	import { Editor } from '@tiptap/core';
 	import StarterKit from '@tiptap/starter-kit';
+	import Link from '@tiptap/extension-link';
 	import { onDestroy, onMount } from 'svelte';
 
 	let { content, onchangecontent }: Props = $props();
@@ -18,7 +19,7 @@
 		const isValidContent = content ? content.startsWith('{') : false;
 		editor = new Editor({
 			element: element!,
-			extensions: [StarterKit],
+			extensions: [StarterKit.configure(), Link.configure({ openOnClick: true })],
 			content: isValidContent ? JSON.parse(content ?? '{}') : undefined,
 			onTransaction: () => {
 				// force re-render so `editor.isActive` works as expected
@@ -56,6 +57,21 @@
 	>
 		P
 	</button>
+	<button
+		onclick={() => {
+			const previousUrl = editor?.getAttributes('link').href;
+			const url = window.prompt('URL', previousUrl);
+			if (url == null) {
+				return;
+			}
+			if (url === '') {
+				editor?.chain().focus().extendMarkRange('link').unsetLink().run();
+				return;
+			}
+			editor?.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+		}}
+		class:active={editor.isActive('bold')}>link</button
+	>
 {/if}
 
 <div class="editor" bind:this={element}></div>
@@ -97,5 +113,8 @@
 			background-color: transparent;
 			padding: 0;
 		}
+	}
+	.editor :global(a) {
+		cursor: pointer;
 	}
 </style>

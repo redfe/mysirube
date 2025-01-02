@@ -312,6 +312,8 @@
 			}}
 			onclickSelect={(theme: Theme) => {
 				isViewThemeSelector = false;
+				isViewThemeEditor = true;
+				isFilterTheme = true;
 				editTheme = new EditTheme({
 					...theme,
 					onchangeHandler: themeChangeHandler

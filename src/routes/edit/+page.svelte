@@ -346,7 +346,8 @@
 				onchangeHandler: themeChangeHandler
 			});
 			isViewThemeSelector = false;
-			isViewThemeEditor = false;
+			isViewThemeEditor = true;
+			isFilterTheme = true;
 			loadAllData();
 		}}
 		onclickRemove={(id: string) => {
