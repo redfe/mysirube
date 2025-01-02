@@ -232,15 +232,8 @@
 						<Typograph></Typograph>
 						<Button
 							onclick={() => {
-								if (isViewThemeSelector) {
-									isViewThemeSelector = false;
-								} else {
-									if (isViewThemeEditor) {
-										isViewThemeEditor = false;
-									} else {
-										isViewThemeSelector = true;
-									}
-								}
+								isViewThemeSelector = true;
+								isViewThemeEditor = false;
 							}}>テーマ</Button
 						>
 						{#if editTheme.isValid()}
