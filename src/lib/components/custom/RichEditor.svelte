@@ -13,7 +13,6 @@
 	import TableCell from '@tiptap/extension-table-cell';
 	import TableHeader from '@tiptap/extension-table-header';
 	import TableRow from '@tiptap/extension-table-row';
-	import Gapcursor from '@tiptap/extension-gapcursor';
 	import Youtube from '@tiptap/extension-youtube';
 	import Image from '@tiptap/extension-image';
 	import FileHandler from '@tiptap-pro/extension-file-handler';
@@ -474,5 +473,9 @@
 	}
 	:global(*:has(.column-resize-handle)) {
 		cursor: col-resize;
+	}
+
+	.editor :global(img.ProseMirror-selectednode) {
+		outline: 4px solid mediumorchid;
 	}
 </style>
