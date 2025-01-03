@@ -220,7 +220,7 @@
 				onclick={(e) => {
 					e.stopPropagation();
 					currentMenu = currentMenu === 'table' ? undefined : 'table';
-				}}>テーブル</button
+				}}>表</button
 			>
 			{#if currentMenu === 'table'}
 				<div class="submenus" transition:scale={{ duration: 100, easing: cubicInOut }}>
@@ -228,17 +228,17 @@
 						onclick={() =>
 							editor?.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
 					>
-						テーブルを作成
+						表を作成
 					</button>
 					<button
 						onclick={() => editor?.chain().focus().fixTables().run()}
 						disabled={!editor?.isActive('table')}
 					>
-						テーブルを修正
+						表を修正
 					</button>
 					<button
 						onclick={() => editor?.chain().focus().deleteTable().run()}
-						disabled={!editor?.isActive('table')}>テーブルを削除</button
+						disabled={!editor?.isActive('table')}>表を削除</button
 					>
 					<hr />
 					<button
@@ -474,7 +474,9 @@
 	:global(*:has(.column-resize-handle)) {
 		cursor: col-resize;
 	}
-
+	.editor :global(.selectedCell) {
+		background-color: whitesmoke;
+	}
 	.editor :global(img.ProseMirror-selectednode) {
 		outline: 4px solid mediumorchid;
 	}
