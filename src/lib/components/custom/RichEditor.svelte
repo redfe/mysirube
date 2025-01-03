@@ -15,6 +15,8 @@
 	import TableRow from '@tiptap/extension-table-row';
 	import Gapcursor from '@tiptap/extension-gapcursor';
 	import Youtube from '@tiptap/extension-youtube';
+	import Image from '@tiptap/extension-image';
+	import FileHandler from '@tiptap-pro/extension-file-handler';
 	import { onDestroy, onMount } from 'svelte';
 	import { scale } from 'svelte/transition';
 	import { cubicInOut } from 'svelte/easing';
@@ -35,10 +37,58 @@
 				TableRow,
 				TableHeader,
 				TableCell,
-				Gapcursor,
 				Youtube.configure({
 					controls: false,
 					nocookie: true
+				}),
+				Image,
+				FileHandler.configure({
+					allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
+					onDrop: (currentEditor, files, pos) => {
+						files.forEach((file) => {
+							const fileReader = new FileReader();
+
+							fileReader.readAsDataURL(file);
+							fileReader.onload = () => {
+								currentEditor
+									.chain()
+									.insertContentAt(pos, {
+										type: 'image',
+										attrs: {
+											src: fileReader.result
+										}
+									})
+									.focus()
+									.run();
+							};
+						});
+					},
+					onPaste: (currentEditor, files, htmlContent) => {
+						files.forEach((file) => {
+							if (htmlContent) {
+								// if there is htmlContent, stop manual insertion & let other extensions handle insertion via inputRule
+								// you could extract the pasted file from this url string and upload it to a server for example
+								return false;
+							}
+
+							const fileReader = new FileReader();
+
+							fileReader.readAsDataURL(file);
+
+							fileReader.onload = () => {
+								currentEditor
+									.chain()
+									.insertContentAt(currentEditor.state.selection.anchor, {
+										type: 'image',
+										attrs: {
+											src: fileReader.result
+										}
+									})
+									.focus()
+									.run();
+							};
+						});
+					}
 				})
 			],
 			content: isValidContent ? JSON.parse(content ?? '{}') : undefined,
@@ -77,13 +127,13 @@
 				<div class="submenus" transition:scale={{ duration: 100, easing: cubicInOut }}>
 					<button
 						onclick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
-						class:active={editor.isActive('heading', { level: 1 })}
+						class:active={editor?.isActive('heading', { level: 1 })}
 					>
 						見出し1
 					</button>
 					<button
 						onclick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-						class:active={editor.isActive('heading', { level: 2 })}
+						class:active={editor?.isActive('heading', { level: 2 })}
 					>
 						見出し2
 					</button>
@@ -102,13 +152,13 @@
 				<div class="submenus" transition:scale={{ duration: 100, easing: cubicInOut }}>
 					<button
 						onclick={() => editor?.chain().focus().toggleBulletList().run()}
-						class:active={editor.isActive('bulletList')}
+						class:active={editor?.isActive('bulletList')}
 					>
 						リスト
 					</button>
 					<button
 						onclick={() => editor?.chain().focus().toggleOrderedList().run()}
-						class:active={editor.isActive('orderedList')}
+						class:active={editor?.isActive('orderedList')}
 					>
 						順序リスト
 					</button>
@@ -118,7 +168,7 @@
 		<div class="menu">
 			<button
 				onclick={() => editor?.chain().focus().toggleCode().run()}
-				class:active={editor.isActive('code')}
+				class:active={editor?.isActive('code')}
 			>
 				コード
 			</button>
@@ -141,7 +191,7 @@
 					</button>
 					<button
 						onclick={() => editor?.chain().focus().toggleBlockquote().run()}
-						class:active={editor.isActive('blockquote')}
+						class:active={editor?.isActive('blockquote')}
 					>
 						引用
 					</button>
@@ -162,7 +212,7 @@
 					}
 					editor?.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
 				}}
-				class:active={editor.isActive('link')}>リンク</button
+				class:active={editor?.isActive('link')}>リンク</button
 			>
 		</div>
 		<div class="menu">
@@ -183,75 +233,75 @@
 					</button>
 					<button
 						onclick={() => editor?.chain().focus().fixTables().run()}
-						disabled={!editor.isActive('table')}
+						disabled={!editor?.isActive('table')}
 					>
 						テーブルを修正
 					</button>
 					<button
 						onclick={() => editor?.chain().focus().deleteTable().run()}
-						disabled={!editor.isActive('table')}>テーブルを削除</button
+						disabled={!editor?.isActive('table')}>テーブルを削除</button
 					>
 					<hr />
 					<button
 						onclick={() => editor?.chain().focus().toggleHeaderColumn().run()}
-						disabled={!editor.isActive('table')}
+						disabled={!editor?.isActive('table')}
 					>
 						ヘッダー列を切り替え
 					</button>
 					<button
 						onclick={() => editor?.chain().focus().toggleHeaderRow().run()}
-						disabled={!editor.isActive('table')}
+						disabled={!editor?.isActive('table')}
 					>
 						ヘッダー行を切り替え
 					</button>
 					<button
 						onclick={() => editor?.chain().focus().toggleHeaderCell().run()}
-						disabled={!editor.isActive('table')}
+						disabled={!editor?.isActive('table')}
 					>
 						ヘッダーセルを切り替え
 					</button>
 					<hr />
 					<button
 						onclick={() => editor?.chain().focus().addColumnBefore().run()}
-						disabled={!editor.isActive('table')}
+						disabled={!editor?.isActive('table')}
 					>
 						列を左に追加
 					</button>
 					<button
 						onclick={() => editor?.chain().focus().addColumnAfter().run()}
-						disabled={!editor.isActive('table')}
+						disabled={!editor?.isActive('table')}
 					>
 						列を右に追加
 					</button>
 					<button
 						onclick={() => editor?.chain().focus().deleteColumn().run()}
-						disabled={!editor.isActive('table')}>列を削除</button
+						disabled={!editor?.isActive('table')}>列を削除</button
 					>
 					<hr />
 					<button
 						onclick={() => editor?.chain().focus().addRowBefore().run()}
-						disabled={!editor.isActive('table')}>行を上に追加</button
+						disabled={!editor?.isActive('table')}>行を上に追加</button
 					>
 					<button
 						onclick={() => editor?.chain().focus().addRowAfter().run()}
-						disabled={!editor.isActive('table')}>行を下に追加</button
+						disabled={!editor?.isActive('table')}>行を下に追加</button
 					>
 					<button
 						onclick={() => editor?.chain().focus().deleteRow().run()}
-						disabled={!editor.isActive('table')}>行を削除</button
+						disabled={!editor?.isActive('table')}>行を削除</button
 					>
 					<hr />
 					<button
 						onclick={() => editor?.chain().focus().mergeCells().run()}
-						disabled={!editor.isActive('table')}>セルを結合</button
+						disabled={!editor?.isActive('table')}>セルを結合</button
 					>
 					<button
 						onclick={() => editor?.chain().focus().splitCell().run()}
-						disabled={!editor.isActive('table')}>セルを分割</button
+						disabled={!editor?.isActive('table')}>セルを分割</button
 					>
 					<button
 						onclick={() => editor?.chain().focus().mergeOrSplit().run()}
-						disabled={!editor.isActive('table')}
+						disabled={!editor?.isActive('table')}
 					>
 						セルを結合または分割
 					</button>
@@ -270,7 +320,20 @@
 				<div class="submenus" transition:scale={{ duration: 100, easing: cubicInOut }}>
 					<button
 						onclick={() => {
-							const url = prompt('YouTube の URL');
+							const url = prompt('画像のURL');
+							if (url) {
+								editor?.commands.setImage({
+									src: url
+								});
+							}
+						}}
+						class:active={editor?.isActive('image')}
+					>
+						画像
+					</button>
+					<button
+						onclick={() => {
+							const url = prompt('YouTubeのURL');
 							if (url) {
 								editor?.commands.setYoutubeVideo({
 									src: url,
@@ -279,7 +342,7 @@
 								});
 							}
 						}}
-						class:active={editor.isActive('youtube')}
+						class:active={editor?.isActive('youtube')}
 					>
 						YouTube動画
 					</button>
@@ -369,14 +432,14 @@
 		padding-left: 10px;
 	}
 	.editor :global(code) {
-		background-color: blanchedalmond;
+		background-color: lightblue;
 		border-radius: 0.25rem;
 		padding: 0.25rem;
-		font-size: 1rem;
 	}
 	.editor :global(pre:has(code)) {
-		background-color: blanchedalmond;
-		border-radius: 0.25rem;
+		background-color: lightblue;
+		border: 1px solid darkblue;
+		border-radius: 0.5rem;
 		padding: 0.5rem;
 		line-height: 1.25rem;
 		:global(code) {
