@@ -14,6 +14,7 @@
 	import TableHeader from '@tiptap/extension-table-header';
 	import TableRow from '@tiptap/extension-table-row';
 	import Gapcursor from '@tiptap/extension-gapcursor';
+	import Youtube from '@tiptap/extension-youtube';
 	import { onDestroy, onMount } from 'svelte';
 	import { scale } from 'svelte/transition';
 	import { cubicInOut } from 'svelte/easing';
@@ -34,7 +35,11 @@
 				TableRow,
 				TableHeader,
 				TableCell,
-				Gapcursor
+				Gapcursor,
+				Youtube.configure({
+					controls: false,
+					nocookie: true
+				})
 			],
 			content: isValidContent ? JSON.parse(content ?? '{}') : undefined,
 			onTransaction: () => {
@@ -256,6 +261,23 @@
 					</button>
 				</div>
 			{/if}
+		</div>
+		<div class="menu">
+			<button
+				onclick={() => {
+					const url = prompt('YouTube の URL');
+					if (url) {
+						editor?.commands.setYoutubeVideo({
+							src: url,
+							width: 320,
+							height: 240
+						});
+					}
+				}}
+				class:active={editor.isActive('youtube')}
+			>
+				YouTube</button
+			>
 		</div>
 	</div>
 {/if}
