@@ -67,10 +67,11 @@
 	<div class="menus">
 		<div class="menu">
 			<button
+				class:hassubmenu={true}
 				onclick={(e) => {
 					e.stopPropagation();
 					currentMenu = currentMenu === 'heading' ? undefined : 'heading';
-				}}>見出し…</button
+				}}>見出し</button
 			>
 			{#if currentMenu === 'heading'}
 				<div class="submenus" transition:scale={{ duration: 100, easing: cubicInOut }}>
@@ -91,18 +92,11 @@
 		</div>
 		<div class="menu">
 			<button
-				onclick={() => editor?.chain().focus().setParagraph().run()}
-				class:active={editor.isActive('paragraph')}
-			>
-				段落
-			</button>
-		</div>
-		<div class="menu">
-			<button
+				class:hassubmenu={true}
 				onclick={(e) => {
 					e.stopPropagation();
 					currentMenu = currentMenu === 'list' ? undefined : 'list';
-				}}>リスト…</button
+				}}>リスト</button
 			>
 			{#if currentMenu === 'list'}
 				<div class="submenus" transition:scale={{ duration: 100, easing: cubicInOut }}>
@@ -131,10 +125,11 @@
 		</div>
 		<div class="menu">
 			<button
+				class:hassubmenu={true}
 				onclick={(e) => {
 					e.stopPropagation();
 					currentMenu = currentMenu === 'block' ? undefined : 'block';
-				}}>ブロック…</button
+				}}>ブロック</button
 			>
 			{#if currentMenu === 'block'}
 				<div class="submenus" transition:scale={{ duration: 100, easing: cubicInOut }}>
@@ -172,10 +167,11 @@
 		</div>
 		<div class="menu">
 			<button
+				class:hassubmenu={true}
 				onclick={(e) => {
 					e.stopPropagation();
 					currentMenu = currentMenu === 'table' ? undefined : 'table';
-				}}>テーブル…</button
+				}}>テーブル</button
 			>
 			{#if currentMenu === 'table'}
 				<div class="submenus" transition:scale={{ duration: 100, easing: cubicInOut }}>
@@ -264,20 +260,31 @@
 		</div>
 		<div class="menu">
 			<button
-				onclick={() => {
-					const url = prompt('YouTube の URL');
-					if (url) {
-						editor?.commands.setYoutubeVideo({
-							src: url,
-							width: 320,
-							height: 240
-						});
-					}
-				}}
-				class:active={editor.isActive('youtube')}
+				class:hassubmenu={true}
+				onclick={(e) => {
+					e.stopPropagation();
+					currentMenu = currentMenu === 'others' ? undefined : 'others';
+				}}>その他</button
 			>
-				YouTube</button
-			>
+			{#if currentMenu === 'others'}
+				<div class="submenus" transition:scale={{ duration: 100, easing: cubicInOut }}>
+					<button
+						onclick={() => {
+							const url = prompt('YouTube の URL');
+							if (url) {
+								editor?.commands.setYoutubeVideo({
+									src: url,
+									width: 320,
+									height: 240
+								});
+							}
+						}}
+						class:active={editor.isActive('youtube')}
+					>
+						YouTube動画
+					</button>
+				</div>
+			{/if}
 		</div>
 	</div>
 {/if}
@@ -312,6 +319,10 @@
 			border-top: 1px solid silver;
 			margin: 0.25rem 0;
 		}
+	}
+	.menu .hassubmenu::after {
+		content: '…';
+		font-size: 0.75rem;
 	}
 	.submenus {
 		position: absolute;
