@@ -336,13 +336,13 @@
 		padding-left: 10px;
 	}
 	.editor :global(code) {
-		background-color: paleturquoise;
+		background-color: blanchedalmond;
 		border-radius: 0.25rem;
 		padding: 0.25rem;
 		font-size: 1rem;
 	}
 	.editor :global(pre:has(code)) {
-		background-color: paleturquoise;
+		background-color: blanchedalmond;
 		border-radius: 0.25rem;
 		padding: 0.5rem;
 		line-height: 1.25rem;
