@@ -400,6 +400,7 @@
 			border: none;
 			margin: 0;
 			cursor: pointer;
+			transition: 0.25s;
 		}
 		&:first-child {
 			border-left: none;
@@ -430,6 +431,7 @@
 			text-align: left;
 			border: none;
 			background-color: white;
+			transition: 0.25s;
 		}
 		& button:hover {
 			background: gainsboro;
