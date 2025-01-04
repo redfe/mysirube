@@ -17,11 +17,11 @@
 
 <header>
 	<nav>
-		<Link href="/" current={'/' == $page.url.pathname}>ホーム</Link>
-		<Link href="/edit" current={'/edit' == $page.url.pathname}>年表</Link>
-		<Link href="/timeline" current={'/timeline' == $page.url.pathname}>タイムライン</Link>
-		<Link href="/export" current={'/export' == $page.url.pathname}>エクスポート</Link>
-		<Link href="/import" current={'/import' == $page.url.pathname}>インポート</Link>
+		<Link href="#/" current={'' == $page.url.hash || '#/' == $page.url.hash}>ホーム</Link>
+		<Link href="#/edit" current={'#/edit' == $page.url.hash}>年表</Link>
+		<Link href="#/timeline" current={'#/timeline' == $page.url.hash}>タイムライン</Link>
+		<Link href="#/export" current={'#/export' == $page.url.hash}>エクスポート</Link>
+		<Link href="#/import" current={'#/import' == $page.url.hash}>インポート</Link>
 	</nav>
 </header>
 
