@@ -240,6 +240,7 @@
 							<Typograph>{editTheme.title}</Typograph>
 							<Button
 								onclick={() => {
+									isViewThemeSelector = false;
 									isViewThemeEditor = true;
 								}}>編集</Button
 							>

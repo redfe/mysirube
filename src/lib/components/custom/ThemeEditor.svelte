@@ -11,12 +11,19 @@
 </script>
 
 <script lang="ts">
-	import ThemeDialogBase from './DialogBase.svelte';
+	import ThemeDialogBase from '$lib/components/core/DialogBase.svelte';
 	import RichEditor from './RichEditor.svelte';
 	let { onclickClose, theme } = $props();
 </script>
 
-<ThemeDialogBase>
+<ThemeDialogBase
+	draggables={{ enabled: true, bounds: 'body', axis: 'x' }}
+	style={`
+	top: 2rem;
+	left: calc(100lvw - 40rem - 8rem);
+	width: 40rem;
+	height: calc(100lvh - 6rem);`}
+>
 	<div class="header">
 		<TextInput label="テーマ名" bind:value={theme.title} style={`width: 20rem;`} />
 		<div>

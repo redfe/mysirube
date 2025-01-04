@@ -12,8 +12,7 @@
 	import Button from '$lib/components/core/Button.svelte';
 	import Typograph from '$lib/components/core/Typograph.svelte';
 	import type { Theme } from '$lib/repository';
-
-	import ThemeDialogBase from './DialogBase.svelte';
+	import ThemeDialogBase from '$lib/components/core/DialogBase.svelte';
 
 	let { onclickNew, onclickClose, onclickSelect, onclickRemove, getThemes }: Props = $props();
 
@@ -26,7 +25,14 @@
 	}
 </script>
 
-<ThemeDialogBase>
+<ThemeDialogBase
+	draggables={{ enabled: true, bounds: 'body', axis: 'x' }}
+	style={`
+	top: 2rem;
+	left: calc(100lvw - 40rem - 8rem);
+	width: 40rem;
+	height: calc(100lvh - 6rem);`}
+>
 	<div class="header">
 		{#if onclickNew}
 			<Button onclick={onclickNew}>新規</Button>
