@@ -156,7 +156,7 @@ export async function colors(): Promise<{ colors: string[]; subColors: string[] 
 	});
 }
 
-export async function getThemes(): Promise<Theme[]> {
+export async function getThemeSummaries(): Promise<ThemeSummary[]> {
 	const db = await initDB();
 	return new Promise((resolve, reject) => {
 		const transaction = db.transaction(themeStoreName, 'readonly');
@@ -164,6 +164,18 @@ export async function getThemes(): Promise<Theme[]> {
 		// title でソートされた状態で取得する
 		const indexOfTitle = store.index('indexOfTitle');
 		const request = indexOfTitle.getAll();
+		request.onsuccess = () =>
+			resolve(request.result.map((theme: Theme) => ({ id: theme.id, title: theme.title })));
+		request.onerror = () => reject(request.error);
+	});
+}
+
+export async function getTheme(id: string): Promise<Theme | undefined> {
+	const db = await initDB();
+	return new Promise((resolve, reject) => {
+		const transaction = db.transaction(themeStoreName, 'readonly');
+		const store = transaction.objectStore(themeStoreName);
+		const request = store.get(id);
 		request.onsuccess = () => resolve(request.result);
 		request.onerror = () => reject(request.error);
 	});
@@ -223,6 +235,11 @@ export type Theme = {
 	memo?: string;
 	createdAt: Date;
 	updatedAt: Date;
+};
+
+export type ThemeSummary = {
+	id: string;
+	title: string;
 };
 
 export type SearchResult = {

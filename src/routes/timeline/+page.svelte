@@ -12,12 +12,14 @@
 	import {
 		colors,
 		getCurrentThemeId,
-		getThemes,
+		getTheme,
+		getThemeSummaries,
 		removeTheme,
 		saveCurrentThemeId,
 		saveTheme,
 		search,
-		type Theme
+		type Theme,
+		type ThemeSummary
 	} from '$lib/repository';
 	import Button from '$lib/components/core/Button.svelte';
 	import Typograph from '$lib/components/core/Typograph.svelte';
@@ -195,7 +197,7 @@
 		const currentThemeId = getCurrentThemeId();
 		if (currentThemeId) {
 			editTheme = new EditTheme({
-				...(await getThemes()).find((t: Theme) => t.id === currentThemeId),
+				...(await getTheme(currentThemeId)),
 				onchangeHandler: themeChangeHandler
 			});
 			isViewThemeEditor = true;
@@ -314,13 +316,14 @@
 			onclickClose={() => {
 				isViewThemeSelector = false;
 			}}
-			onclickSelect={(theme?: Theme) => {
+			onclickSelect={async (themeSummary?: ThemeSummary) => {
+				const theme = themeSummary ? await getTheme(themeSummary?.id) : undefined;
 				editTheme = new EditTheme({
 					...theme,
 					onchangeHandler: themeChangeHandler
 				});
-				if (theme) {
-					saveCurrentThemeId(theme?.id);
+				if (themeSummary) {
+					saveCurrentThemeId(themeSummary?.id);
 					isViewThemeEditor = true;
 					isFilterTheme = true;
 				} else {
@@ -340,7 +343,7 @@
 					isViewThemeSelector = false;
 				}
 			}}
-			{getThemes}
+			{getThemeSummaries}
 		/>
 	{/if}
 	{#if isViewThemeEditor}

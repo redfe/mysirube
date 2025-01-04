@@ -7,10 +7,12 @@
 		type Theme,
 		remove as removeData,
 		saveTheme,
-		getThemes,
 		removeTheme,
 		getCurrentThemeId,
-		saveCurrentThemeId
+		saveCurrentThemeId,
+		getTheme,
+		getThemeSummaries,
+		type ThemeSummary
 	} from '$lib/repository';
 	import { onMount } from 'svelte';
 	import Button from '$lib/components/core/Button.svelte';
@@ -166,7 +168,7 @@
 		const currentThemeId = getCurrentThemeId();
 		if (currentThemeId) {
 			editTheme = new EditTheme({
-				...(await getThemes()).find((t: Theme) => t.id === currentThemeId),
+				...(await getTheme(currentThemeId)),
 				onchangeHandler: themeChangeHandler
 			});
 			isViewThemeEditor = true;
@@ -343,13 +345,14 @@
 		onclickClose={() => {
 			isViewThemeSelector = false;
 		}}
-		onclickSelect={(theme?: Theme) => {
+		onclickSelect={async (themeSummary?: ThemeSummary) => {
+			const theme = themeSummary ? await getTheme(themeSummary?.id) : undefined;
 			editTheme = new EditTheme({
 				...theme,
 				onchangeHandler: themeChangeHandler
 			});
-			if (theme) {
-				saveCurrentThemeId(theme?.id);
+			if (themeSummary) {
+				saveCurrentThemeId(themeSummary?.id);
 				isViewThemeEditor = true;
 				isFilterTheme = true;
 			} else {
@@ -369,7 +372,7 @@
 				isViewThemeSelector = false;
 			}
 		}}
-		{getThemes}
+		{getThemeSummaries}
 	/>
 {/if}
 {#if isViewThemeEditor}
@@ -393,6 +396,11 @@
 		padding: 0.25rem;
 		box-sizing: border-box;
 		vertical-align: middle;
+	}
+	tr,
+	th,
+	td {
+		transition: 0.25s;
 	}
 	th:nth-child(5),
 	td:nth-child(5),

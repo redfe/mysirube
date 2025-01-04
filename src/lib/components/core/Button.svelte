@@ -30,6 +30,7 @@
 		font-size: 1rem;
 		border: 1px solid silver;
 		box-sizing: border-box;
+		transition: 0.25s;
 	}
 	button:hover:not(:disabled) {
 		background-color: bisque;

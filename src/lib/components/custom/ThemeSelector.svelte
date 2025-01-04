@@ -2,23 +2,24 @@
 	export type Props = {
 		onclickNew?: () => void;
 		onclickClose?: () => void;
-		onclickSelect?: (theme?: Theme) => void;
+		onclickSelect?: (theme?: ThemeSummary) => void;
 		onclickRemove?: (id: string) => void;
-		getThemes: () => Promise<Theme[]>;
+		getThemeSummaries: () => Promise<ThemeSummary[]>;
 	};
 </script>
 
 <script lang="ts">
 	import Button from '$lib/components/core/Button.svelte';
-	import type { Theme } from '$lib/repository';
+	import type { Theme, ThemeSummary } from '$lib/repository';
 	import ThemeDialogBase from '$lib/components/core/DialogBase.svelte';
 
-	let { onclickNew, onclickClose, onclickSelect, onclickRemove, getThemes }: Props = $props();
+	let { onclickNew, onclickClose, onclickSelect, onclickRemove, getThemeSummaries }: Props =
+		$props();
 
-	let themes: Theme[] = $state([]);
+	let themes: ThemeSummary[] = $state([]);
 
 	function reloadThemes(_node: HTMLElement) {
-		getThemes().then((r) => {
+		getThemeSummaries().then((r) => {
 			themes = r;
 		});
 	}
@@ -87,6 +88,7 @@
 	li {
 		width: 100%;
 		list-style: none;
+		transition: 0.25s;
 	}
 	li:hover {
 		background-color: gainsboro;
