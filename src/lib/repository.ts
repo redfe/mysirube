@@ -193,6 +193,14 @@ export async function removeTheme(id: string) {
 	});
 }
 
+export function saveCurrentThemeId(id: string) {
+	localStorage.setItem('currentThemeId', id);
+}
+
+export function getCurrentThemeId(): string | null {
+	return localStorage.getItem('currentThemeId');
+}
+
 export type Data = {
 	id: string;
 	start: number;

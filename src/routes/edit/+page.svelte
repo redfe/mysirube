@@ -8,7 +8,9 @@
 		remove as removeData,
 		saveTheme,
 		getThemes,
-		removeTheme
+		removeTheme,
+		getCurrentThemeId,
+		saveCurrentThemeId
 	} from '$lib/repository';
 	import { onMount } from 'svelte';
 	import Button from '$lib/components/core/Button.svelte';
@@ -161,6 +163,15 @@
 	});
 
 	onMount(async () => {
+		const currentThemeId = getCurrentThemeId();
+		if (currentThemeId) {
+			editTheme = new EditTheme({
+				...(await getThemes()).find((t: Theme) => t.id === currentThemeId),
+				onchangeHandler: themeChangeHandler
+			});
+			isViewThemeEditor = true;
+			isFilterTheme = true;
+		}
 		loadAllData();
 	});
 </script>
@@ -337,6 +348,7 @@
 				...theme,
 				onchangeHandler: themeChangeHandler
 			});
+			saveCurrentThemeId(theme.id);
 			isViewThemeSelector = false;
 			isViewThemeEditor = true;
 			isFilterTheme = true;

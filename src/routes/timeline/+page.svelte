@@ -9,7 +9,16 @@
 		fadeWithTooltip
 	} from './timeline.svelte';
 	import type { Item } from './timeline.svelte';
-	import { colors, getThemes, removeTheme, saveTheme, search, type Theme } from '$lib/repository';
+	import {
+		colors,
+		getCurrentThemeId,
+		getThemes,
+		removeTheme,
+		saveCurrentThemeId,
+		saveTheme,
+		search,
+		type Theme
+	} from '$lib/repository';
 	import Button from '$lib/components/core/Button.svelte';
 	import Typograph from '$lib/components/core/Typograph.svelte';
 	import StartYearChange from '$lib/components/custom/StartYearChange.svelte';
@@ -149,8 +158,8 @@
 		loading = true;
 		const result = await search({
 			start: offsetStartYear,
-			colors: selectedColors,
-			subColors: selectedSubColors,
+			colors: selectableColors.length === 0 ? undefined : selectedColors,
+			subColors: selectableSubColors.length === 0 ? undefined : selectedSubColors,
 			ids: isFilterTheme ? editTheme.dataIds : undefined
 		});
 		items = result.datas.map((data) => ({
@@ -158,6 +167,7 @@
 			end: data.end == null ? data.start : data.end
 		}));
 		allCount = result.count;
+		loading = false;
 	}
 
 	function moveStartYear() {
@@ -181,15 +191,18 @@
 	});
 
 	onMount(async () => {
-		const result = await search();
-		allCount = result.count;
-		// データ読み込み
-		loading = true;
-		items = result.datas.map((data) => ({
-			...data,
-			end: data.end == null ? data.start : data.end
-		}));
-		loading = false;
+		// テーマを復元
+		const currentThemeId = getCurrentThemeId();
+		if (currentThemeId) {
+			editTheme = new EditTheme({
+				...(await getThemes()).find((t: Theme) => t.id === currentThemeId),
+				onchangeHandler: themeChangeHandler
+			});
+			isViewThemeEditor = true;
+			isFilterTheme = true;
+		}
+
+		await filter();
 
 		// 表示単位を初期化
 		// 20行で収まりそうな初期表示単位の基準値
@@ -309,6 +322,7 @@
 					...theme,
 					onchangeHandler: themeChangeHandler
 				});
+				saveCurrentThemeId(theme.id);
 				filter();
 			}}
 			onclickRemove={(id) => {
