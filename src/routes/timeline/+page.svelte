@@ -314,15 +314,20 @@
 			onclickClose={() => {
 				isViewThemeSelector = false;
 			}}
-			onclickSelect={(theme: Theme) => {
-				isViewThemeSelector = false;
-				isViewThemeEditor = true;
-				isFilterTheme = true;
+			onclickSelect={(theme?: Theme) => {
 				editTheme = new EditTheme({
 					...theme,
 					onchangeHandler: themeChangeHandler
 				});
-				saveCurrentThemeId(theme.id);
+				if (theme) {
+					saveCurrentThemeId(theme?.id);
+					isViewThemeEditor = true;
+					isFilterTheme = true;
+				} else {
+					saveCurrentThemeId(undefined);
+					isFilterTheme = false;
+				}
+				isViewThemeSelector = false;
 				filter();
 			}}
 			onclickRemove={(id) => {

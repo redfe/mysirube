@@ -193,8 +193,12 @@ export async function removeTheme(id: string) {
 	});
 }
 
-export function saveCurrentThemeId(id: string) {
-	localStorage.setItem('currentThemeId', id);
+export function saveCurrentThemeId(id?: string) {
+	if (id == null) {
+		localStorage.removeItem('currentThemeId');
+	} else {
+		localStorage.setItem('currentThemeId', id);
+	}
 }
 
 export function getCurrentThemeId(): string | null {

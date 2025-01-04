@@ -2,7 +2,7 @@
 	export type Props = {
 		onclickNew?: () => void;
 		onclickClose?: () => void;
-		onclickSelect?: (theme: Theme) => void;
+		onclickSelect?: (theme?: Theme) => void;
 		onclickRemove?: (id: string) => void;
 		getThemes: () => Promise<Theme[]>;
 	};
@@ -10,7 +10,6 @@
 
 <script lang="ts">
 	import Button from '$lib/components/core/Button.svelte';
-	import Typograph from '$lib/components/core/Typograph.svelte';
 	import type { Theme } from '$lib/repository';
 	import ThemeDialogBase from '$lib/components/core/DialogBase.svelte';
 
@@ -44,6 +43,19 @@
 	</div>
 	<div>
 		<ul use:reloadThemes>
+			<li>
+				<Button
+					onclick={() => onclickSelect?.(undefined)}
+					style={`
+				width: calc(100% - 4rem);
+				text-align: left;
+				font-size: 1rem;
+				cursor: pointer;
+				background-color: transparent;
+				border: none;
+				`}>選択解除</Button
+				>
+			</li>
 			{#each themes as theme (theme.id)}
 				<li>
 					<Button
