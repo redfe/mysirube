@@ -119,10 +119,10 @@
 				class:hassubmenu={true}
 				onclick={(e) => {
 					e.stopPropagation();
-					currentMenu = currentMenu === 'heading' ? undefined : 'heading';
-				}}>見出し</button
+					currentMenu = currentMenu === 'text' ? undefined : 'text';
+				}}>テキスト</button
 			>
-			{#if currentMenu === 'heading'}
+			{#if currentMenu === 'text'}
 				<div class="submenus" transition:scale={{ duration: 100, easing: cubicInOut }}>
 					<button
 						onclick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
@@ -135,6 +135,37 @@
 						class:active={editor?.isActive('heading', { level: 2 })}
 					>
 						見出し2
+					</button>
+					<button
+						onclick={() => editor?.chain().focus().setParagraph().run()}
+						class:active={editor?.isActive('paragraph')}
+					>
+						段落
+					</button>
+					<hr />
+					<button
+						onclick={() => editor?.chain().focus().toggleBold().run()}
+						class:active={editor?.isActive('bold')}
+					>
+						強調
+					</button>
+					<button
+						onclick={() => editor?.chain().focus().toggleStrike().run()}
+						class:active={editor?.isActive('strike')}
+					>
+						打ち消し線
+					</button>
+					<button
+						onclick={() => editor?.chain().focus().toggleItalic().run()}
+						class:active={editor?.isActive('italic')}
+					>
+						イタリック
+					</button>
+					<button
+						onclick={() => editor?.chain().focus().toggleCode().run()}
+						class:active={editor?.isActive('code')}
+					>
+						コード
 					</button>
 				</div>
 			{/if}
@@ -166,14 +197,6 @@
 		</div>
 		<div class="menu">
 			<button
-				onclick={() => editor?.chain().focus().toggleCode().run()}
-				class:active={editor?.isActive('code')}
-			>
-				コード
-			</button>
-		</div>
-		<div class="menu">
-			<button
 				class:hassubmenu={true}
 				onclick={(e) => {
 					e.stopPropagation();
@@ -193,6 +216,12 @@
 						class:active={editor?.isActive('blockquote')}
 					>
 						引用
+					</button>
+					<button
+						onclick={() => editor?.chain().focus().setHorizontalRule().run()}
+						class:active={editor?.isActive('horizontalRule')}
+					>
+						水平線
 					</button>
 				</div>
 			{/if}
@@ -313,7 +342,7 @@
 				onclick={(e) => {
 					e.stopPropagation();
 					currentMenu = currentMenu === 'others' ? undefined : 'others';
-				}}>その他</button
+				}}>メディア</button
 			>
 			{#if currentMenu === 'others'}
 				<div class="submenus" transition:scale={{ duration: 100, easing: cubicInOut }}>

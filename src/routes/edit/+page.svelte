@@ -331,8 +331,6 @@
 		}}
 		onclickClose={() => {
 			isViewThemeSelector = false;
-			editTheme = new EditTheme();
-			loadAllData();
 		}}
 		onclickSelect={(theme: Theme) => {
 			editTheme = new EditTheme({

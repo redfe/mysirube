@@ -17,12 +17,14 @@
 </script>
 
 <ThemeDialogBase
-	draggables={{ enabled: true, bounds: 'body', axis: 'x' }}
+	draggables={{ enabled: true, axis: 'both' }}
 	style={`
 	top: 2rem;
-	left: calc(100lvw - 40rem - 8rem);
-	width: 40rem;
-	height: calc(100lvh - 6rem);`}
+	left: calc(100lvw - 50rem - 8rem);
+	width: 50rem;
+	height: calc(100lvh - 6rem);
+	z-index: 2000;
+	`}
 >
 	<div class="header">
 		<TextInput label="テーマ名" bind:value={theme.title} style={`width: 20rem;`} />

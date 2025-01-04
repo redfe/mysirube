@@ -26,12 +26,13 @@
 </script>
 
 <ThemeDialogBase
-	draggables={{ enabled: true, bounds: 'body', axis: 'x' }}
+	isModal={true}
 	style={`
 	top: 2rem;
-	left: calc(100lvw - 40rem - 8rem);
 	width: 40rem;
-	height: calc(100lvh - 6rem);`}
+	height: calc(100lvh - 6rem);
+	z-index: 2000;
+	`}
 >
 	<div class="header">
 		{#if onclickNew}
@@ -45,8 +46,17 @@
 		<ul use:reloadThemes>
 			{#each themes as theme (theme.id)}
 				<li>
-					<Button onclick={() => onclickSelect?.(theme)}>選択</Button>
-					<Typograph style={`margin-left: 0.5rem;`}>{theme.title}</Typograph>
+					<Button
+						onclick={() => onclickSelect?.(theme)}
+						style={`
+						width: calc(100% - 4rem);
+						text-align: left;
+						font-size: 1rem;
+						cursor: pointer;
+						background-color: transparent;
+						border: none;
+						`}>{theme.title}</Button
+					>
 					<Button onclick={() => onclickRemove?.(theme.id)}>削除</Button>
 				</li>
 			{/each}
@@ -59,7 +69,14 @@
 		display: flex;
 		justify-content: space-between;
 	}
+	ul {
+		padding: 0 1rem;
+	}
 	li {
+		width: 100%;
 		list-style: none;
+	}
+	li:hover {
+		background-color: gainsboro;
 	}
 </style>

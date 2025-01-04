@@ -4,7 +4,7 @@
 		draggables?: {
 			enabled?: boolean;
 			axis?: 'x' | 'y' | 'both';
-			bounds?: string;
+			bounds?: DragOptions['bounds'];
 		};
 	} & HTMLDialogAttributes;
 </script>
@@ -17,6 +17,7 @@
 
 	let { isModal, draggables, children, ...others }: Props = $props();
 	let dialog: HTMLDialogElement | undefined = $state();
+	let handleCursor = $state('auto');
 
 	function draggableWrapper(node: HTMLElement, options?: DragOptions) {
 		const { enabled, axis, bounds } = draggables || {};
@@ -31,7 +32,14 @@
 			} else {
 				dialog.show();
 			}
-			console.log(others.style);
+			handleCursor =
+				draggables?.axis === 'x'
+					? 'ew-resize'
+					: draggables?.axis === 'y'
+						? 'ns-resize'
+						: draggables?.axis === 'both'
+							? 'move'
+							: 'auto';
 		}
 	});
 </script>
@@ -45,8 +53,9 @@
 	}}
 	{...others}
 >
-	<div class="handle"></div>
+	<div class="handle" style={`cursor:${handleCursor};`}></div>
 	{@render children?.()}
+	<div class="handle" style={`cursor:${handleCursor};`}></div>
 </dialog>
 
 <style>
@@ -62,6 +71,5 @@
 	.handle {
 		width: 100%;
 		height: 1.5rem;
-		cursor: ew-resize;
 	}
 </style>
