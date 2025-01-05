@@ -400,7 +400,7 @@
 
 	thead {
 		th:nth-child(1) {
-			width: 1rem;
+			width: 2rem;
 		}
 		th:nth-child(2) {
 			width: 7rem;
