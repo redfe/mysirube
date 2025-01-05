@@ -22,7 +22,7 @@
 		box-sizing: border-box;
 	}
 	.text-field input {
-		padding: 0.5rem 0.25rem;
+		padding: 0.5rem 0.5rem;
 		font-size: 1rem;
 		border: 1px solid silver;
 		border-radius: 4px;
@@ -42,7 +42,7 @@
 	.text-field input:not(:placeholder-shown) + label {
 		top: 0;
 		left: 10px;
-		font-size: 0.8rem;
+		font-size: 0.7rem;
 		padding: 0 5px;
 		color: black;
 		transform: translateY(-50%);
