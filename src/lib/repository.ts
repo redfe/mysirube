@@ -1,22 +1,20 @@
 import { sampleData } from './sampleData';
 
-export const dbName = 'MySerube';
-export const storeName = 'datas';
+export const dbName = 'MyShirube';
+export const dataStoreName = 'datas';
 export const themeStoreName = 'themes';
 export const version = 1;
 const MAX_PER_DISPLAY = 1000;
 
 let database: Promise<IDBDatabase> | null = null;
 
-export function initDB(): Promise<IDBDatabase> {
-	if (database) return database;
-
-	database = new Promise((resolve, reject) => {
+async function createDatabase(): Promise<IDBDatabase> {
+	const createdDatabase: Promise<IDBDatabase> = new Promise((resolve, reject) => {
 		const request = indexedDB.open(dbName, version);
 
 		request.onupgradeneeded = () => {
 			const db = request.result;
-			if (!db.objectStoreNames.contains(storeName)) {
+			if (!db.objectStoreNames.contains(dataStoreName)) {
 				const store = createDataStore(db);
 				sampleData.forEach((item) => {
 					const request = store.add(item);
@@ -31,11 +29,28 @@ export function initDB(): Promise<IDBDatabase> {
 		request.onsuccess = () => resolve(request.result);
 		request.onerror = () => reject(request.error);
 	});
+	return createdDatabase;
+}
+
+export function initDB(): Promise<IDBDatabase> {
+	if (database) {
+		// databaseの生存確認
+		return database.then((db) => {
+			try {
+				db.transaction(dataStoreName, 'readonly');
+				return db;
+			} catch {
+				database = createDatabase();
+				return database;
+			}
+		});
+	}
+	database = createDatabase();
 	return database;
 }
 
 function createDataStore(db: IDBDatabase): IDBObjectStore {
-	const store = db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: false });
+	const store = db.createObjectStore(dataStoreName, { keyPath: 'id', autoIncrement: false });
 	store.createIndex('indexOfStartAndTitle', ['start', 'title'], { unique: false });
 	return store;
 }
@@ -50,8 +65,8 @@ function createThemeStore(db: IDBDatabase): IDBObjectStore {
 export async function save(data: Data) {
 	const db = await initDB();
 	return new Promise((resolve, reject) => {
-		const transaction = db.transaction(storeName, 'readwrite');
-		const store = transaction.objectStore(storeName);
+		const transaction = db.transaction(dataStoreName, 'readwrite');
+		const store = transaction.objectStore(dataStoreName);
 		const request = store.put(data);
 
 		request.onsuccess = () => resolve(request.result);
@@ -62,13 +77,28 @@ export async function save(data: Data) {
 export async function remove(id: string) {
 	const db = await initDB();
 	return new Promise((resolve, reject) => {
-		const transaction = db.transaction(storeName, 'readwrite');
-		const store = transaction.objectStore(storeName);
+		const transaction = db.transaction(dataStoreName, 'readwrite');
+		const store = transaction.objectStore(dataStoreName);
 		const request = store.delete(id);
 
 		request.onsuccess = () => resolve(request.result);
 		request.onerror = () => reject(request.error);
 	});
+}
+
+export async function getAllCount(storeName: string): Promise<number> {
+	const db = await initDB();
+	return new Promise((resolve, reject) => {
+		const transaction = db.transaction(storeName, 'readonly');
+		const store = transaction.objectStore(storeName);
+		const request = store.count();
+		request.onsuccess = () => resolve(request.result);
+		request.onerror = () => reject(request.error);
+	});
+}
+
+export async function getAllDataCount(): Promise<number> {
+	return getAllCount(dataStoreName);
 }
 
 /**
@@ -83,8 +113,8 @@ export async function search(options?: {
 }): Promise<SearchResult> {
 	const db = await initDB();
 	return new Promise((resolve, reject) => {
-		const transaction = db.transaction(storeName, 'readonly');
-		const store = transaction.objectStore(storeName);
+		const transaction = db.transaction(dataStoreName, 'readonly');
+		const store = transaction.objectStore(dataStoreName);
 		// start でソートされた状態で取得する
 		const indexOfStartAndTitle = store.index('indexOfStartAndTitle');
 		const query = options?.start != null ? IDBKeyRange.lowerBound([options?.start]) : null;
@@ -128,8 +158,8 @@ export async function search(options?: {
 export async function colors(): Promise<{ colors: string[]; subColors: string[] }> {
 	const db = await initDB();
 	return new Promise((resolve, reject) => {
-		const transaction = db.transaction(storeName, 'readonly');
-		const store = transaction.objectStore(storeName);
+		const transaction = db.transaction(dataStoreName, 'readonly');
+		const store = transaction.objectStore(dataStoreName);
 		const indexOfStartAndTitle = store.index('indexOfStartAndTitle');
 		const request = indexOfStartAndTitle.openCursor(null, 'next');
 
@@ -168,6 +198,10 @@ export async function getThemeSummaries(): Promise<ThemeSummary[]> {
 			resolve(request.result.map((theme: Theme) => ({ id: theme.id, title: theme.title })));
 		request.onerror = () => reject(request.error);
 	});
+}
+
+export async function getAllThemeCount(): Promise<number> {
+	return getAllCount(themeStoreName);
 }
 
 export async function getTheme(id: string): Promise<Theme | undefined> {

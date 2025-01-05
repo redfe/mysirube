@@ -1,34 +1,42 @@
 <script lang="ts">
 	import Button from '$lib/components/core/Button.svelte';
 	import Typograph from '$lib/components/core/Typograph.svelte';
-	import { initDB, storeName, version } from '$lib/repository';
+	import { initDB, version } from '$lib/repository';
+
+	const valueBuffers: { datas: any[]; themes: any[] } = { datas: [], themes: [] };
 
 	let progress = $state(0);
 	let importing = $state(false);
 
 	const clearStore = async () => {
 		const db = await initDB();
-		return new Promise<void>((resolve, reject) => {
-			const transaction = db.transaction(storeName, 'readwrite');
-			const store = transaction.objectStore(storeName);
-			const clearRequest = store.clear();
-			clearRequest.onsuccess = () => resolve();
-			clearRequest.onerror = (error) => reject(error);
-		});
+		const storeNames = Object.keys(valueBuffers);
+		for (let i = 0; i < storeNames.length; i++) {
+			const storeName = storeNames[i];
+			await new Promise<void>((resolve, reject) => {
+				const transaction = db.transaction(storeName, 'readwrite');
+				const store = transaction.objectStore(storeName);
+				const clearRequest = store.clear();
+				clearRequest.onsuccess = () => resolve();
+				clearRequest.onerror = (error) => reject(error);
+			});
+		}
 	};
 
-	// チャンクごとに IndexedDB にデータを挿入
-	const insertChunk = async (chunk: any[]) => {
+	const selectStoreName = (chunk: any) => {
+		return chunk._storeName;
+	};
+
+	const saveValues = async (storeName: string, values: any[]) => {
 		const db = await initDB();
 		return new Promise<void>((resolve, reject) => {
 			const transaction = db.transaction(storeName, 'readwrite');
 			const store = transaction.objectStore(storeName);
-
-			for (const item of chunk) {
-				if (!('start' in item)) {
-					continue;
-				}
-				store.add({
+			for (const item of values) {
+				// 不要なデータを削除しておく
+				delete item['_storeName'];
+				// 登録
+				store.put({
 					...item,
 					id: item.id ?? crypto.randomUUID,
 					createdAt: new Date(item.createdAt ?? new Date()),
@@ -39,6 +47,31 @@
 			transaction.oncomplete = () => resolve();
 			transaction.onerror = () => reject(transaction.error);
 		});
+	};
+
+	const addToValueBuffers = async (value: any) => {
+		const storeName = selectStoreName(value);
+		if (storeName == null) {
+			console.warn(`ストア名を特定できませんでした。:`, value);
+			return;
+		}
+		const buffer = (valueBuffers as any)[storeName] as any[];
+		if (buffer) {
+			buffer.push(value);
+			// 件数が閾値を越えたら保存する
+			if (buffer.length > 100) {
+				await saveValues(storeName, buffer);
+				buffer.splice(0, buffer.length);
+			}
+		}
+	};
+
+	const finalizeValueBuffers = async () => {
+		const storeNames = Object.keys(valueBuffers);
+		for (let i = 0; i < storeNames.length; i++) {
+			const storeName = storeNames[i];
+			await saveValues(storeName, (valueBuffers as any)[storeName]);
+		}
 	};
 
 	// ファイルをストリーミングで読み込みながらインポート
@@ -79,14 +112,18 @@
 				}
 				buffer = lines.pop(); // 最後の行が不完全ならバッファに保持
 
-				insertChunk(lines.map((line) => JSON.parse(line)));
+				const values = lines.map((line) => JSON.parse(line));
+				for (let i = 0; i < values.length; i++) {
+					await addToValueBuffers(values[i]);
+				}
 				progress = (processedSize * 100) / totalSize;
 			}
 
 			// 最後に残ったバッファを処理
 			if (buffer) {
-				insertChunk([JSON.parse(buffer)]);
+				addToValueBuffers([JSON.parse(buffer)]);
 			}
+			await finalizeValueBuffers();
 
 			alert('インポートが完了しました');
 		} finally {
@@ -98,7 +135,8 @@
 	const handleFileSelect = async (event: Event) => {
 		const input = event.target as HTMLInputElement;
 		if (input.files && input.files[0]) {
-			await importFile(input.files[0]);
+			const file = input.files[0];
+			await importFile(file);
 		}
 	};
 
@@ -111,7 +149,14 @@
 	{#if importing}
 		<Typograph>インポート中... {progress}%</Typograph>
 	{:else}
-		<Button><label for={id}>ファイル選択</label></Button>
+		<Button
+			onclick={(e) => {
+				if (!confirm('データが上書きされるので、事前にエクスポートしておくことをお勧めします。')) {
+					e.preventDefault();
+					e.stopPropagation();
+				}
+			}}><label for={id}>ファイル選択</label></Button
+		>
 		<input {id} type="file" accept=".myshirube" onchange={handleFileSelect} />
 	{/if}
 </div>
