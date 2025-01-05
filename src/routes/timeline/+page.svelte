@@ -200,7 +200,6 @@
 				...(await getTheme(currentThemeId)),
 				onchangeHandler: themeChangeHandler
 			});
-			isViewThemeEditor = true;
 			isFilterTheme = true;
 		}
 
@@ -324,7 +323,6 @@
 				});
 				if (themeSummary) {
 					saveCurrentThemeId(themeSummary?.id);
-					isViewThemeEditor = true;
 					isFilterTheme = true;
 				} else {
 					saveCurrentThemeId(undefined);
