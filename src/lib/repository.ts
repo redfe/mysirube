@@ -1,5 +1,3 @@
-import { sampleData } from './sampleData';
-
 export const dbName = 'MyShirube';
 export const dataStoreName = 'datas';
 export const themeStoreName = 'themes';
@@ -15,11 +13,7 @@ async function createDatabase(): Promise<IDBDatabase> {
 		request.onupgradeneeded = () => {
 			const db = request.result;
 			if (!db.objectStoreNames.contains(dataStoreName)) {
-				const store = createDataStore(db);
-				sampleData.forEach((item) => {
-					const request = store.add(item);
-					request.onerror = () => reject(request.error);
-				});
+				createDataStore(db);
 			}
 			if (!db.objectStoreNames.contains(themeStoreName)) {
 				createThemeStore(db);
