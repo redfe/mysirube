@@ -21,6 +21,7 @@
 	import ThemeSelector from '$lib/components/custom/ThemeSelector.svelte';
 	import ThemeEditor from '$lib/components/custom/ThemeEditor.svelte';
 	import Switch from '$lib/components/core/Switch.svelte';
+	import ColorSelect from '$lib/components/core/ColorSelect.svelte';
 
 	let newData = $state(new EditData());
 	let datas: EditData[] = $state([]);
@@ -87,7 +88,13 @@
 			editTheme.dataIds = [...(editTheme.dataIds ?? []), editData.id];
 		}
 
-		newData = new EditData({ start: '', end: '', title: '', color: editData.color });
+		newData = new EditData({
+			start: '',
+			end: '',
+			title: '',
+			color: editData.color,
+			subColor: editData.subColor
+		});
 		startElm?.focus();
 		loadAllData();
 	}
@@ -208,20 +215,12 @@
 				bind:textContent={newData.title}
 				contenteditable="true"
 			></td>
-			<td
-				class="color"
-				data-errormsg={newData.errors.color}
-				bind:textContent={newData.color}
-				contenteditable="true"
-				style="border-right-color:{newData.color}"
-			></td>
-			<td
-				class="color sub"
-				data-errormsg={newData.errors.subColor}
-				bind:textContent={newData.subColor}
-				contenteditable="true"
-				style="border-right-color:{newData.subColor}"
-			></td>
+			<td class="color" data-errormsg={newData.errors.color}>
+				<ColorSelect label="色" bind:value={newData.color} />
+			</td>
+			<td class="color sub" data-errormsg={newData.errors.subColor}>
+				<ColorSelect label="補色" bind:value={newData.subColor} />
+			</td>
 			<td>
 				{#if !newData.isValid()}
 					<pre>{oneError(newData)}</pre>
@@ -301,19 +300,17 @@
 				<td
 					class="color"
 					data-errormsg={data.errors.color}
-					bind:textContent={data.color}
-					contenteditable="true"
-					style="border-right-color:{data.color ? data.color : 'white'}"
 					onkeydown={(e) => moveByArrowKey(e, i, 5)}
-				></td>
+				>
+					<ColorSelect label="色" bind:value={data.color} />
+				</td>
 				<td
 					class="color sub"
 					data-errormsg={data.errors.subColor}
-					bind:textContent={data.subColor}
-					contenteditable="true"
-					style="border-right-color:{data.subColor ? data.subColor : 'white'}"
 					onkeydown={(e) => moveByArrowKey(e, i, 6)}
-				></td>
+				>
+					<ColorSelect label="補色" bind:value={data.subColor} />
+				</td>
 				<td>
 					{#if hasError(data.errors)}
 						<pre>{oneError(data)}</pre>
@@ -400,12 +397,7 @@
 	td {
 		transition: 0.25s;
 	}
-	th:nth-child(5),
-	td:nth-child(5),
-	th:nth-child(6),
-	td:nth-child(6) {
-		opacity: 0.8;
-	}
+
 	thead {
 		th:nth-child(1) {
 			width: 1rem;
@@ -420,7 +412,7 @@
 			width: 20rem;
 		}
 		th:nth-child(5) {
-			width: 4rem;
+			width: 2rem;
 		}
 		th:nth-child(6) {
 			width: 4rem;
@@ -459,12 +451,6 @@
 	}
 	td[data-errormsg] {
 		background-color: rgb(255, 192, 203, 0.8);
-	}
-	.color {
-		border-right: 2rem solid white;
-	}
-	.color.sub {
-		border-right: 1rem solid white;
 	}
 	tr.selected {
 		background-color: azure;
