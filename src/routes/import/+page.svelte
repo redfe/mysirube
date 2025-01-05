@@ -155,7 +155,7 @@
 					e.preventDefault();
 					e.stopPropagation();
 				}
-			}}><label for={id}>ファイル選択</label></Button
+			}}><label for={id}>インポート</label></Button
 		>
 		<input {id} type="file" accept=".myshirube" onchange={handleFileSelect} />
 	{/if}
