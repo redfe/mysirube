@@ -54,7 +54,7 @@
 				cursor: pointer;
 				background-color: transparent;
 				border: none;
-				`}>選択解除</Button
+				`}>（選択解除）</Button
 				>
 			</li>
 			{#each themes as theme (theme.id)}
