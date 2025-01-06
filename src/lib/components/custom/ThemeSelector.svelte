@@ -10,7 +10,7 @@
 
 <script lang="ts">
 	import Button from '$lib/components/core/Button.svelte';
-	import type { Theme, ThemeSummary } from '$lib/repository';
+	import type { ThemeSummary } from '$lib/repository';
 	import ThemeDialogBase from '$lib/components/core/DialogBase.svelte';
 
 	let { onclickNew, onclickClose, onclickSelect, onclickRemove, getThemeSummaries }: Props =
