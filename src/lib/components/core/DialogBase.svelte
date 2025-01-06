@@ -10,7 +10,6 @@
 </script>
 
 <script lang="ts">
-	import { scale } from 'svelte/transition';
 	import { draggable, type DragOptions } from '@neodrag/svelte';
 	import { onMount } from 'svelte';
 	import type { HTMLDialogAttributes } from 'svelte/elements';
@@ -47,7 +46,6 @@
 <dialog
 	bind:this={dialog}
 	class="dialog-base"
-	transition:scale
 	use:draggableWrapper={{
 		handle: '.handle'
 	}}
