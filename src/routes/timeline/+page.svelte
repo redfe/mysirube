@@ -207,7 +207,7 @@
 
 		// 表示単位を初期化
 		// 20行で収まりそうな初期表示単位の基準値
-		const s = Math.abs(items[items.length - 1].end - items[0].start) / 20;
+		const s = Math.abs((items[items.length - 1]?.end ?? 0) - (items[0]?.start ?? 0)) / 20;
 		unit = units.reduce(
 			(acc, cur) => (Math.abs(1 - cur / s) < Math.abs(1 - acc / s) ? cur : acc),
 			units[0]
@@ -383,7 +383,7 @@
 	}
 	.timelineContainer {
 		position: relative;
-		overflow: scroll;
+		overflow: auto;
 		box-sizing: border-box;
 		padding-bottom: 2rem;
 	}
