@@ -201,6 +201,7 @@
 				onchangeHandler: themeChangeHandler
 			});
 			isFilterTheme = true;
+			isViewThemeEditor = true;
 		}
 
 		await filter();
