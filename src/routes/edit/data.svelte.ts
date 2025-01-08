@@ -83,7 +83,7 @@ export class EditData {
 	}
 
 	get color() {
-		return this.#color;
+		return this.#color || 'white';
 	}
 
 	set subColor(subColor: string | undefined) {
@@ -93,7 +93,7 @@ export class EditData {
 	}
 
 	get subColor() {
-		return this.#subColor;
+		return this.#subColor || 'white';
 	}
 
 	set onchangeHandler(onchangeHandler: OnchangeHandler<EditData> | undefined) {
@@ -160,7 +160,9 @@ export class EditData {
 
 	private handleOnChange(options?: { name: keyof EditData; before?: unknown; after: unknown }) {
 		if (this.#onchangeHandler && this.isValid()) {
-			this.#onchangeHandler(this, options);
+			if ((options?.before || options?.after) && options?.before !== options?.after) {
+				this.#onchangeHandler(this, options);
+			}
 		}
 	}
 }
