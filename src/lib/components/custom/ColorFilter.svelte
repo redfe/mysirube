@@ -55,17 +55,19 @@
 			width: 1.5rem;
 			height: 1.5rem;
 			display: inline-block;
-			border: solid 1px rgba(0, 0, 0, 0.7);
+			border: solid 1px rgba(0, 0, 0, 0.5);
 			box-sizing: border-box;
-			margin-right: 0.5rem;
+			margin-right: 0.25rem;
 			transition: padding 0.25s;
 
 			input {
 				display: none;
 			}
 			div {
+				border: 1px solid rgba(0, 0, 0, 0.5);
 				width: 100%;
 				height: 100%;
+				box-sizing: border-box;
 			}
 		}
 		.color:has(input:checked) {

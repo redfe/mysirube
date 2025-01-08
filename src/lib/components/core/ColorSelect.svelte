@@ -127,5 +127,12 @@
 		border: none;
 		margin: 0;
 		cursor: pointer;
+		box-sizing: border-box;
+		transform: scale(0.8);
+		border: 1px solid rgba(0, 0, 0, 0.3);
+		transition: transform 0.25s;
+	}
+	.select-items button:hover {
+		transform: scale(1);
 	}
 </style>
