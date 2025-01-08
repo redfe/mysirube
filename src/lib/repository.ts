@@ -1,4 +1,4 @@
-export const dbName = 'MyShirube';
+export const dbName = 'MySirube';
 export const dataStoreName = 'datas';
 export const themeStoreName = 'themes';
 export const version = 1;

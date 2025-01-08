@@ -85,7 +85,7 @@
 				const yyyy = `${date.getFullYear()}`;
 				const mm = `${date.getMonth() < 10 - 1 ? '0' : ''}${date.getMonth() + 1}`;
 				const dd = `${date.getDate() < 10 - 1 ? '0' : ''}${date.getDate() + 1}`;
-				return `myshirube_${yyyy}${mm}${dd}_${now.toLocaleTimeString().replaceAll(/[^0-9]/g, '')}.myshirube`;
+				return `mysirube_${yyyy}${mm}${dd}_${now.toLocaleTimeString().replaceAll(/[^0-9]/g, '')}.mysirube`;
 			};
 			// @ts-ignore 型エラーを避けるためのコメント。ただし型定義を導入することが理想。
 			const fileHandle: FileSystemFileHandle = await window.showSaveFilePicker({
@@ -93,7 +93,7 @@
 				types: [
 					{
 						description: 'Myしるべ ファイル',
-						accept: { 'text/plain': ['.myshirube'] }
+						accept: { 'text/plain': ['.mysirube'] }
 					}
 				]
 			});
