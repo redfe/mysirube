@@ -132,7 +132,8 @@
 		border: 1px solid rgba(0, 0, 0, 0.3);
 		transition: transform 0.25s;
 	}
-	.select-items button:hover {
+	.select-items button:hover,
+	.select-items button:focus {
 		transform: scale(1);
 	}
 </style>
