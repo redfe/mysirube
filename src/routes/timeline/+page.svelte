@@ -196,12 +196,14 @@
 		// テーマを復元
 		const currentThemeId = getCurrentThemeId();
 		if (currentThemeId) {
-			editTheme = new EditTheme({
-				...(await getTheme(currentThemeId)),
-				onchangeHandler: themeChangeHandler
-			});
-			isFilterTheme = true;
-			isViewThemeEditor = true;
+			const theme = await getTheme(currentThemeId);
+			if (theme) {
+				editTheme = new EditTheme({
+					...theme,
+					onchangeHandler: themeChangeHandler
+				});
+				isFilterTheme = true;
+			}
 		}
 
 		await filter();
