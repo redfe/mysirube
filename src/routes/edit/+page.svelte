@@ -144,6 +144,7 @@
 	}
 
 	function moveByArrowKey(e: KeyboardEvent, i: number, col: number) {
+		if (e.isComposing) return; // 日本語入力中は無視
 		const t = e.target as HTMLElement;
 		const tagName = t.tagName.toLowerCase();
 		const tbody =
@@ -174,12 +175,14 @@
 	onMount(async () => {
 		const currentThemeId = getCurrentThemeId();
 		if (currentThemeId) {
-			editTheme = new EditTheme({
-				...(await getTheme(currentThemeId)),
-				onchangeHandler: themeChangeHandler
-			});
-			isFilterTheme = true;
-			isViewThemeEditor = true;
+			const theme = await getTheme(currentThemeId);
+			if (theme) {
+				editTheme = new EditTheme({
+					...theme,
+					onchangeHandler: themeChangeHandler
+				});
+				isFilterTheme = true;
+			}
 		}
 		loadAllData();
 	});
