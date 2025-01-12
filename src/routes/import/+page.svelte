@@ -157,7 +157,7 @@
 				}
 			}}><label for={id}>インポート</label></Button
 		>
-		<input {id} type="file" accept=".myhirube" onchange={handleFileSelect} />
+		<input {id} type="file" accept=".mysirube" onchange={handleFileSelect} />
 	{/if}
 </div>
 
