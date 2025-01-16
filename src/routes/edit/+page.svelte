@@ -189,147 +189,145 @@
 </script>
 
 <svelte:head><title>Myしるべ：年表</title></svelte:head>
-
-<table>
-	<thead>
-		<tr>
-			<th></th>
-			<th>開始年</th>
-			<th>終了年</th>
-			<th>タイトル</th>
-			<th>色</th>
-			<th>補色</th>
-			<th>エラー</th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td></td>
-			<td
-				data-errormsg={newData.errors.start}
-				bind:textContent={newData.start}
-				contenteditable="true"
-				bind:this={startElm}
-			></td>
-			<td data-errormsg={newData.errors.end} bind:textContent={newData.end} contenteditable="true"
-			></td>
-			<td
-				data-errormsg={newData.errors.title}
-				bind:textContent={newData.title}
-				contenteditable="true"
-			></td>
-			<td class="color" data-errormsg={newData.errors.color}>
-				<ColorSelect label="色" bind:value={newData.color} />
-			</td>
-			<td class="color sub" data-errormsg={newData.errors.subColor}>
-				<ColorSelect label="補色" bind:value={newData.subColor} />
-			</td>
-			<td>
-				{#if !newData.isValid()}
-					<pre>{oneError(newData)}</pre>
+<div>
+	<div class="commands">
+		<div>
+			<StartYearChange label="表示開始年" move={moveStartYear} bind:startYear={offsetStart} />
+			<div class="count">
+				<Typograph>件数:</Typograph>
+				<Typograph>{datas.length}/{allCount}</Typograph>
+			</div>
+			<div>
+				<Typograph></Typograph>
+				<Button
+					onclick={() => {
+						isViewThemeSelector = true;
+						isViewThemeEditor = false;
+					}}>テーマ</Button
+				>
+				{#if editTheme.isValid()}
+					<Typograph>{editTheme.title}</Typograph>
+					<Button
+						onclick={() => {
+							isViewThemeSelector = false;
+							isViewThemeEditor = true;
+						}}>編集</Button
+					>
+					<Switch bind:on={isFilterTheme} onchange={() => loadAllData()} />
 				{/if}
-			</td>
-			<td>
-				<Button disabled={!newData.isValid()} onclick={add}>追加</Button>
-			</td>
-		</tr>
-		<tr class="commands">
-			<td> </td>
-			<td colspan="7">
-				<div>
-					<StartYearChange label="表示開始年" move={moveStartYear} bind:startYear={offsetStart} />
-					<div class="count">
-						<Typograph>件数:</Typograph>
-						<Typograph>{datas.length}/{allCount}</Typograph>
-					</div>
-					<div>
-						<Typograph></Typograph>
-						<Button
-							onclick={() => {
-								isViewThemeSelector = true;
-								isViewThemeEditor = false;
-							}}>テーマ</Button
-						>
-						{#if editTheme.isValid()}
-							<Typograph>{editTheme.title}</Typograph>
-							<Button
-								onclick={() => {
-									isViewThemeSelector = false;
-									isViewThemeEditor = true;
-								}}>編集</Button
-							>
-							<Switch bind:on={isFilterTheme} onchange={() => loadAllData()} />
-						{/if}
-					</div>
-				</div>
-			</td>
-		</tr>
-		{#each datas as data, i (i)}
-			<tr class:selected={editTheme.dataIds?.includes(data.id)}>
+			</div>
+		</div>
+	</div>
+	<table>
+		<thead>
+			<tr>
+				<th></th>
+				<th>開始年</th>
+				<th>終了年</th>
+				<th>タイトル</th>
+				<th>色</th>
+				<th>補色</th>
+				<th>エラー</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td></td>
 				<td
-					><input
-						type="checkbox"
-						checked={editTheme.dataIds?.includes(data.id)}
-						onchange={(e) => {
-							const elm = e.target as HTMLInputElement;
-							if (elm.checked) {
-								// onchangeHandler を発火させるため代入する
-								editTheme.dataIds = [...(editTheme.dataIds ?? []), data.id];
-							} else {
-								editTheme.dataIds = editTheme.dataIds?.filter((v) => v !== data.id);
-							}
-						}}
-						onkeydown={(e) => moveByArrowKey(e, i, 1)}
-					/></td
-				>
-				<td
-					data-errormsg={data.errors.start}
-					bind:textContent={data.start}
+					data-errormsg={newData.errors.start}
+					bind:textContent={newData.start}
 					contenteditable="true"
-					onkeydown={(e) => moveByArrowKey(e, i, 2)}
+					bind:this={startElm}
+				></td>
+				<td data-errormsg={newData.errors.end} bind:textContent={newData.end} contenteditable="true"
 				></td>
 				<td
-					data-errormsg={data.errors.end}
-					bind:textContent={data.end}
+					data-errormsg={newData.errors.title}
+					bind:textContent={newData.title}
 					contenteditable="true"
-					onkeydown={(e) => moveByArrowKey(e, i, 3)}
 				></td>
-				<td
-					data-errormsg={data.errors.title}
-					bind:textContent={data.title}
-					contenteditable="true"
-					onkeydown={(e) => moveByArrowKey(e, i, 4)}
-				></td>
-				<td
-					class="color"
-					data-errormsg={data.errors.color}
-					onkeydown={(e) => moveByArrowKey(e, i, 5)}
-				>
-					<ColorSelect label="色" bind:value={data.color} />
+				<td class="color" data-errormsg={newData.errors.color}>
+					<ColorSelect label="色" bind:value={newData.color} />
 				</td>
-				<td
-					class="color sub"
-					data-errormsg={data.errors.subColor}
-					onkeydown={(e) => moveByArrowKey(e, i, 6)}
-				>
-					<ColorSelect label="補色" bind:value={data.subColor} />
+				<td class="color sub" data-errormsg={newData.errors.subColor}>
+					<ColorSelect label="補色" bind:value={newData.subColor} />
 				</td>
 				<td>
-					{#if hasError(data.errors)}
-						<pre>{oneError(data)}</pre>
+					{#if !newData.isValid()}
+						<pre>{oneError(newData)}</pre>
 					{/if}
 				</td>
-				<td
-					><Button
-						onclick={() => remove(data.id)}
-						onkeydown={(e: KeyboardEvent) => moveByArrowKey(e, i, 8)}>×</Button
+				<td>
+					<Button disabled={!newData.isValid()} onclick={add}>追加</Button>
+				</td>
+			</tr>
+			{#each datas as data, i (i)}
+				<tr class:selected={editTheme.dataIds?.includes(data.id)}>
+					<td
+						><input
+							type="checkbox"
+							checked={editTheme.dataIds?.includes(data.id)}
+							onchange={(e) => {
+								const elm = e.target as HTMLInputElement;
+								if (elm.checked) {
+									// onchangeHandler を発火させるため代入する
+									editTheme.dataIds = [...(editTheme.dataIds ?? []), data.id];
+								} else {
+									editTheme.dataIds = editTheme.dataIds?.filter((v) => v !== data.id);
+								}
+							}}
+							onkeydown={(e) => moveByArrowKey(e, i, 1)}
+						/></td
 					>
-				</td></tr
-			>
-		{/each}
-	</tbody>
-</table>
+					<td
+						data-errormsg={data.errors.start}
+						bind:textContent={data.start}
+						contenteditable="true"
+						onkeydown={(e) => moveByArrowKey(e, i, 2)}
+					></td>
+					<td
+						data-errormsg={data.errors.end}
+						bind:textContent={data.end}
+						contenteditable="true"
+						onkeydown={(e) => moveByArrowKey(e, i, 3)}
+					></td>
+					<td
+						data-errormsg={data.errors.title}
+						bind:textContent={data.title}
+						contenteditable="true"
+						onkeydown={(e) => moveByArrowKey(e, i, 4)}
+					></td>
+					<td
+						class="color"
+						data-errormsg={data.errors.color}
+						onkeydown={(e) => moveByArrowKey(e, i, 5)}
+					>
+						<ColorSelect label="色" bind:value={data.color} />
+					</td>
+					<td
+						class="color sub"
+						data-errormsg={data.errors.subColor}
+						onkeydown={(e) => moveByArrowKey(e, i, 6)}
+					>
+						<ColorSelect label="補色" bind:value={data.subColor} />
+					</td>
+					<td>
+						{#if hasError(data.errors)}
+							<pre>{oneError(data)}</pre>
+						{/if}
+					</td>
+					<td
+						><Button
+							onclick={() => remove(data.id)}
+							onkeydown={(e: KeyboardEvent) => moveByArrowKey(e, i, 8)}>×</Button
+						>
+					</td></tr
+				>
+			{/each}
+		</tbody>
+	</table>
+</div>
 
 {#if isViewThemeSelector}
 	<ThemeSelector
@@ -384,6 +382,14 @@
 {/if}
 
 <style>
+	.commands {
+		& > div {
+			text-align: left;
+			display: flex;
+			gap: 2rem;
+		}
+	}
+
 	table,
 	th,
 	td {
@@ -431,17 +437,9 @@
 	tbody {
 		td:nth-child(7) {
 			font-weight: bold;
-			color: red;
 			border-color: black;
 			pre {
 				margin: 0;
-			}
-		}
-		tr.commands {
-			td > div {
-				text-align: left;
-				display: flex;
-				gap: 2rem;
 			}
 		}
 		td:nth-child(2),
