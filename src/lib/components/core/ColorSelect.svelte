@@ -42,6 +42,10 @@
 		}
 		return isParent(elm.parentElement, target);
 	}
+
+	function close() {
+		current = undefined;
+	}
 </script>
 
 <svelte:window
@@ -59,7 +63,12 @@
 				return;
 			}
 		}
-		current = undefined;
+		close();
+	}}
+	onkeydown={(e: KeyboardEvent) => {
+		if (e.key === 'Escape') {
+			close();
+		}
 	}}
 />
 
