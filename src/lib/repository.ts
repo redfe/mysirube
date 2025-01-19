@@ -245,6 +245,19 @@ export function getCurrentThemeId(): string | null {
 	return localStorage.getItem('currentThemeId');
 }
 
+export function saveCurrentStartYear(startYear?: number) {
+	if (startYear == null) {
+		localStorage.removeItem('currentStartYear');
+	} else {
+		localStorage.setItem('currentStartYear', `${startYear}`);
+	}
+}
+
+export function getCurrentStartyear(): number | null {
+	const val = localStorage.getItem('currentStartYear');
+	return val ? Number(val) : null;
+}
+
 export type Data = {
 	id: string;
 	start: number;
