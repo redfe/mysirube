@@ -206,6 +206,9 @@
 			}
 		}
 
+		// 表示開始年を初期化
+		offsetStartYear = startValue;
+
 		await filter();
 
 		// 表示単位を初期化

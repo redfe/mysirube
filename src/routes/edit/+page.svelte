@@ -26,7 +26,7 @@
 	let newData = $state(new EditData());
 	let datas: EditData[] = $state([]);
 	let startElm: HTMLElement;
-	let offsetStart: number | undefined = $state();
+	let offsetStartYear: number | undefined = $state();
 	let allCount = $state(0);
 	let isFilterTheme = $state(false);
 	let isViewThemeSelector = $state(false);
@@ -122,7 +122,7 @@
 
 	function loadAllData() {
 		search({
-			start: offsetStart,
+			start: offsetStartYear,
 			ids: isFilterTheme && editTheme.isValid() ? [...(editTheme.dataIds ?? [])] : undefined
 		}).then((r) => {
 			allCount = r.count;
@@ -192,7 +192,7 @@
 <div>
 	<div class="commands">
 		<div>
-			<StartYearChange label="表示開始年" move={moveStartYear} bind:startYear={offsetStart} />
+			<StartYearChange label="表示開始年" move={moveStartYear} bind:startYear={offsetStartYear} />
 			<div class="count">
 				<Typograph>件数:</Typograph>
 				<Typograph>{datas.length}/{allCount}</Typograph>
