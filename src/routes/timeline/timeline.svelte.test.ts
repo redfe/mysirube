@@ -43,6 +43,10 @@ describe('generatePeriods', () => {
 		const actual = generatePeriods(100, [item(-200, -100), item(-50, 30), item(70, 200)]);
 		expect(actual).toEqual([-200, -100, 0, 100, 200]);
 	});
+	it('offsetStartYearを含む', () => {
+		const actual = generatePeriods(100, [item(-110, -100), item(-50, 30), item(70, 270)], 0);
+		expect(actual).toEqual([0, 100, 200]);
+	});
 });
 
 describe('createLanes', () => {
@@ -56,6 +60,12 @@ describe('createLanes', () => {
 		const item1 = item(710, 710);
 		const item2 = item(794, 794);
 		const actual = createLanes(100, [item1, item2]);
+		expect(actual).toEqual([[item1], [item2]]);
+	});
+	it('offsetStartYear含む', () => {
+		const item1 = item(710, 810);
+		const item2 = item(794, 794);
+		const actual = createLanes(100, [item1, item2], 800);
 		expect(actual).toEqual([[item1], [item2]]);
 	});
 });

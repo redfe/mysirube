@@ -25,9 +25,9 @@ export function getUnitPeriod(start: number, end: number, unit: number) {
 }
 
 // 表示枠作成
-export function generatePeriods(unit: number, items: Item[]): number[] {
+export function generatePeriods(unit: number, items: Item[], offsetStartYear?: number): number[] {
 	if (items.length === 0) return [];
-	const min = items[0].start;
+	const min = offsetStartYear ?? items[0].start;
 	const max = [...items].sort((a, b) => b.end - a.end)[0].end;
 	const displayPeriod = getUnitPeriod(min, max, unit);
 	const periods = new Array(Math.abs(displayPeriod.end - displayPeriod.start) / unit + 1);
@@ -41,7 +41,7 @@ export function formatYear(y: number) {
 	return `${new Intl.NumberFormat().format(y)}年`;
 }
 
-export function createLanes(unit: number, items: Item[]) {
+export function createLanes(unit: number, items: Item[], offsetStartYear?: number) {
 	const lanes: Item[][] = [];
 
 	items.forEach((item) => {
@@ -54,7 +54,13 @@ export function createLanes(unit: number, items: Item[]) {
 				lane.push(item);
 				return;
 			} else {
-				const laneEndYear = getUnitPeriod(last.start, last.end, unit).end + (unit - 1);
+				const laneEndYear =
+					getUnitPeriod(
+						offsetStartYear != null && last.start < offsetStartYear ? offsetStartYear : last.start,
+						last.end,
+						unit
+					).end +
+					(unit - 1);
 				const unitPeriod = getUnitPeriod(item.start, item.end, unit);
 				const itemStart = unitPeriod.start;
 				if (laneEndYear < itemStart) {

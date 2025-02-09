@@ -18,7 +18,6 @@
 		saveCurrentThemeId,
 		saveTheme,
 		search,
-		type Theme,
 		type ThemeSummary
 	} from '$lib/repository';
 	import Button from '$lib/components/core/Button.svelte';
@@ -30,10 +29,16 @@
 	import ThemeEditor from '$lib/components/custom/ThemeEditor.svelte';
 	import Switch from '$lib/components/core/Switch.svelte';
 
+	// 表示単位
 	const units = [10000, 5000, 1000, 500, 100, 50, 10, 5, 1];
 
+	// 上部の余白幅（範囲外表示用）
+	const paddingTop = 20;
+
+	// 初期化フラグ
 	let initialized = $state(false);
 
+	// ローディングフラグ
 	let loading = $state(true);
 
 	// 表示単位
@@ -66,9 +71,6 @@
 	// 全件数
 	let allCount: number = $state(0);
 
-	// 表示期間
-	let periods = $derived(generatePeriods(unit, items));
-
 	// 最上位の表示枠要素
 	let first: HTMLElement | undefined = $state();
 
@@ -77,6 +79,9 @@
 
 	// 表示開始年
 	let offsetStartYear: number | undefined = $state();
+
+	// 表示期間
+	let periods = $derived(generatePeriods(unit, items, offsetStartYear));
 
 	// 年表要素
 	let timelineElm: HTMLElement | undefined = $state();
@@ -103,17 +108,21 @@
 
 	// 表示関数
 	function display(unit: number, periods: number[], filteredItems: Item[]) {
-		const lanes = createLanes(unit, filteredItems);
+		const lanes = createLanes(unit, filteredItems, offsetStartYear);
+		const begin = performance.now();
 		lanes.forEach((lane, laneIndex) => {
 			const items = lane;
 			items.forEach((item) => {
-				new Promise(() => displayByItem(item, laneIndex, periods));
+				Promise.resolve().then(() => displayByItem(item, laneIndex, periods));
 			});
 		});
+		const end = performance.now();
+		console.log('display time:', end - begin);
 	}
 
 	function displayByItem(item: Item, laneIndex: number, periods: number[]) {
-		const unitPeriod = getUnitPeriod(item.start, item.end, unit);
+		const isOverWrap = offsetStartYear != null && item.start < offsetStartYear;
+		const unitPeriod = getUnitPeriod(isOverWrap ? offsetStartYear! : item.start, item.end, unit);
 		const firstElement = first;
 		const firstTop = firstElement?.offsetTop!;
 		const itemElement: HTMLElement | null = document.querySelector('#item-' + item.id);
@@ -126,8 +135,9 @@
 		const unitCount = (unitPeriod.end - unitPeriod.start) / unit + 1;
 		const height = unitHeight * unitCount || unitHeight;
 		let periodIndex = periods.indexOf(unitPeriod.start);
-		itemElement!.style.top = firstTop + periodIndex * unitHeight + 2 + 'px';
-		itemElement!.style.height = height - 3 + 'px';
+		itemElement!.style.top =
+			firstTop + periodIndex * unitHeight + 2 + (isOverWrap ? -(paddingTop + 3) : 0) + 'px';
+		itemElement!.style.height = height - 3 + (isOverWrap ? paddingTop + 3 : 0) + 'px';
 		const left = (10 + itemWidth) * laneIndex + 130;
 		itemElement!.style.left = left + 'px';
 
@@ -162,7 +172,8 @@
 			start: offsetStartYear,
 			colors: selectableColors.length === 0 ? undefined : selectedColors,
 			subColors: selectableSubColors.length === 0 ? undefined : selectedSubColors,
-			ids: isFilterTheme ? editTheme.dataIds : undefined
+			ids: isFilterTheme ? editTheme.dataIds : undefined,
+			isIncludeOverrap: true
 		});
 		items = result.datas.map((data) => ({
 			...data,
@@ -293,9 +304,9 @@
 			{/if}
 		</div>
 	</div>
-	<div class="timelineContainer" bind:this={timelineElm}>
+	<div class="timelineContainer" bind:this={timelineElm} style={`padding-top: ${paddingTop}px;`}>
 		<ul bind:this={first}>
-			{#each periods as p, i (p)}
+			{#each periods as p (p)}
 				<li id="li-{p}" style="height:{unitHeight}px">
 					<span>{formatYear(p)}</span>
 				</li>
@@ -309,7 +320,7 @@
 				data-start={item.start}
 				data-end={item.end}
 				data-title={item.title}
-				style:background={`linear-gradient(90deg, ${item.color ? item.color : defaultColor} 0% 90%, ${item.subColor ? item.subColor : defaultColor} 90%)`}
+				style:background={`linear-gradient(90deg, ${item.color ? item.color : defaultColor} 0% 80%, ${item.subColor ? item.subColor : defaultColor} 80%)`}
 				style:width={`${itemWidth}px`}
 				use:tooltip
 				transition:fadeWithTooltip
@@ -380,6 +391,7 @@
 		flex-wrap: wrap;
 		padding: 0.25rem 1rem;
 		justify-content: center;
+		box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.2);
 	}
 	@media (max-width: 768px) {
 		.commands {
