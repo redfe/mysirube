@@ -41,7 +41,7 @@ export function formatYear(y: number) {
 	return `${new Intl.NumberFormat().format(y)}年`;
 }
 
-export function createLanes(unit: number, items: Item[], offsetStartYear?: number) {
+export function createLanes(unit: number, items: Item[]) {
 	const lanes: Item[][] = [];
 
 	items.forEach((item) => {
@@ -54,13 +54,7 @@ export function createLanes(unit: number, items: Item[], offsetStartYear?: numbe
 				lane.push(item);
 				return;
 			} else {
-				const laneEndYear =
-					getUnitPeriod(
-						offsetStartYear != null && last.start < offsetStartYear ? offsetStartYear : last.start,
-						last.end,
-						unit
-					).end +
-					(unit - 1);
+				const laneEndYear = getUnitPeriod(last.start, last.end, unit).end + (unit - 1);
 				const unitPeriod = getUnitPeriod(item.start, item.end, unit);
 				const itemStart = unitPeriod.start;
 				if (laneEndYear < itemStart) {

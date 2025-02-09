@@ -62,12 +62,6 @@ describe('createLanes', () => {
 		const actual = createLanes(100, [item1, item2]);
 		expect(actual).toEqual([[item1], [item2]]);
 	});
-	it('offsetStartYear含む', () => {
-		const item1 = item(710, 810);
-		const item2 = item(794, 794);
-		const actual = createLanes(100, [item1, item2], 800);
-		expect(actual).toEqual([[item1], [item2]]);
-	});
 });
 
 function item(start: number, end: number) {

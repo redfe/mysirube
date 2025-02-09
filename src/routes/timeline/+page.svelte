@@ -108,7 +108,7 @@
 
 	// 表示関数
 	function display(unit: number, periods: number[], filteredItems: Item[]) {
-		const lanes = createLanes(unit, filteredItems, offsetStartYear);
+		const lanes = createLanes(unit, filteredItems);
 		const begin = performance.now();
 		lanes.forEach((lane, laneIndex) => {
 			const items = lane;
