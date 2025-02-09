@@ -109,15 +109,12 @@
 	// 表示関数
 	function display(unit: number, periods: number[], filteredItems: Item[]) {
 		const lanes = createLanes(unit, filteredItems);
-		const begin = performance.now();
 		lanes.forEach((lane, laneIndex) => {
 			const items = lane;
 			items.forEach((item) => {
 				Promise.resolve().then(() => displayByItem(item, laneIndex, periods));
 			});
 		});
-		const end = performance.now();
-		console.log('display time:', end - begin);
 	}
 
 	function displayByItem(item: Item, laneIndex: number, periods: number[]) {
