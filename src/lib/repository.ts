@@ -104,6 +104,7 @@ export async function search(options?: {
 	colors?: string[];
 	subColors?: string[];
 	ids?: string[];
+	isIncludeOverrap?: boolean; // {start:100} の場合 {start:50, end:150} はヒットする
 }): Promise<SearchResult> {
 	const db = await initDB();
 	return new Promise((resolve, reject) => {
@@ -111,15 +112,11 @@ export async function search(options?: {
 		const store = transaction.objectStore(dataStoreName);
 		// start でソートされた状態で取得する
 		const indexOfStartAndTitle = store.index('indexOfStartAndTitle');
-		const query = options?.start != null ? IDBKeyRange.lowerBound([options?.start]) : null;
 		const countRequest = indexOfStartAndTitle.count();
 
-		const searchResult: SearchResult = {
-			datas: [],
-			count: 0
-		};
+		const searchResult: SearchResult = { datas: [], count: 0 };
 		countRequest.onsuccess = () => {
-			const request = indexOfStartAndTitle.openCursor(query, 'next');
+			const request = indexOfStartAndTitle.openCursor(null, 'next');
 			searchResult.count = countRequest.result;
 			let hitCount = 0;
 			request.onsuccess = () => {
@@ -130,11 +127,16 @@ export async function search(options?: {
 				}
 				if (cursor) {
 					const data: Data = cursor.value;
+					const isMatchPeriod =
+						options?.start == null ||
+						(options?.isIncludeOverrap
+							? options.start <= (data.end ?? data.start)
+							: options.start <= data.start);
 					const isMatchColor = options?.colors == null || options.colors.includes(data.color ?? '');
 					const isMatchSubColor =
 						options?.subColors == null || options.subColors.includes(data.subColor ?? '');
 					const isMatchIds = options?.ids == null || options.ids.includes(data.id);
-					if (isMatchColor && isMatchSubColor && isMatchIds) {
+					if (isMatchPeriod && isMatchColor && isMatchSubColor && isMatchIds) {
 						hitCount++;
 						searchResult.datas.push(data);
 					}
@@ -278,12 +280,6 @@ export type Theme = {
 	updatedAt: Date;
 };
 
-export type ThemeSummary = {
-	id: string;
-	title: string;
-};
+export type ThemeSummary = { id: string; title: string };
 
-export type SearchResult = {
-	datas: Data[];
-	count: number;
-};
+export type SearchResult = { datas: Data[]; count: number };
