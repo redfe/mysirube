@@ -7,15 +7,19 @@
 <script lang="ts">
 	let { on: checked = $bindable(false), disabled = false, ...others }: Props = $props();
 
-	function toggle() {
+	function toggle(e: KeyboardEvent) {
 		if (!disabled) {
-			checked = !checked;
+			if (e.key === 'Enter' || e.key === ' ') {
+				checked = !checked;
+				e.preventDefault();
+				e.stopPropagation();
+			}
 		}
 	}
 </script>
 
 <label class="switch" {...others}>
-	<input type="checkbox" bind:checked {disabled} />
+	<input type="checkbox" tabindex="-1" bind:checked {disabled} />
 	<span class="slider" role="checkbox" tabindex="0" aria-checked={checked} onkeydown={toggle}
 	></span>
 </label>
