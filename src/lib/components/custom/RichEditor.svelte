@@ -16,14 +16,18 @@
 	import Youtube from '@tiptap/extension-youtube';
 	import Image from '@tiptap/extension-image';
 	import FileHandler from '@tiptap-pro/extension-file-handler';
+	import Mermaid from '$lib/tiptap/mermaid';
 	import { onDestroy, onMount } from 'svelte';
 	import { scale } from 'svelte/transition';
 	import { cubicInOut } from 'svelte/easing';
+	import MermaidEditorDialog from './MermaidEditorDialog.svelte';
 
 	let { content, onchangecontent }: Props = $props();
 	let element: HTMLElement | undefined = $state();
 	let editor: Editor | undefined = $state();
 	let currentMenu: string | undefined = $state();
+	let mermaidText: string | undefined = $state();
+	let showMermaidDialog: boolean = $state(false);
 
 	onMount(() => {
 		const isValidContent = content ? content.startsWith('{') : false;
@@ -88,7 +92,8 @@
 							};
 						});
 					}
-				})
+				}),
+				Mermaid
 			],
 			content: isValidContent ? JSON.parse(content ?? '{}') : undefined,
 			onTransaction: () => {
@@ -374,6 +379,16 @@
 					>
 						YouTube動画
 					</button>
+					<button
+						onclick={() => {
+							const previousText = editor?.getAttributes('mermaid').text;
+							mermaidText = previousText;
+							showMermaidDialog = true;
+						}}
+						class:active={editor?.isActive('mermaid')}
+					>
+						図（Mermaid）
+					</button>
 				</div>
 			{/if}
 		</div>
@@ -381,6 +396,19 @@
 {/if}
 
 <div class="editor" bind:this={element}></div>
+
+{#if showMermaidDialog}
+	<MermaidEditorDialog
+		bind:text={mermaidText}
+		onclickCancel={() => {
+			showMermaidDialog = false;
+		}}
+		onclickOk={() => {
+			showMermaidDialog = false;
+			editor?.commands.addMermaid({ text: mermaidText || 'flowchart\na --> b' });
+		}}
+	></MermaidEditorDialog>
+{/if}
 
 <style>
 	.menus {
@@ -508,7 +536,7 @@
 	.editor :global(.selectedCell) {
 		background-color: whitesmoke;
 	}
-	.editor :global(img.ProseMirror-selectednode) {
+	.editor :global(.ProseMirror-selectednode) {
 		outline: 4px solid mediumorchid;
 	}
 </style>

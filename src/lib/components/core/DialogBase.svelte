@@ -62,8 +62,7 @@
 		background-color: white;
 		border: none;
 		border-radius: 0.25rem;
-		padding: 1rem;
-		padding-top: 0;
+		padding: 0 1rem;
 		box-shadow: 0 0 2000rem 0rem rgba(0, 0, 0, 0.5);
 	}
 	.handle {

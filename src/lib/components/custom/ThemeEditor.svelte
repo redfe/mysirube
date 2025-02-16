@@ -11,12 +11,12 @@
 </script>
 
 <script lang="ts">
-	import ThemeDialogBase from '$lib/components/core/DialogBase.svelte';
+	import DialogBase from '$lib/components/core/DialogBase.svelte';
 	import RichEditor from './RichEditor.svelte';
 	let { onclickClose, theme } = $props();
 </script>
 
-<ThemeDialogBase
+<DialogBase
 	draggables={{ enabled: true, axis: 'both' }}
 	style={`
 	top: 2rem;
@@ -39,7 +39,7 @@
 			theme.memo = content;
 		}}
 	/>
-</ThemeDialogBase>
+</DialogBase>
 
 <style>
 	.header {
