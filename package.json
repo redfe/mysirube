@@ -48,7 +48,8 @@
 		"lint": "prettier --check . && eslint .",
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run && npm run test:e2e",
-		"test:e2e": "playwright test"
+		"test:e2e": "playwright test",
+		"build:docs": "vite build && mkdir -p docs/$npm_package_version && mv build/index.html docs/$npm_package_version"
 	},
 	"type": "module"
 }
