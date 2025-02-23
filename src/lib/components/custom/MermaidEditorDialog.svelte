@@ -16,14 +16,15 @@
 	import Link from '$lib/components/core/Link.svelte';
 	const defaultText = 'flowchart\na --> b';
 	let { text = $bindable(), onclickCancel, onclickOk }: Props = $props();
-	let elementText = $state(text ?? defaultText);
+	text = text ?? defaultText;
 	let previewElement: HTMLElement | undefined = $state();
 	let isError = $state(false);
 	const run = async () => {
-		if (await mermaid.parse(elementText, { suppressErrors: true })) {
+		const parseText = text ?? defaultText;
+		if (await mermaid.parse(parseText, { suppressErrors: true })) {
 			isError = false;
 			await tick(); // wait for the DOM to update
-			const { svg } = await mermaid.render('dummy', elementText);
+			const { svg } = await mermaid.render('dummy', parseText);
 			previewElement!.innerHTML = svg;
 		} else {
 			isError = true;
@@ -53,7 +54,7 @@
 		</div>
 	</div>
 	<div class="container">
-		<textarea bind:value={elementText} oninput={() => run()}></textarea>
+		<textarea bind:value={text} oninput={() => run()}></textarea>
 		{#if isError}
 			<div>
 				<p>
