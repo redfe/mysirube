@@ -21,12 +21,12 @@
 	import { scale } from 'svelte/transition';
 	import { cubicInOut } from 'svelte/easing';
 	import MermaidEditorDialog from './MermaidEditorDialog.svelte';
+	import ImageResize from 'tiptap-extension-resize-image';
 
 	let { content, onchangecontent }: Props = $props();
 	let element: HTMLElement | undefined = $state();
 	let editor: Editor | undefined = $state();
 	let currentMenu: string | undefined = $state();
-	let mermaidText: string | undefined = $state();
 	let showMermaidDialog: boolean = $state(false);
 
 	onMount(() => {
@@ -45,6 +45,7 @@
 					nocookie: true
 				}),
 				Image,
+				ImageResize,
 				FileHandler.configure({
 					allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
 					onDrop: (currentEditor, files, pos) => {
@@ -381,8 +382,6 @@
 					</button>
 					<button
 						onclick={() => {
-							const previousText = editor?.getAttributes('mermaid').text;
-							mermaidText = previousText;
 							showMermaidDialog = true;
 						}}
 						class:active={editor?.isActive('mermaid')}
@@ -399,13 +398,17 @@
 
 {#if showMermaidDialog}
 	<MermaidEditorDialog
-		bind:text={mermaidText}
+		code={editor?.getAttributes('mermaid').code}
 		onclickCancel={() => {
 			showMermaidDialog = false;
 		}}
-		onclickOk={() => {
+		onclickOk={({ code, base64 }) => {
 			showMermaidDialog = false;
-			editor?.commands.addMermaid({ text: mermaidText || 'flowchart\na --> b' });
+			editor?.commands.setMermaid({
+				src: 'data:image/svg+xml;base64,' + base64,
+				code,
+				style: editor?.getAttributes('mermaid').style
+			});
 		}}
 	></MermaidEditorDialog>
 {/if}

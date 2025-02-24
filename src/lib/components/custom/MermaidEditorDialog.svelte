@@ -3,9 +3,9 @@
 	import Typograph from '$lib/components/core/Typograph.svelte';
 
 	export type Props = {
-		text?: string;
+		code?: string;
 		onclickCancel?: () => void;
-		onclickOk?: () => void;
+		onclickOk?: ({ code, base64 }: { code: string; base64: string }) => void;
 	};
 </script>
 
@@ -15,17 +15,19 @@
 	import mermaid from 'mermaid';
 	import Link from '$lib/components/core/Link.svelte';
 	const defaultText = 'flowchart\na --> b';
-	let { text = $bindable(), onclickCancel, onclickOk }: Props = $props();
-	text = text ?? defaultText;
+	let { code, onclickCancel, onclickOk }: Props = $props();
+	code = code ?? defaultText;
 	let previewElement: HTMLElement | undefined = $state();
 	let isError = $state(false);
+	let base64 = $state('');
 	const run = async () => {
-		const parseText = text ?? defaultText;
+		const parseText = code ?? defaultText;
 		if (await mermaid.parse(parseText, { suppressErrors: true })) {
 			isError = false;
 			await tick(); // wait for the DOM to update
 			const { svg } = await mermaid.render('dummy', parseText);
 			previewElement!.innerHTML = svg;
+			base64 = btoa(String.fromCharCode(...new TextEncoder().encode(svg)));
 		} else {
 			isError = true;
 		}
@@ -54,7 +56,7 @@
 		</div>
 	</div>
 	<div class="container">
-		<textarea bind:value={text} oninput={() => run()}></textarea>
+		<textarea bind:value={code} oninput={() => run()}></textarea>
 		{#if isError}
 			<div>
 				<p>
@@ -67,7 +69,7 @@
 			<div class="preview" class:hide={!isError} bind:this={previewElement}></div>
 		{/if}
 	</div>
-	<Button onclick={onclickOk}>決定</Button>
+	<Button onclick={() => onclickOk?.({ code: code ?? '', base64 })}>決定</Button>
 </DialogBase>
 
 <style>
