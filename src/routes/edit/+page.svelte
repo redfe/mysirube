@@ -153,14 +153,14 @@
 				: t.parentElement?.parentElement?.parentElement;
 		if (e.key === 'ArrowDown') {
 			const next = tbody?.querySelector(
-				`tr:nth-child(${i + 4}) td:nth-child(${col})${tagName === 'td' ? '' : ' ' + tagName}`
+				`tr:nth-child(${i + 3}) td:nth-child(${col})${tagName === 'td' ? '' : ' ' + tagName}`
 			);
 			if (next) {
 				(next as HTMLElement).focus();
 			}
 		} else if (e.key === 'ArrowUp') {
 			const prev = tbody?.querySelector(
-				`tr:nth-child(${i + 2}) td:nth-child(${col})${tagName === 'td' ? '' : ' ' + tagName}`
+				`tr:nth-child(${i + 1}) td:nth-child(${col})${tagName === 'td' ? '' : ' ' + tagName}`
 			);
 			if (prev) {
 				(prev as HTMLElement).focus();
