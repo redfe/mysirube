@@ -20,7 +20,7 @@
 	a:visited {
 		color: darkblue;
 	}
-	a[target='_blank']::after {
+	a[target='_blank']:not(.noblankicon)::after {
 		content: '';
 		display: inline-block;
 		width: 18px;

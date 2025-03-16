@@ -7,7 +7,6 @@
 		dataStoreName,
 		themeStoreName,
 		version,
-		type Data,
 		getAllDataCount,
 		getAllThemeCount
 	} from '$lib/repository';
