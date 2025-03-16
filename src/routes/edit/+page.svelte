@@ -264,22 +264,24 @@
 			</tr>
 			{#each datas as data, i (i)}
 				<tr class:selected={editTheme.dataIds?.includes(data.id)}>
-					<td
-						><input
-							type="checkbox"
-							checked={editTheme.dataIds?.includes(data.id)}
-							onchange={(e) => {
-								const elm = e.target as HTMLInputElement;
-								if (elm.checked) {
-									// onchangeHandler を発火させるため代入する
-									editTheme.dataIds = [...(editTheme.dataIds ?? []), data.id];
-								} else {
-									editTheme.dataIds = editTheme.dataIds?.filter((v) => v !== data.id);
-								}
-							}}
-							onkeydown={(e) => moveByArrowKey(e, i, 1)}
-						/></td
-					>
+					<td>
+						{#if editTheme.isValid()}
+							<input
+								type="checkbox"
+								checked={editTheme.dataIds?.includes(data.id)}
+								onchange={(e) => {
+									const elm = e.target as HTMLInputElement;
+									if (elm.checked) {
+										// onchangeHandler を発火させるため代入する
+										editTheme.dataIds = [...(editTheme.dataIds ?? []), data.id];
+									} else {
+										editTheme.dataIds = editTheme.dataIds?.filter((v) => v !== data.id);
+									}
+								}}
+								onkeydown={(e) => moveByArrowKey(e, i, 1)}
+							/>
+						{/if}
+					</td>
 					<td
 						data-errormsg={data.errors.start}
 						bind:textContent={data.start}
@@ -334,7 +336,7 @@
 		onclickNew={() => {
 			editTheme = new EditTheme({
 				id: crypto.randomUUID(),
-				dataIds: editTheme.dataIds,
+				dataIds: [],
 				onchangeHandler: themeChangeHandler
 			});
 			isViewThemeSelector = false;
