@@ -43,6 +43,9 @@
 	});
 </script>
 
+{#if !draggables?.enabled}
+	<div class="cover"></div>
+{/if}
 <dialog
 	bind:this={dialog}
 	class="dialog-base"
@@ -68,5 +71,14 @@
 	.handle {
 		width: 100%;
 		height: 1.5rem;
+	}
+	.cover {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100lvw;
+		height: 100lvh;
+		backdrop-filter: blur(0.25rem);
+		z-index: 1000;
 	}
 </style>
