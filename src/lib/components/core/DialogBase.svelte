@@ -79,6 +79,6 @@
 		width: 100lvw;
 		height: 100lvh;
 		backdrop-filter: blur(0.25rem);
-		z-index: 1000;
+		z-index: 1100; /* 1000件表示できるかつプラスアルファを考慮して1100 */
 	}
 </style>

@@ -230,8 +230,6 @@
 				<th>エラー</th>
 				<th></th>
 			</tr>
-		</thead>
-		<tbody>
 			<tr>
 				<td></td>
 				<td
@@ -262,6 +260,8 @@
 					<Button disabled={!newData.isValid()} onclick={add}>追加</Button>
 				</td>
 			</tr>
+		</thead>
+		<tbody>
 			{#each datas as data, i (i)}
 				<tr class:selected={editTheme.dataIds?.includes(data.id)}>
 					<td>
@@ -385,6 +385,10 @@
 
 <style>
 	.commands {
+		position: sticky;
+		top: 0;
+		background-color: white;
+		z-index: 1001;
 		& > div {
 			text-align: left;
 			display: flex;
@@ -397,6 +401,7 @@
 	td {
 		border-collapse: separate;
 		border: solid 1px;
+		background-color: white;
 	}
 	th,
 	td {
@@ -409,8 +414,22 @@
 	td {
 		transition: 0.25s;
 	}
-
+	@keyframes scroll-anim {
+		0% {
+		}
+		1% {
+			box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.2);
+		}
+		100% {
+			box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.2);
+		}
+	}
 	thead {
+		position: sticky;
+		top: 3.5rem;
+		animation: scroll-anim linear;
+		animation-timeline: scroll();
+		z-index: 1001;
 		th:nth-child(1) {
 			width: 2rem;
 		}
@@ -436,27 +455,28 @@
 			width: 5rem;
 		}
 	}
-	tbody {
-		td:nth-child(7) {
-			font-weight: bold;
-			border-color: black;
-			pre {
-				margin: 0;
-			}
-		}
-		td:nth-child(2),
-		td:nth-child(3) {
-			text-align: right;
-		}
+	td {
+		line-break: anywhere;
+	}
+	td:nth-child(7) {
+		font-weight: bold;
+		border-color: black;
 		pre {
-			color: crimson;
 			margin: 0;
 		}
 	}
-	td[data-errormsg] {
-		background-color: rgb(255, 192, 203, 0.8);
+	td:nth-child(2),
+	td:nth-child(3) {
+		text-align: right;
 	}
-	tr.selected {
+	pre {
+		color: crimson;
+		margin: 0;
+	}
+	td[data-errormsg] {
+		background-color: rgb(252, 197, 206);
+	}
+	tr.selected td {
 		background-color: azure;
 	}
 </style>
