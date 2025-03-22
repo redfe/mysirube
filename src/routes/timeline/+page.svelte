@@ -95,6 +95,19 @@
 
 	let isFilterTheme = $state(false);
 
+	let selectedPeriods: number[] = $state([]);
+
+	const seleletablePeriod = (node: HTMLElement, { period }: { period: number }) => {
+		node.addEventListener('click', (e) => {
+			const target = e.target as HTMLElement;
+			if (selectedPeriods.includes(period)) {
+				selectedPeriods = selectedPeriods.filter((v) => v !== period);
+			} else {
+				selectedPeriods = [...selectedPeriods, period];
+			}
+		});
+	};
+
 	const themeChangeHandler = (edited: EditTheme) => {
 		saveTheme({
 			id: edited.id,
@@ -304,7 +317,12 @@
 	<div class="timelineContainer" bind:this={timelineElm} style={`padding-top: ${paddingTop}px;`}>
 		<ul bind:this={first}>
 			{#each periods as p (p)}
-				<li id="li-{p}" style="height:{unitHeight}px">
+				<li
+					id="li-{p}"
+					style="height:{unitHeight}px"
+					class:selected={selectedPeriods.includes(p)}
+					use:seleletablePeriod={{ period: p }}
+				>
 					<span>{formatYear(p)}</span>
 				</li>
 			{/each}
@@ -411,6 +429,12 @@
 	li {
 		border-top: 1px solid rgba(0, 0, 0, 0.1);
 		box-sizing: border-box;
+		&:hover {
+			background-color: lightblue;
+		}
+		&.selected {
+			background-color: lightsteelblue;
+		}
 	}
 	li span {
 		display: inline-block;
@@ -419,7 +443,7 @@
 	}
 	.bar {
 		white-space: nowrap;
-		opacity: 0.7;
+		opacity: 0.8;
 		width: 30px;
 		border: solid 1px gray;
 		box-sizing: border-box;

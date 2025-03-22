@@ -113,6 +113,9 @@
 	.custom-select {
 		position: relative;
 		display: inline-block;
+		button {
+			opacity: 0.8;
+		}
 	}
 	.select-selected {
 		border: 1px solid silver;
