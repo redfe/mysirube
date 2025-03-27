@@ -128,6 +128,8 @@
 				Promise.resolve().then(() => displayByItem(item, laneIndex, periods));
 			});
 		});
+		// 横線が最大まで伸びるように幅を調整
+		first!.style.width = 200 + lanes.length * (itemWidth + 10) + 130 + 'px';
 	}
 
 	function displayByItem(item: Item, laneIndex: number, periods: number[]) {
