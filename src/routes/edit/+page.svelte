@@ -22,6 +22,7 @@
 	import ThemeEditor from '$lib/components/custom/ThemeEditor.svelte';
 	import Switch from '$lib/components/core/Switch.svelte';
 	import ColorSelect from '$lib/components/core/ColorSelect.svelte';
+	import ToTopButton from '$lib/components/core/ToTopButton.svelte';
 
 	let newData = $state(new EditData());
 	let datas: EditData[] = $state([]);
@@ -382,6 +383,8 @@
 		theme={editTheme}
 	/>
 {/if}
+
+<ToTopButton />
 
 <style>
 	.commands {
