@@ -431,6 +431,7 @@
 	li {
 		border-top: 1px solid rgba(0, 0, 0, 0.1);
 		box-sizing: border-box;
+		min-width: 100lvw;
 		&:hover {
 			background-color: lightblue;
 		}
