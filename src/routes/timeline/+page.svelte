@@ -95,15 +95,12 @@
 
 	let isFilterTheme = $state(false);
 
-	let selectedPeriods: number[] = $state([]);
-
 	const seleletablePeriod = (node: HTMLElement, { period }: { period: number }) => {
-		node.addEventListener('click', (e) => {
-			const target = e.target as HTMLElement;
-			if (selectedPeriods.includes(period)) {
-				selectedPeriods = selectedPeriods.filter((v) => v !== period);
+		node.addEventListener('click', () => {
+			if (node.classList.contains('selected')) {
+				node.classList.remove('selected');
 			} else {
-				selectedPeriods = [...selectedPeriods, period];
+				node.classList.add('selected');
 			}
 		});
 	};
@@ -319,12 +316,7 @@
 	<div class="timelineContainer" bind:this={timelineElm} style={`padding-top: ${paddingTop}px;`}>
 		<ul bind:this={first}>
 			{#each periods as p (p)}
-				<li
-					id="li-{p}"
-					style="height:{unitHeight}px"
-					class:selected={selectedPeriods.includes(p)}
-					use:seleletablePeriod={{ period: p }}
-				>
+				<li id="li-{p}" style="height:{unitHeight}px" use:seleletablePeriod={{ period: p }}>
 					<span>{formatYear(p)}</span>
 				</li>
 			{/each}
@@ -435,7 +427,7 @@
 		&:hover {
 			background-color: lightblue;
 		}
-		&.selected {
+		:global(&.selected) {
 			background-color: lightsteelblue;
 		}
 	}
