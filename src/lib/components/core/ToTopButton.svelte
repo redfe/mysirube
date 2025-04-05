@@ -30,13 +30,7 @@
 		0% {
 			bottom: -120px;
 		}
-		20% {
-			bottom: -120px;
-		}
-		25% {
-			bottom: 2rem;
-		}
-		50% {
+		1% {
 			bottom: 2rem;
 		}
 		100% {
