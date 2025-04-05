@@ -46,6 +46,8 @@
 		padding: 1rem;
 		display: flex;
 		justify-content: center;
+		flex-direction: column;
+		align-items: center;
 	}
 	header {
 		padding: 1rem;
