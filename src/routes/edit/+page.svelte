@@ -250,7 +250,7 @@
 					<ColorSelect label="色" bind:value={newData.color} />
 				</td>
 				<td class="color sub" data-errormsg={newData.errors.subColor}>
-					<ColorSelect label="補色" bind:value={newData.subColor} />
+					<ColorSelect label="補色" bind:value={newData.subColor} type="sub" />
 				</td>
 				<td>
 					{#if !newData.isValid()}
@@ -313,7 +313,7 @@
 						data-errormsg={data.errors.subColor}
 						onkeydown={(e) => moveByArrowKey(e, i, 6)}
 					>
-						<ColorSelect label="補色" bind:value={data.subColor} />
+						<ColorSelect label="補色" bind:value={data.subColor} type="sub" />
 					</td>
 					<td>
 						{#if hasError(data.errors)}

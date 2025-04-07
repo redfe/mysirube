@@ -293,6 +293,7 @@
 			bind:selectedColors={selectedSubColors}
 			{defaultColor}
 			{filter}
+			type="sub"
 		/>
 		<div>
 			<Typograph></Typograph>
@@ -438,7 +439,7 @@
 	}
 	.bar {
 		white-space: nowrap;
-		opacity: 0.8;
+		opacity: 0.7;
 		width: 30px;
 		border: solid 1px gray;
 		box-sizing: border-box;
@@ -466,7 +467,7 @@
 		color: #ddd;
 		padding: 0.25rem;
 		border-radius: 0.25rem;
-		opacity: 0.8;
+		opacity: 0.7;
 	}
 	.root :global(.tooltip.pinned) {
 		--tooltip-arrow-size: 5px;

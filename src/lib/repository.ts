@@ -1,6 +1,9 @@
+import type { ColorName } from './colors';
+
 export const dbName = 'MySirube';
 export const dataStoreName = 'datas';
 export const themeStoreName = 'themes';
+export const colorSettingsStoreName = 'ColorSettings';
 export const version = 1;
 const MAX_PER_DISPLAY = 1000;
 
@@ -12,12 +15,7 @@ async function createDatabase(): Promise<IDBDatabase> {
 
 		request.onupgradeneeded = () => {
 			const db = request.result;
-			if (!db.objectStoreNames.contains(dataStoreName)) {
-				createDataStore(db);
-			}
-			if (!db.objectStoreNames.contains(themeStoreName)) {
-				createThemeStore(db);
-			}
+			initStores(db);
 		};
 
 		request.onsuccess = () => resolve(request.result);
@@ -27,20 +25,47 @@ async function createDatabase(): Promise<IDBDatabase> {
 }
 
 export function initDB(): Promise<IDBDatabase> {
-	if (database) {
-		// databaseの生存確認
-		return database.then((db) => {
-			try {
-				db.transaction(dataStoreName, 'readonly');
-				return db;
-			} catch {
-				database = createDatabase();
-				return database;
-			}
-		});
+	if (!database) {
+		database = createDatabase();
 	}
-	database = createDatabase();
+	database.then(initStores);
 	return database;
+}
+
+function initStores(db: IDBDatabase) {
+	if (!db.objectStoreNames.contains(dataStoreName)) {
+		try {
+			createDataStore(db);
+		} catch (e) {
+			// すでに存在する場合は無視
+			console.warn(e);
+		}
+	}
+	if (!db.objectStoreNames.contains(themeStoreName)) {
+		try {
+			createThemeStore(db);
+		} catch (e) {
+			// すでに存在する場合は無視
+			console.warn(e);
+		}
+	}
+	if (!db.objectStoreNames.contains(colorSettingsStoreName)) {
+		let store = null;
+		try {
+			store = createColorSettingsStore(db);
+		} catch (e) {
+			console.warn(e);
+		}
+		if (store) {
+			initializeColorSettings(store);
+		}
+	} else {
+		const transaction = db.transaction(colorSettingsStoreName, 'readonly');
+		const store = transaction.objectStore(colorSettingsStoreName);
+		if (store.get('default') == null) {
+			initializeColorSettings(store);
+		}
+	}
 }
 
 function createDataStore(db: IDBDatabase): IDBObjectStore {
@@ -54,6 +79,53 @@ function createThemeStore(db: IDBDatabase): IDBObjectStore {
 	// タイトルでソートして取得できるようにしておく
 	store.createIndex('indexOfTitle', ['title'], { unique: false });
 	return store;
+}
+
+function createColorSettingsStore(db: IDBDatabase): IDBObjectStore {
+	const store = db.createObjectStore(colorSettingsStoreName, {
+		keyPath: 'id',
+		autoIncrement: false
+	});
+	return store;
+}
+
+function initializeColorSettings(store: IDBObjectStore) {
+	// 初期データを登録
+	const colorSettings: ColorSettings = {
+		id: 'default',
+		main: {
+			white: { description: '全世界' },
+			red: { description: '' },
+			pink: { description: 'アフリカ' },
+			purple: { description: '日本' },
+			blue: { description: '欧州' },
+			green: { description: '北米' },
+			yellowgreen: { description: '中南米' },
+			yellow: { description: '' },
+			gold: { description: '中東' },
+			brown: { description: '大洋州（オーストリア、ニュージーランド、ミクロネシア系）' },
+			silver: { description: '' },
+			gray: { description: 'アジア' },
+			black: { description: '' }
+		},
+		sub: {
+			white: { description: '' },
+			red: { description: '争い' },
+			pink: { description: '' },
+			purple: { description: '天皇' },
+			blue: { description: '技術' },
+			green: { description: '植民地' },
+			yellowgreen: { description: '' },
+			yellow: { description: '人物' },
+			gold: { description: '' },
+			brown: { description: '年代区分' },
+			silver: { description: '' },
+			gray: { description: '' },
+			black: { description: '災害' }
+		}
+	};
+	const request = store.put(colorSettings);
+	request.onsuccess = () => {};
 }
 
 export async function save(data: Data) {
@@ -260,6 +332,17 @@ export function getCurrentStartyear(): number | null {
 	return val ? Number(val) : null;
 }
 
+export async function getColorSettings(): Promise<ColorSettings | undefined> {
+	const db = await initDB();
+	return new Promise((resolve, reject) => {
+		const transaction = db.transaction(colorSettingsStoreName, 'readonly');
+		const store = transaction.objectStore(colorSettingsStoreName);
+		const request = store.get('default');
+		request.onsuccess = () => resolve(request.result);
+		request.onerror = () => reject(request.error);
+	});
+}
+
 export type Data = {
 	id: string;
 	start: number;
@@ -278,6 +361,17 @@ export type Theme = {
 	memo?: string;
 	createdAt: Date;
 	updatedAt: Date;
+};
+
+export type Color = {
+	id: ColorName;
+	description: string;
+};
+
+export type ColorSettings = {
+	id: string;
+	main: Record<ColorName, { description: string }>;
+	sub: Record<ColorName, { description: string }>;
 };
 
 export type ThemeSummary = { id: string; title: string };

@@ -1,4 +1,6 @@
 <script module lang="ts">
+	import { colors, type ColorName } from '$lib/colors';
+	import { getColorSettings, type ColorSettings } from '$lib/repository';
 	import { cubicInOut } from 'svelte/easing';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { scale } from 'svelte/transition';
@@ -7,29 +9,17 @@
 		label: string;
 		value?: string;
 		axis?: 'y' | 'x';
+		type?: 'main' | 'sub';
 	} & HTMLAttributes<HTMLElement>;
 
 	let current: HTMLElement | undefined = $state();
+
+	let loadColorSetting: Promise<ColorSettings | undefined> = getColorSettings();
 </script>
 
 <script lang="ts">
-	let { label, value = $bindable(), axis, ...others }: Props = $props();
+	let { label, value = $bindable(), axis, type = 'main', ...others }: Props = $props();
 	const id = crypto.randomUUID();
-	const colors = [
-		'white',
-		'red',
-		'pink',
-		'purple',
-		'blue',
-		'green',
-		'yellowgreen',
-		'yellow',
-		'gold',
-		'brown',
-		'silver',
-		'gray',
-		'black'
-	];
 
 	let selectElm: HTMLElement | undefined = $state();
 
@@ -45,6 +35,10 @@
 
 	function close() {
 		current = undefined;
+	}
+
+	function description(color: ColorName, colorSetting?: ColorSettings) {
+		return colorSetting?.[type][color].description;
 	}
 </script>
 
@@ -72,49 +66,53 @@
 	}}
 />
 
-<div class="custom-select" {id} {...others} bind:this={selectElm}>
-	<button
-		aria-label={label}
-		class="select-selected"
-		onclick={() => {
-			if (current === selectElm) {
-				current = undefined;
-			} else {
-				current = selectElm;
-			}
-		}}
-		style:background-color={value}
-	></button>
-	{#if selectElm != null && current === selectElm}
-		<div
-			class="select-items"
-			transition:scale={{ duration: 100, easing: cubicInOut }}
-			style={`
+{#await loadColorSetting then colorSetting}
+	<div class="custom-select" {id} {...others} bind:this={selectElm}>
+		<button
+			aria-label={description((value as ColorName) ?? 'white', colorSetting)}
+			title={description((value as ColorName) ?? 'white', colorSetting)}
+			class="select-selected"
+			onclick={() => {
+				if (current === selectElm) {
+					current = undefined;
+				} else {
+					current = selectElm;
+				}
+			}}
+			style:background-color={value}
+		></button>
+		{#if selectElm != null && current === selectElm}
+			<div
+				class="select-items"
+				transition:scale={{ duration: 100, easing: cubicInOut }}
+				style={`
 			margin-left: ${axis === 'y' ? '' : '1.85rem'};
 			margin-top: ${axis === 'y' ? '0.25rem' : ''};
 			top: ${axis === 'y' ? ';' : '0.25rem'};
 			flex-direction: ${axis === 'y' ? 'column' : 'row'};
 			`}
-		>
-			{#each colors as color (color)}
-				<button
-					aria-label={color}
-					class={color}
-					data-value={color}
-					style:background-color={color}
-					onclick={() => (value = color)}
-				></button>
-			{/each}
-		</div>
-	{/if}
-</div>
+			>
+				{#each colors as color (color)}
+					<button
+						aria-label={description(color, colorSetting)}
+						title={description(color, colorSetting)}
+						class={color}
+						data-value={color}
+						style:background-color={color}
+						onclick={() => (value = color)}
+					></button>
+				{/each}
+			</div>
+		{/if}
+	</div>
+{/await}
 
 <style>
 	.custom-select {
 		position: relative;
 		display: inline-block;
 		button {
-			opacity: 0.8;
+			opacity: 0.7;
 		}
 	}
 	.select-selected {
@@ -134,7 +132,7 @@
 		background-color: white;
 	}
 	.select-items button {
-		opacity: 0.8;
+		opacity: 0.7;
 		padding: 0.75rem;
 		border: none;
 		margin: 0;
