@@ -9,7 +9,6 @@
 		filter: () => void;
 		type?: 'main' | 'sub';
 	};
-	let loadColorSetting: Promise<ColorSettings | undefined> = getColorSettings();
 </script>
 
 <script lang="ts">
@@ -26,7 +25,7 @@
 	}
 </script>
 
-{#await loadColorSetting then colorSetting}
+{#await getColorSettings() then colorSetting}
 	<fieldset class="colorSelector">
 		<legend>色フィルター</legend>
 		{#each selectableColors as color (color)}

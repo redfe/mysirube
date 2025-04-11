@@ -3,7 +3,11 @@
 	import Typograph from '$lib/components/core/Typograph.svelte';
 	import { initDB, version } from '$lib/repository';
 
-	const valueBuffers: { datas: any[]; themes: any[] } = { datas: [], themes: [] };
+	const valueBuffers: { datas: any[]; themes: any[]; colorSettings: any[] } = {
+		datas: [],
+		themes: [],
+		colorSettings: []
+	};
 
 	let progress = $state(0);
 	let importing = $state(false);

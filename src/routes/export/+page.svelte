@@ -2,14 +2,7 @@
 	import { browser } from '$app/environment';
 	import Button from '$lib/components/core/Button.svelte';
 	import Typograph from '$lib/components/core/Typograph.svelte';
-	import {
-		initDB,
-		dataStoreName,
-		themeStoreName,
-		version,
-		getAllDataCount,
-		getAllThemeCount
-	} from '$lib/repository';
+	import { initDB, version, getAllDataCount, getAllThemeCount, storeNames } from '$lib/repository';
 
 	// 書き込み中かどうかを管理するストア
 	let writing = $state(false);
@@ -29,49 +22,28 @@
 		// メタ情報を書き込み
 		await writable.write(JSON.stringify({ version, exportedAt: new Date() }) + '\n');
 
-		// datas
-		// 大量データを想定して1件ずつ書き込む
-		const datas = new Promise<void>(async (resolve, reject) => {
-			const transaction = db.transaction(dataStoreName, 'readonly');
-			const store = transaction.objectStore(dataStoreName);
-			const index = store.index('indexOfStartAndTitle');
-			const cursorRequest = index.openCursor(null, 'next');
-			cursorRequest.onsuccess = async () => {
-				const cursor = cursorRequest.result;
-				if (cursor) {
-					const value = cursor.value;
-					// どのストアにインポートすべきかを示すためストア名を追加しておく
-					writable.write(JSON.stringify({ _storeName: dataStoreName, ...value }) + '\n');
-					exportedCount++;
-					progress = Math.floor((exportedCount / totalCount) * 100);
-					cursor.continue();
-				} else {
-					resolve();
-				}
-			};
-			cursorRequest.onerror = () => reject(cursorRequest.error);
-		});
+		function exportStore(storeName: string) {
+			return new Promise<void>(async (resolve, reject) => {
+				const transaction = db.transaction(storeName, 'readonly');
+				const store = transaction.objectStore(storeName);
+				const cursorRequest = store.openCursor(null, 'next');
+				cursorRequest.onsuccess = async () => {
+					const cursor = cursorRequest.result;
+					if (cursor) {
+						const value = cursor.value;
+						writable.write(JSON.stringify({ _storeName: storeName, ...value }) + '\n');
+						exportedCount++;
+						progress = Math.floor((exportedCount / totalCount) * 100);
+						cursor.continue();
+					} else {
+						resolve();
+					}
+				};
+				cursorRequest.onerror = () => reject(cursorRequest.error);
+			});
+		}
 
-		// themes
-		const themes = new Promise<void>(async (resolve, reject) => {
-			const transaction = db.transaction(themeStoreName, 'readonly');
-			const store = transaction.objectStore(themeStoreName);
-			const cursorRequest = store.openCursor(null, 'next');
-			cursorRequest.onsuccess = async () => {
-				const cursor = cursorRequest.result;
-				if (cursor) {
-					const value = cursor.value;
-					writable.write(JSON.stringify({ _storeName: themeStoreName, ...value }) + '\n');
-					exportedCount++;
-					progress = Math.floor((exportedCount / totalCount) * 100);
-					cursor.continue();
-				} else {
-					resolve();
-				}
-			};
-			cursorRequest.onerror = () => reject(cursorRequest.error);
-		});
-		await Promise.all([datas, themes]);
+		await Promise.all(storeNames.map(exportStore));
 		await writable.close();
 	};
 

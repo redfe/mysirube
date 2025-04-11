@@ -3,7 +3,8 @@ import type { ColorName } from './colors';
 export const dbName = 'MySirube';
 export const dataStoreName = 'datas';
 export const themeStoreName = 'themes';
-export const colorSettingsStoreName = 'ColorSettings';
+export const colorSettingsStoreName = 'colorSettings';
+export const storeNames = [dataStoreName, themeStoreName, colorSettingsStoreName];
 export const version = 1;
 const MAX_PER_DISPLAY = 1000;
 
@@ -49,6 +50,7 @@ function initStores(db: IDBDatabase) {
 			console.warn(e);
 		}
 	}
+
 	if (!db.objectStoreNames.contains(colorSettingsStoreName)) {
 		let store = null;
 		try {
@@ -60,11 +62,15 @@ function initStores(db: IDBDatabase) {
 			initializeColorSettings(store);
 		}
 	} else {
-		const transaction = db.transaction(colorSettingsStoreName, 'readonly');
+		const transaction = db.transaction(colorSettingsStoreName, 'readwrite');
 		const store = transaction.objectStore(colorSettingsStoreName);
-		if (store.get('default') == null) {
-			initializeColorSettings(store);
-		}
+		const request = store.get('default');
+		request.onsuccess = () => {
+			if (request.result == null) {
+				initializeColorSettings(store);
+			}
+		};
+		request.onerror = () => console.warn(request.error);
 	}
 }
 
@@ -112,7 +118,7 @@ function initializeColorSettings(store: IDBObjectStore) {
 			white: { description: '' },
 			red: { description: '争い' },
 			pink: { description: '' },
-			purple: { description: '天皇' },
+			purple: { description: '' },
 			blue: { description: '技術' },
 			green: { description: '植民地' },
 			yellowgreen: { description: '' },
@@ -332,7 +338,7 @@ export function getCurrentStartyear(): number | null {
 	return val ? Number(val) : null;
 }
 
-export async function getColorSettings(): Promise<ColorSettings | undefined> {
+export async function getColorSettings(): Promise<ColorSettings> {
 	const db = await initDB();
 	return new Promise((resolve, reject) => {
 		const transaction = db.transaction(colorSettingsStoreName, 'readonly');
@@ -340,6 +346,17 @@ export async function getColorSettings(): Promise<ColorSettings | undefined> {
 		const request = store.get('default');
 		request.onsuccess = () => resolve(request.result);
 		request.onerror = () => reject(request.error);
+	});
+}
+
+export async function saveColorSettings(colorSettings: ColorSettings) {
+	const db = await initDB();
+	return new Promise((resolve, reject) => {
+		const transaction = db.transaction(colorSettingsStoreName, 'readwrite');
+		const store = transaction.objectStore(colorSettingsStoreName);
+		const updateRequest = store.put(colorSettings);
+		updateRequest.onsuccess = () => resolve(updateRequest.result);
+		updateRequest.onerror = () => reject(updateRequest.error);
 	});
 }
 

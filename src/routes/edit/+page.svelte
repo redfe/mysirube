@@ -4,7 +4,6 @@
 		search,
 		save,
 		type Data,
-		type Theme,
 		remove as removeData,
 		saveTheme,
 		removeTheme,

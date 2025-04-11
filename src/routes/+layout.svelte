@@ -26,6 +26,7 @@
 		<Link href="#/timeline" current={'#/timeline' == page.url.hash}>タイムライン</Link>
 		<Link href="#/export" current={'#/export' == page.url.hash}>エクスポート</Link>
 		<Link href="#/import" current={'#/import' == page.url.hash}>インポート</Link>
+		<Link href="#/color" current={'#/color' == page.url.hash}>色設定</Link>
 	</nav>
 	<div class="right">
 		<Link href="https://github.com/redfe/mysirube" target="_blank" class="noblankicon"
