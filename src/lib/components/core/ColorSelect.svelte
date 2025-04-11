@@ -11,13 +11,22 @@
 		axis?: 'y' | 'x';
 		type?: 'main' | 'sub';
 		onselect?: (color: ColorName | undefined) => void;
+		colorSettingsLoader?: Promise<ColorSettings>;
 	} & HTMLAttributes<HTMLElement>;
 
 	let current: HTMLElement | undefined = $state();
 </script>
 
 <script lang="ts">
-	let { label, value = $bindable(), axis, type = 'main', onselect, ...others }: Props = $props();
+	let {
+		label,
+		value = $bindable(),
+		axis,
+		type = 'main',
+		onselect,
+		colorSettingsLoader,
+		...others
+	}: Props = $props();
 	const id = crypto.randomUUID();
 
 	let selectElm: HTMLElement | undefined = $state();
@@ -65,7 +74,7 @@
 	}}
 />
 
-{#await getColorSettings() then colorSetting}
+{#await colorSettingsLoader then colorSetting}
 	<div class="custom-select" {id} {...others} bind:this={selectElm}>
 		<button
 			aria-label={description((value as ColorName) ?? 'white', colorSetting)}

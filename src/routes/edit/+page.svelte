@@ -11,7 +11,8 @@
 		saveCurrentThemeId,
 		getTheme,
 		getThemeSummaries,
-		type ThemeSummary
+		type ThemeSummary,
+		getColorSettings
 	} from '$lib/repository';
 	import { onMount } from 'svelte';
 	import Button from '$lib/components/core/Button.svelte';
@@ -168,6 +169,8 @@
 		}
 	}
 
+	const colorSettingsLoader = getColorSettings();
+
 	$effect(() => {
 		if (startElm) startElm.focus();
 	});
@@ -246,10 +249,15 @@
 					contenteditable="true"
 				></td>
 				<td class="color" data-errormsg={newData.errors.color}>
-					<ColorSelect label="色" bind:value={newData.color} />
+					<ColorSelect label="色" bind:value={newData.color} {colorSettingsLoader} />
 				</td>
 				<td class="color sub" data-errormsg={newData.errors.subColor}>
-					<ColorSelect label="補色" bind:value={newData.subColor} type="sub" />
+					<ColorSelect
+						label="補色"
+						bind:value={newData.subColor}
+						type="sub"
+						{colorSettingsLoader}
+					/>
 				</td>
 				<td>
 					{#if !newData.isValid()}
