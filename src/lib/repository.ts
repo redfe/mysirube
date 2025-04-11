@@ -5,7 +5,7 @@ export const dataStoreName = 'datas';
 export const themeStoreName = 'themes';
 export const colorSettingsStoreName = 'colorSettings';
 export const storeNames = [dataStoreName, themeStoreName, colorSettingsStoreName];
-export const version = 1;
+export const version = 2;
 const MAX_PER_DISPLAY = 1000;
 
 let database: Promise<IDBDatabase> | null = null;
@@ -13,12 +13,10 @@ let database: Promise<IDBDatabase> | null = null;
 async function createDatabase(): Promise<IDBDatabase> {
 	const createdDatabase: Promise<IDBDatabase> = new Promise((resolve, reject) => {
 		const request = indexedDB.open(dbName, version);
-
 		request.onupgradeneeded = () => {
 			const db = request.result;
 			initStores(db);
 		};
-
 		request.onsuccess = () => resolve(request.result);
 		request.onerror = () => reject(request.error);
 	});
@@ -50,7 +48,6 @@ function initStores(db: IDBDatabase) {
 			console.warn(e);
 		}
 	}
-
 	if (!db.objectStoreNames.contains(colorSettingsStoreName)) {
 		let store = null;
 		try {
@@ -61,16 +58,6 @@ function initStores(db: IDBDatabase) {
 		if (store) {
 			initializeColorSettings(store);
 		}
-	} else {
-		const transaction = db.transaction(colorSettingsStoreName, 'readwrite');
-		const store = transaction.objectStore(colorSettingsStoreName);
-		const request = store.get('default');
-		request.onsuccess = () => {
-			if (request.result == null) {
-				initializeColorSettings(store);
-			}
-		};
-		request.onerror = () => console.warn(request.error);
 	}
 }
 

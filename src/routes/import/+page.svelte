@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Button from '$lib/components/core/Button.svelte';
 	import Typograph from '$lib/components/core/Typograph.svelte';
-	import { initDB, version } from '$lib/repository';
+	import { initDB, storeNames, version } from '$lib/repository';
 
 	const valueBuffers: { datas: any[]; themes: any[]; colorSettings: any[] } = {
 		datas: [],
@@ -14,7 +14,7 @@
 
 	const clearStore = async () => {
 		const db = await initDB();
-		const storeNames = Object.keys(valueBuffers);
+		const storeNames = db.objectStoreNames;
 		for (let i = 0; i < storeNames.length; i++) {
 			const storeName = storeNames[i];
 			await new Promise<void>((resolve, reject) => {
@@ -57,6 +57,10 @@
 		const storeName = selectStoreName(value);
 		if (storeName == null) {
 			console.warn(`ストア名を特定できませんでした。:`, value);
+			return;
+		}
+		if (storeNames.indexOf(storeName) < 0) {
+			console.warn(`ストア名が不正です: ${storeName}`);
 			return;
 		}
 		const buffer = (valueBuffers as any)[storeName] as any[];
@@ -107,11 +111,6 @@
 				const lines: string[] = buffer?.split('\n') ?? [];
 				if (!firstLine && lines.length > 0) {
 					firstLine = lines[0];
-					const meta: any = JSON.parse(firstLine);
-					if (String(meta.version) !== String(version)) {
-						alert('バージョンが違うためインポートできません。');
-						return;
-					}
 					importing = true;
 				}
 				buffer = lines.pop(); // 最後の行が不完全ならバッファに保持
