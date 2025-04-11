@@ -169,7 +169,7 @@
 		}
 	}
 
-	const colorSettingsLoader = getColorSettings();
+	const colorSettings = getColorSettings();
 
 	$effect(() => {
 		if (startElm) startElm.focus();
@@ -249,15 +249,10 @@
 					contenteditable="true"
 				></td>
 				<td class="color" data-errormsg={newData.errors.color}>
-					<ColorSelect label="色" bind:value={newData.color} {colorSettingsLoader} />
+					<ColorSelect label="色" bind:value={newData.color} {colorSettings} />
 				</td>
 				<td class="color sub" data-errormsg={newData.errors.subColor}>
-					<ColorSelect
-						label="補色"
-						bind:value={newData.subColor}
-						type="sub"
-						{colorSettingsLoader}
-					/>
+					<ColorSelect label="補色" bind:value={newData.subColor} type="sub" {colorSettings} />
 				</td>
 				<td>
 					{#if !newData.isValid()}
@@ -313,14 +308,14 @@
 						data-errormsg={data.errors.color}
 						onkeydown={(e) => moveByArrowKey(e, i, 5)}
 					>
-						<ColorSelect label="色" bind:value={data.color} />
+						<ColorSelect label="色" bind:value={data.color} {colorSettings} />
 					</td>
 					<td
 						class="color sub"
 						data-errormsg={data.errors.subColor}
 						onkeydown={(e) => moveByArrowKey(e, i, 6)}
 					>
-						<ColorSelect label="補色" bind:value={data.subColor} type="sub" />
+						<ColorSelect label="補色" bind:value={data.subColor} type="sub" {colorSettings} />
 					</td>
 					<td>
 						{#if hasError(data.errors)}

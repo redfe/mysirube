@@ -9,8 +9,9 @@
 	let mainColorName: ColorName = $state('white');
 	let subColorName: ColorName = $state('white');
 
-	async function load() {
+	async function colorSettingsLoader() {
 		colorSettings = await getColorSettings();
+		return colorSettings;
 	}
 
 	function save() {
@@ -19,33 +20,31 @@
 	}
 </script>
 
-{#await load() then}
-	{#if colorSettings}
-		<ul>
-			<li>
-				<p>色</p>
-				<ColorSelect label="色" bind:value={mainColorName} />
-				<div>
-					<TextInput
-						label="色の説明"
-						bind:value={colorSettings.main[mainColorName].description}
-						oninput={save}
-					/>
-				</div>
-			</li>
-			<li>
-				<p>補色</p>
-				<ColorSelect label="補色" bind:value={subColorName} type="sub" />
-				<div>
-					<TextInput
-						label="補色の説明"
-						bind:value={colorSettings.sub[subColorName].description}
-						oninput={save}
-					/>
-				</div>
-			</li>
-		</ul>
-	{/if}
+{#await colorSettingsLoader() then colorSettings}
+	<ul>
+		<li>
+			<p>色</p>
+			<ColorSelect label="色" bind:value={mainColorName} {colorSettings} />
+			<div>
+				<TextInput
+					label="色の説明"
+					bind:value={colorSettings.main[mainColorName].description}
+					oninput={save}
+				/>
+			</div>
+		</li>
+		<li>
+			<p>補色</p>
+			<ColorSelect label="補色" bind:value={subColorName} type="sub" {colorSettings} />
+			<div>
+				<TextInput
+					label="補色の説明"
+					bind:value={colorSettings.sub[subColorName].description}
+					oninput={save}
+				/>
+			</div>
+		</li>
+	</ul>
 {/await}
 
 <style>
