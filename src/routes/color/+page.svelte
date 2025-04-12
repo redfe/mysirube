@@ -16,7 +16,7 @@
 
 	function save() {
 		if (!colorSettings) return;
-		saveColorSettings(JSON.parse(JSON.stringify(colorSettings)));
+		saveColorSettings($state.snapshot(colorSettings));
 	}
 </script>
 
