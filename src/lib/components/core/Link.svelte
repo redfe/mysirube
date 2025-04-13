@@ -1,14 +1,14 @@
 <script module lang="ts">
 	import type { HTMLAnchorAttributes } from 'svelte/elements';
 
-	export type Props = { href?: string; current?: boolean } & HTMLAnchorAttributes;
+	export type Props = { href?: string } & HTMLAnchorAttributes;
 </script>
 
 <script lang="ts">
-	let { href, current, children, ...others }: Props = $props();
+	let { href, children, ...others }: Props = $props();
 </script>
 
-<a {href} class:current {...others}>{@render children?.()}</a>
+<a {href} {...others}>{@render children?.()}</a>
 
 <style>
 	a {
