@@ -342,6 +342,7 @@
 				dataIds: [],
 				onchangeHandler: themeChangeHandler
 			});
+			saveCurrentThemeId(editTheme.id);
 			isViewThemeSelector = false;
 			isViewThemeEditor = true;
 		}}
