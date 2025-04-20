@@ -95,13 +95,20 @@
 
 	let isFilterTheme = $state(false);
 
+	let isSelecting = $state(false);
+
 	const seleletablePeriod = (node: HTMLElement, { period }: { period: number }) => {
-		node.addEventListener('click', () => {
-			if (node.classList.contains('selected')) {
-				node.classList.remove('selected');
-			} else {
-				node.classList.add('selected');
-			}
+		// ドラッグで選択状態を変更する
+		node.addEventListener('mousedown', () => {
+			isSelecting = true;
+			node.classList.toggle('selected');
+		});
+		node.addEventListener('mouseup', () => {
+			isSelecting = false;
+		});
+		node.addEventListener('mouseenter', (e) => {
+			if (!isSelecting) return;
+			node.classList.toggle('selected');
 		});
 	};
 
@@ -425,6 +432,7 @@
 		border-top: 1px solid rgba(0, 0, 0, 0.1);
 		box-sizing: border-box;
 		min-width: 100lvw;
+		user-select: none;
 		&:hover {
 			background-color: lightblue;
 		}
