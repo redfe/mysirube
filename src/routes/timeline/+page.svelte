@@ -93,24 +93,43 @@
 	// テーマ
 	let editTheme: EditTheme = $state(new EditTheme());
 
+	// テーマに紐づいたアイテムの選択フラグ
 	let isFilterTheme = $state(false);
 
+	// 期間選択フラグ
 	let isSelecting = $state(false);
 
+	// 期間選択開始年
+	let selectStartYear: number | undefined = $state();
+
+	// 期間選択終了年
+	let selectEndYear: number | undefined = $state();
+
 	const seleletablePeriod = (node: HTMLElement, { period }: { period: number }) => {
-		// ドラッグで選択状態を変更する
+		// mouseenter、mouseleave、イベントでclassを設定すると抜けが出やすいので期間の範囲で選択状態を管理
 		node.addEventListener('mousedown', () => {
 			isSelecting = true;
-			node.classList.toggle('selected');
+			selectStartYear = period;
+			selectEndYear = undefined;
 		});
 		node.addEventListener('mouseup', () => {
 			isSelecting = false;
+			selectEndYear = period;
 		});
 		node.addEventListener('mouseenter', (e) => {
 			if (!isSelecting) return;
-			node.classList.toggle('selected');
+			selectEndYear = period;
 		});
 	};
+
+	function isSelected(period: number) {
+		if (selectStartYear && selectEndYear) {
+			const start = Math.min(selectStartYear, selectEndYear);
+			const end = Math.max(selectStartYear, selectEndYear);
+			return period >= start && period <= end;
+		}
+		return false;
+	}
 
 	const themeChangeHandler = (edited: EditTheme) => {
 		saveTheme({
@@ -324,7 +343,12 @@
 	<div class="timelineContainer" bind:this={timelineElm} style={`padding-top: ${paddingTop}px;`}>
 		<ul bind:this={first}>
 			{#each periods as p (p)}
-				<li id="li-{p}" style="height:{unitHeight}px" use:seleletablePeriod={{ period: p }}>
+				<li
+					id="li-{p}"
+					style="height:{unitHeight}px"
+					use:seleletablePeriod={{ period: p }}
+					class:selected={isSelected(p)}
+				>
 					<span>{formatYear(p)}</span>
 				</li>
 			{/each}
