@@ -28,17 +28,18 @@
 <style>
 	@keyframes scroll-anim-for-scroll-top {
 		0% {
-			bottom: -120px;
+			top: -5rem;
 		}
 		1% {
-			bottom: 2rem;
+			top: 2rem;
 		}
 		100% {
-			bottom: 2rem;
+			top: 2rem;
 		}
 	}
 	.scroll-top {
 		position: fixed;
+		top: -5rem;
 		right: 2rem;
 		background-color: dodgerblue;
 		color: white;
@@ -49,7 +50,6 @@
 		cursor: pointer;
 		animation: scroll-anim-for-scroll-top linear;
 		animation-timeline: scroll();
-		bottom: -120px;
 		opacity: 0.5;
 	}
 	.scroll-top:hover {
