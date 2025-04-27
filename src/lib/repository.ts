@@ -31,34 +31,26 @@ export function initDB(): Promise<IDBDatabase> {
 	return database;
 }
 
+function safeCreateStore(
+	db: IDBDatabase,
+	creator: (db: IDBDatabase) => IDBObjectStore,
+	storeName: string,
+	initializer?: (store: IDBObjectStore) => void
+) {
+	if (!db.objectStoreNames.contains(storeName)) {
+		try {
+			const store = creator(db);
+			if (initializer) initializer(store);
+		} catch (e) {
+			console.warn(e);
+		}
+	}
+}
+
 function initStores(db: IDBDatabase) {
-	if (!db.objectStoreNames.contains(dataStoreName)) {
-		try {
-			createDataStore(db);
-		} catch (e) {
-			// すでに存在する場合は無視
-			console.warn(e);
-		}
-	}
-	if (!db.objectStoreNames.contains(themeStoreName)) {
-		try {
-			createThemeStore(db);
-		} catch (e) {
-			// すでに存在する場合は無視
-			console.warn(e);
-		}
-	}
-	if (!db.objectStoreNames.contains(colorSettingsStoreName)) {
-		let store = null;
-		try {
-			store = createColorSettingsStore(db);
-		} catch (e) {
-			console.warn(e);
-		}
-		if (store) {
-			initializeColorSettings(store);
-		}
-	}
+	safeCreateStore(db, createDataStore, dataStoreName);
+	safeCreateStore(db, createThemeStore, themeStoreName);
+	safeCreateStore(db, createColorSettingsStore, colorSettingsStoreName, initializeColorSettings);
 }
 
 function createDataStore(db: IDBDatabase): IDBObjectStore {
@@ -121,18 +113,18 @@ function initializeColorSettings(store: IDBObjectStore) {
 	request.onsuccess = () => {};
 }
 
-function performTransaction(
+function performTransaction<T>(
 	storeName: string,
 	mode: IDBTransactionMode,
-	callback: (store: IDBObjectStore) => void
-): Promise<void> {
+	callback: (store: IDBObjectStore) => T
+): Promise<T> {
 	return new Promise((resolve, reject) => {
 		initDB()
 			.then((db) => {
 				const transaction = db.transaction(storeName, mode);
 				const store = transaction.objectStore(storeName);
-				callback(store);
-				transaction.oncomplete = () => resolve();
+				const result = callback(store);
+				transaction.oncomplete = () => resolve(result);
 				transaction.onerror = () => reject(transaction.error);
 			})
 			.catch(reject);
