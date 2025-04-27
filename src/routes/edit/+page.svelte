@@ -144,31 +144,6 @@
 		});
 	}
 
-	function moveByArrowKey(e: KeyboardEvent, i: number, col: number) {
-		if (e.isComposing) return; // 日本語入力中は無視
-		const t = e.target as HTMLElement;
-		const tagName = t.tagName.toLowerCase();
-		const tbody =
-			tagName == 'td'
-				? t.parentElement?.parentElement
-				: t.parentElement?.parentElement?.parentElement;
-		if (e.key === 'ArrowDown') {
-			const next = tbody?.querySelector(
-				`tr:nth-child(${i + 3}) td:nth-child(${col})${tagName === 'td' ? '' : ' ' + tagName}`
-			);
-			if (next) {
-				(next as HTMLElement).focus();
-			}
-		} else if (e.key === 'ArrowUp') {
-			const prev = tbody?.querySelector(
-				`tr:nth-child(${i + 1}) td:nth-child(${col})${tagName === 'td' ? '' : ' ' + tagName}`
-			);
-			if (prev) {
-				(prev as HTMLElement).focus();
-			}
-		}
-	}
-
 	const colorSettings = getColorSettings();
 
 	$effect(() => {
@@ -281,40 +256,19 @@
 										editTheme.dataIds = editTheme.dataIds?.filter((v) => v !== data.id);
 									}
 								}}
-								onkeydown={(e) => moveByArrowKey(e, i, 1)}
 							/>
 						{/if}
 					</td>
-					<td
-						data-errormsg={data.errors.start}
-						bind:textContent={data.start}
-						contenteditable="true"
-						onkeydown={(e) => moveByArrowKey(e, i, 2)}
+					<td data-errormsg={data.errors.start} bind:textContent={data.start} contenteditable="true"
 					></td>
-					<td
-						data-errormsg={data.errors.end}
-						bind:textContent={data.end}
-						contenteditable="true"
-						onkeydown={(e) => moveByArrowKey(e, i, 3)}
+					<td data-errormsg={data.errors.end} bind:textContent={data.end} contenteditable="true"
 					></td>
-					<td
-						data-errormsg={data.errors.title}
-						bind:textContent={data.title}
-						contenteditable="true"
-						onkeydown={(e) => moveByArrowKey(e, i, 4)}
+					<td data-errormsg={data.errors.title} bind:textContent={data.title} contenteditable="true"
 					></td>
-					<td
-						class="color"
-						data-errormsg={data.errors.color}
-						onkeydown={(e) => moveByArrowKey(e, i, 5)}
-					>
+					<td class="color" data-errormsg={data.errors.color}>
 						<ColorSelect label="色" bind:value={data.color} {colorSettings} />
 					</td>
-					<td
-						class="color sub"
-						data-errormsg={data.errors.subColor}
-						onkeydown={(e) => moveByArrowKey(e, i, 6)}
-					>
+					<td class="color sub" data-errormsg={data.errors.subColor}>
 						<ColorSelect label="補色" bind:value={data.subColor} type="sub" {colorSettings} />
 					</td>
 					<td>
@@ -322,12 +276,7 @@
 							<pre>{oneError(data)}</pre>
 						{/if}
 					</td>
-					<td
-						><Button
-							onclick={() => remove(data.id)}
-							onkeydown={(e: KeyboardEvent) => moveByArrowKey(e, i, 8)}>×</Button
-						>
-					</td></tr
+					<td><Button onclick={() => remove(data.id)}>×</Button> </td></tr
 				>
 			{/each}
 		</tbody>
