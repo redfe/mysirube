@@ -121,27 +121,33 @@ function initializeColorSettings(store: IDBObjectStore) {
 	request.onsuccess = () => {};
 }
 
-export async function save(data: Data) {
-	const db = await initDB();
+function performTransaction(
+	storeName: string,
+	mode: IDBTransactionMode,
+	callback: (store: IDBObjectStore) => void
+): Promise<void> {
 	return new Promise((resolve, reject) => {
-		const transaction = db.transaction(dataStoreName, 'readwrite');
-		const store = transaction.objectStore(dataStoreName);
-		const request = store.put(data);
+		initDB()
+			.then((db) => {
+				const transaction = db.transaction(storeName, mode);
+				const store = transaction.objectStore(storeName);
+				callback(store);
+				transaction.oncomplete = () => resolve();
+				transaction.onerror = () => reject(transaction.error);
+			})
+			.catch(reject);
+	});
+}
 
-		request.onsuccess = () => resolve(request.result);
-		request.onerror = () => reject(request.error);
+export async function save(data: Data) {
+	return performTransaction(dataStoreName, 'readwrite', (store) => {
+		store.put(data);
 	});
 }
 
 export async function remove(id: string) {
-	const db = await initDB();
-	return new Promise((resolve, reject) => {
-		const transaction = db.transaction(dataStoreName, 'readwrite');
-		const store = transaction.objectStore(dataStoreName);
-		const request = store.delete(id);
-
-		request.onsuccess = () => resolve(request.result);
-		request.onerror = () => reject(request.error);
+	return performTransaction(dataStoreName, 'readwrite', (store) => {
+		store.delete(id);
 	});
 }
 
@@ -277,26 +283,14 @@ export async function getTheme(id: string): Promise<Theme | undefined> {
 }
 
 export async function saveTheme(theme: Theme) {
-	const db = await initDB();
-	return new Promise((resolve, reject) => {
-		const transaction = db.transaction(themeStoreName, 'readwrite');
-		const store = transaction.objectStore(themeStoreName);
-		const request = store.put(theme);
-
-		request.onsuccess = () => resolve(request.result);
-		request.onerror = () => reject(request.error);
+	return performTransaction(themeStoreName, 'readwrite', (store) => {
+		store.put(theme);
 	});
 }
 
 export async function removeTheme(id: string) {
-	const db = await initDB();
-	return new Promise((resolve, reject) => {
-		const transaction = db.transaction(themeStoreName, 'readwrite');
-		const store = transaction.objectStore(themeStoreName);
-		const request = store.delete(id);
-
-		request.onsuccess = () => resolve(request.result);
-		request.onerror = () => reject(request.error);
+	return performTransaction(themeStoreName, 'readwrite', (store) => {
+		store.delete(id);
 	});
 }
 
@@ -337,13 +331,8 @@ export async function getColorSettings(): Promise<ColorSettings> {
 }
 
 export async function saveColorSettings(colorSettings: ColorSettings) {
-	const db = await initDB();
-	return new Promise((resolve, reject) => {
-		const transaction = db.transaction(colorSettingsStoreName, 'readwrite');
-		const store = transaction.objectStore(colorSettingsStoreName);
-		const updateRequest = store.put(colorSettings);
-		updateRequest.onsuccess = () => resolve(updateRequest.result);
-		updateRequest.onerror = () => reject(updateRequest.error);
+	return performTransaction(colorSettingsStoreName, 'readwrite', (store) => {
+		store.put(colorSettings);
 	});
 }
 

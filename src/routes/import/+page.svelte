@@ -89,7 +89,6 @@
 		await clearStore();
 
 		let buffer: string | undefined = ''; // 行分割用のバッファ
-
 		const totalSize = file.size;
 		let processedSize = 0;
 		progress = 0;
@@ -98,34 +97,21 @@
 
 		try {
 			while (true) {
-				// ファイルをストリームからチャンクごとに読み込む
 				const { done, value } = await reader.read();
 				if (done) break;
 
 				processedSize += value.length;
-
-				// バイナリデータをテキストにデコード
 				buffer += decoder.decode(value, { stream: true });
-
-				// 行単位に分割
-				const lines: string[] = buffer?.split('\n') ?? [];
-				if (!firstLine && lines.length > 0) {
-					firstLine = lines[0];
-					importing = true;
-				}
-				buffer = lines.pop(); // 最後の行が不完全ならバッファに保持
-
-				const values = lines.map((line) => JSON.parse(line));
-				for (let i = 0; i < values.length; i++) {
-					await addToValueBuffers(values[i]);
-				}
+				buffer = await processBuffer(buffer);
 				progress = (processedSize * 100) / totalSize;
 			}
 
 			// 最後に残ったバッファを処理
 			if (buffer) {
-				addToValueBuffers([JSON.parse(buffer)]);
+				await processFinalBuffer(buffer);
 			}
+
+			// バッファが空でも finalizeValueBuffers を実行
 			await finalizeValueBuffers();
 
 			alert('インポートが完了しました');
@@ -133,6 +119,23 @@
 			importing = false;
 			progress = 0;
 		}
+	}
+
+	async function processBuffer(buffer: string): Promise<string> {
+		const lines: string[] = buffer.split('\n');
+		const lastLine = lines.pop(); // 最後の行が不完全ならバッファに保持
+
+		const values = lines.map((line) => JSON.parse(line));
+		for (const value of values) {
+			await addToValueBuffers(value);
+		}
+
+		return lastLine || '';
+	}
+
+	async function processFinalBuffer(buffer: string) {
+		// 最後のバッファを処理する際も processBuffer を再利用
+		await processBuffer(buffer);
 	}
 
 	const handleFileSelect = async (event: Event) => {
