@@ -18,12 +18,6 @@
 			saveCurrentStartYear(startYear);
 		}
 	};
-
-	onMount(() => {
-		if (defaultStartYear) {
-			moveCallback();
-		}
-	});
 </script>
 
 <div class="root">
