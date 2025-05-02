@@ -481,7 +481,7 @@
 			top 0.5s,
 			height 0.5s;
 		&.not-theme {
-			opacity: 0.1;
+			opacity: 0.18;
 		}
 	}
 	.color-separator {
