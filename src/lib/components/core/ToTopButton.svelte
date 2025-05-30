@@ -51,6 +51,7 @@
 		animation: scroll-anim-for-scroll-top linear;
 		animation-timeline: scroll();
 		opacity: 0.5;
+		z-index: 1002;
 	}
 	.scroll-top:hover {
 		opacity: 1;
