@@ -35,7 +35,6 @@
 		"prettier": "^3.5.3",
 		"prettier-plugin-svelte": "^3.4.0",
 		"svelte": "^5.33.10",
-		"svelte-adapter-azure-swa": "^0.22.0",
 		"svelte-check": "^4.2.1",
 		"tiptap-extension-resize-image": "^1.2.2",
 		"typescript": "^5.8.3",
