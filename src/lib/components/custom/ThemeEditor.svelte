@@ -512,6 +512,7 @@
 		margin-top: 0.5rem;
 		height: calc(100% - 8.5rem);
 		overflow-y: auto; /* 縦方向のスクロールを有効化 */
+		overscroll-behavior: contain;
 		border: 1px solid silver; /* 視覚的に区別するための境界線 */
 		border-radius: 0.25rem;
 		padding-left: 0.5rem;

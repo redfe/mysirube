@@ -445,6 +445,7 @@
 		overflow: auto;
 		box-sizing: border-box;
 		padding-bottom: 2rem;
+		overscroll-behavior: contain;
 	}
 	ul {
 		list-style: none;
