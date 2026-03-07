@@ -16,12 +16,12 @@
 	import Link from '$lib/components/core/Link.svelte';
 	const defaultText = 'flowchart\na --> b';
 	let { code, onclickCancel, onclickOk }: Props = $props();
-	code = code ?? defaultText;
+	let localCode = $derived(code ?? defaultText);
 	let previewElement: HTMLElement | undefined = $state();
 	let isError = $state(false);
 	let base64 = $state('');
 	const run = async () => {
-		const parseText = code ?? defaultText;
+		const parseText = localCode;
 		if (await mermaid.parse(parseText, { suppressErrors: true })) {
 			isError = false;
 			await tick(); // wait for the DOM to update
@@ -56,7 +56,7 @@
 		</div>
 	</div>
 	<div class="container">
-		<textarea bind:value={code} oninput={() => run()}></textarea>
+		<textarea bind:value={localCode} oninput={() => run()}></textarea>
 		{#if isError}
 			<div>
 				<p>
@@ -69,7 +69,7 @@
 			<div class="preview" class:hide={!isError} bind:this={previewElement}></div>
 		{/if}
 	</div>
-	<Button onclick={() => onclickOk?.({ code: code ?? '', base64 })}>決定</Button>
+	<Button onclick={() => onclickOk?.({ code: localCode ?? '', base64 })}>決定</Button>
 </DialogBase>
 
 <style>
